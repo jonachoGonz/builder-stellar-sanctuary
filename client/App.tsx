@@ -69,36 +69,22 @@ const App = () => (
             }
           />
 
-          {/* Dashboard routes (will be added later) */}
+          {/* Dashboard routes */}
           <Route
             path="/dashboard"
             element={
-              <PublicLayout>
-                <div className="container mx-auto px-4 py-20 text-center">
-                  <h1 className="text-4xl font-bold text-gym-dark mb-4">
-                    Dashboard
-                  </h1>
-                  <p className="text-gray-600">
-                    Panel de control - Próximamente
-                  </p>
-                </div>
-              </PublicLayout>
+              <div className="min-h-screen">
+                <Dashboard />
+              </div>
             }
           />
 
           <Route
             path="/profile"
             element={
-              <PublicLayout>
-                <div className="container mx-auto px-4 py-20 text-center">
-                  <h1 className="text-4xl font-bold text-gym-dark mb-4">
-                    Perfil
-                  </h1>
-                  <p className="text-gray-600">
-                    Página de perfil - Próximamente
-                  </p>
-                </div>
-              </PublicLayout>
+              <div className="min-h-screen">
+                <Profile />
+              </div>
             }
           />
 
