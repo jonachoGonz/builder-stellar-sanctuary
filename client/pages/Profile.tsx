@@ -188,8 +188,8 @@ export function Profile() {
   return (
     <div className="min-h-screen bg-muted">
       <WelcomeModal
-        userName={userData.firstName}
-        userPlan={userData.plan}
+        userName={user.firstName}
+        userPlan={user.plan || "Plan Trial"}
         isNewUser={true} // You can make this dynamic based on user registration date
       />
       {/* Profile Header */}
