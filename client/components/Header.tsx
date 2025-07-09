@@ -182,51 +182,106 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-4">
-              <Link
-                to="/"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Inicio
-              </Link>
-              <Link
-                to="/#plans"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Planes
-              </Link>
-              <Link
-                to="/#about"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Nosotros
-              </Link>
-              <Link
-                to="/#contact"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contacto
-              </Link>
-              <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-gray-700 hover:text-primary"
+              {isAuthenticated && user ? (
+                // Authenticated mobile menu
+                <>
+                  <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-lg">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.avatar} alt={user.firstName} />
+                      <AvatarFallback className="bg-primary text-white text-sm">
+                        {user.firstName?.[0]}
+                        {user.lastName?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      {user.plan && (
+                        <p className="text-xs text-primary font-medium">
+                          {user.plan}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Iniciar Sesión
-                  </Button>
-                </Link>
-                <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full btn-primary">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Registrarse
-                  </Button>
-                </Link>
-              </div>
+                    Mi Perfil
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Mi Dashboard
+                  </Link>
+                  <div className="pt-4 border-t border-gray-200">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:text-primary"
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Cerrar Sesión
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                // Unauthenticated mobile menu
+                <>
+                  <Link
+                    to="/"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Inicio
+                  </Link>
+                  <Link
+                    to="/#plans"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Planes
+                  </Link>
+                  <Link
+                    to="/#about"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Nosotros
+                  </Link>
+                  <Link
+                    to="/#contact"
+                    className="text-gray-700 hover:text-primary transition-colors font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Contacto
+                  </Link>
+                  <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-gray-700 hover:text-primary"
+                      >
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Iniciar Sesión
+                      </Button>
+                    </Link>
+                    <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="w-full btn-primary">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Registrarse
+                      </Button>
+                    </Link>
+                  </div>
+                </>
+              )}
             </nav>
           </div>
         )}
