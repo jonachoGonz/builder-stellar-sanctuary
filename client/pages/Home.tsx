@@ -257,20 +257,21 @@ export function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="card-hover border-0 shadow-lg">
               <CardHeader className="text-center">
                 <div className="mx-auto bg-primary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-                  <Target className="h-8 w-8 text-primary" />
+                  <Activity className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle className="text-xl text-gym-dark">
-                  Entrenamientos Personalizados
+                  Entrenamiento y Kinesiología
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600">
-                  Cada rutina está diseñada específicamente para tus objetivos,
-                  nivel y preferencias personales.
+                  Programas de entrenamiento personalizados con enfoque
+                  kinesiológico para prevenir lesiones y optimizar tu
+                  rendimiento.
                 </p>
               </CardContent>
             </Card>
@@ -278,10 +279,10 @@ export function Home() {
             <Card className="card-hover border-0 shadow-lg">
               <CardHeader className="text-center">
                 <div className="mx-auto bg-secondary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-                  <Zap className="h-8 w-8 text-secondary" />
+                  <Leaf className="h-8 w-8 text-secondary" />
                 </div>
                 <CardTitle className="text-xl text-gym-dark">
-                  Resultados Garantizados
+                  Nutrición Saludable y Deportiva
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
