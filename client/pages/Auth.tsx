@@ -164,7 +164,7 @@ export function Auth() {
         <div className="hidden lg:block text-white space-y-8">
           <div>
             <h1 className="text-5xl font-bold mb-4">
-              Bienvenido a <span className="text-primary">FitFlow</span>
+              Bienvenido a <span className="text-primary">HTK center</span>
             </h1>
             <p className="text-xl text-gray-300">
               Únete a miles de personas que han transformado sus vidas
