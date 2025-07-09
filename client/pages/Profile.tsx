@@ -201,11 +201,11 @@ export function Profile() {
             </div>
             <div className="flex-1">
               <h1 className="text-4xl font-bold">
-                ¡Bienvenido, {userData.firstName} {userData.lastName}!
+                ¡Bienvenido, {user.firstName} {user.lastName}!
               </h1>
               <div className="flex items-center space-x-4 mt-2">
                 <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
-                  {userData.plan}
+                  {user.plan || "Plan Trial"}
                 </Badge>
                 <span className="text-white/80">
                   Miembro desde {userStats.joinDate}
