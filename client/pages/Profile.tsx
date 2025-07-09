@@ -437,7 +437,7 @@ export function Profile() {
 
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Apellido</Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Input
                         id="lastName"
                         value={editData.lastName}
@@ -447,7 +447,7 @@ export function Profile() {
                       />
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.lastName}
+                        {user.lastName || "No especificado"}
                       </div>
                     )}
                   </div>
@@ -457,20 +457,12 @@ export function Profile() {
                       <Mail className="h-4 w-4 mr-1" />
                       Email
                     </Label>
-                    {isEditing ? (
-                      <Input
-                        id="email"
-                        type="email"
-                        value={editData.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.email}
-                      </div>
-                    )}
+                    <div className="p-3 bg-gray-100 rounded-lg border">
+                      {user.email}
+                      <span className="text-xs text-gray-500 ml-2">
+                        (No editable)
+                      </span>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -478,7 +470,7 @@ export function Profile() {
                       <Phone className="h-4 w-4 mr-1" />
                       Teléfono
                     </Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Input
                         id="phone"
                         value={editData.phone}
@@ -488,7 +480,7 @@ export function Profile() {
                       />
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.phone}
+                        {user.phone || "No especificado"}
                       </div>
                     )}
                   </div>
@@ -498,7 +490,7 @@ export function Profile() {
                       <Calendar className="h-4 w-4 mr-1" />
                       Fecha de Nacimiento
                     </Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Input
                         id="birthDate"
                         type="date"
@@ -509,16 +501,16 @@ export function Profile() {
                       />
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {new Date(userData.birthDate).toLocaleDateString(
-                          "es-ES",
-                        )}
+                        {user.birthDate
+                          ? new Date(user.birthDate).toLocaleDateString("es-ES")
+                          : "No especificado"}
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="occupation">Ocupación</Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Input
                         id="occupation"
                         value={editData.occupation}
@@ -528,7 +520,7 @@ export function Profile() {
                       />
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.occupation}
+                        {user.occupation || "No especificado"}
                       </div>
                     )}
                   </div>
