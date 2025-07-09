@@ -278,7 +278,7 @@ export function Profile() {
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-accent" />
-                      <span>Conectar con profesores expertos</span>
+                      <span>Conectar con profesionales expertos</span>
                     </div>
                   </div>
                 </div>
