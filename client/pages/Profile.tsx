@@ -252,7 +252,7 @@ export function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
                 <Award className="h-6 w-6 mr-2 text-primary" />
-                Tu Plan: {userData.plan}
+                Tu Plan: {user.plan || "Plan Trial"}
               </CardTitle>
             </CardHeader>
             <CardContent>
