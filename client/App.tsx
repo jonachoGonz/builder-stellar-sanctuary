@@ -6,10 +6,31 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+
+// Import components
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+
+// Import pages
+import { Home } from "./pages/Home";
+import { Auth } from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// Layout component for pages with header and footer
+const PublicLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen flex flex-col">
+    <Header />
+    <main className="flex-1">{children}</main>
+    <Footer />
+  </div>
+);
+
+// Layout component for auth pages (no header/footer)
+const AuthLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen">{children}</div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -18,9 +39,109 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          {/* Public routes with header/footer */}
+          <Route
+            path="/"
+            element={
+              <PublicLayout>
+                <Home />
+              </PublicLayout>
+            }
+          />
+
+          {/* Authentication routes without header/footer */}
+          <Route
+            path="/login"
+            element={
+              <AuthLayout>
+                <Auth />
+              </AuthLayout>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthLayout>
+                <Auth />
+              </AuthLayout>
+            }
+          />
+
+          {/* Dashboard routes (will be added later) */}
+          <Route
+            path="/dashboard"
+            element={
+              <PublicLayout>
+                <div className="container mx-auto px-4 py-20 text-center">
+                  <h1 className="text-4xl font-bold text-gym-dark mb-4">
+                    Dashboard
+                  </h1>
+                  <p className="text-gray-600">
+                    Panel de control - Próximamente
+                  </p>
+                </div>
+              </PublicLayout>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <PublicLayout>
+                <div className="container mx-auto px-4 py-20 text-center">
+                  <h1 className="text-4xl font-bold text-gym-dark mb-4">
+                    Perfil
+                  </h1>
+                  <p className="text-gray-600">
+                    Página de perfil - Próximamente
+                  </p>
+                </div>
+              </PublicLayout>
+            }
+          />
+
+          {/* Legal pages placeholders */}
+          <Route
+            path="/terms"
+            element={
+              <PublicLayout>
+                <div className="container mx-auto px-4 py-20">
+                  <h1 className="text-4xl font-bold text-gym-dark mb-8">
+                    Términos y Condiciones
+                  </h1>
+                  <div className="prose max-w-none text-gray-600">
+                    <p>Términos y condiciones - Contenido próximamente</p>
+                  </div>
+                </div>
+              </PublicLayout>
+            }
+          />
+
+          <Route
+            path="/privacy"
+            element={
+              <PublicLayout>
+                <div className="container mx-auto px-4 py-20">
+                  <h1 className="text-4xl font-bold text-gym-dark mb-8">
+                    Política de Privacidad
+                  </h1>
+                  <div className="prose max-w-none text-gray-600">
+                    <p>Política de privacidad - Contenido próximamente</p>
+                  </div>
+                </div>
+              </PublicLayout>
+            }
+          />
+
+          {/* 404 page */}
+          <Route
+            path="*"
+            element={
+              <PublicLayout>
+                <NotFound />
+              </PublicLayout>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
