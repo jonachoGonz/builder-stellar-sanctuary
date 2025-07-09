@@ -69,7 +69,7 @@ export function Auth() {
     try {
       if (isLogin) {
         await login(formData.email, formData.password);
-        navigate("/dashboard");
+        navigate("/profile");
       } else {
         // Validate required fields
         if (
@@ -98,7 +98,7 @@ export function Auth() {
           emergencyContactName: formData.emergencyContactName,
           emergencyContactPhone: formData.emergencyContactPhone,
         });
-        navigate("/dashboard");
+        navigate("/profile");
       }
     } catch (error: any) {
       setError(error.message);
