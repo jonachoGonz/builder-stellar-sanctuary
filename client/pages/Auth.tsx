@@ -33,9 +33,14 @@ import {
 import { Checkbox } from "../components/ui/checkbox";
 
 export function Auth() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { login, register, loginWithGoogle, isLoading } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
