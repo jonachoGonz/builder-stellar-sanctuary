@@ -14,6 +14,8 @@ import { Footer } from "./components/Footer";
 // Import pages
 import { Home } from "./pages/Home";
 import { Auth } from "./pages/Auth";
+import { Dashboard } from "./pages/Dashboard";
+import { Profile } from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
