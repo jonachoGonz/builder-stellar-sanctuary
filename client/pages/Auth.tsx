@@ -105,8 +105,18 @@ export function Auth() {
     }
   };
 
-  const handleGoogleAuth = () => {
-    loginWithGoogle();
+  const handleGoogleAuth = async () => {
+    try {
+      // Check if Google OAuth is available
+      const response = await fetch("/api/auth/google");
+      if (response.status === 501) {
+        setError("Autenticación con Google no disponible temporalmente");
+        return;
+      }
+      loginWithGoogle();
+    } catch (error) {
+      setError("Error al conectar con Google");
+    }
   };
 
   if (isVerificationSent) {
@@ -350,7 +360,7 @@ export function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Tel��fono *</Label>
+                    <Label htmlFor="phone">Teléfono *</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
