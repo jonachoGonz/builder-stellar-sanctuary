@@ -186,8 +186,10 @@ export function Auth() {
                 <User className="h-6 w-6 text-secondary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Profesores Expertos</h3>
-                <p className="text-gray-400">Entrenadores certificados</p>
+                <h3 className="text-lg font-semibold">
+                  Profesionales Expertos
+                </h3>
+                <p className="text-gray-400">Especialistas certificados</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
