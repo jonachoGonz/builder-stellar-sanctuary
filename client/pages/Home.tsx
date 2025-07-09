@@ -569,7 +569,7 @@ export function Home() {
               </Button>
             </Link>
             <a
-              href="https://wa.me/56912345678"
+              href="https://wa.me/56994748507"
               target="_blank"
               rel="noopener noreferrer"
             >
