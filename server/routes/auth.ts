@@ -140,45 +140,64 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-// Google OAuth login
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-  }),
-);
+// Google OAuth routes - only if properly configured
+if (
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id"
+) {
+  // Google OAuth login
+  router.get(
+    "/google",
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+    }),
+  );
 
-// Google OAuth callback
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false }),
-  async (req: Request, res: Response) => {
-    try {
-      const user = req.user as any;
+  // Google OAuth callback
+  router.get(
+    "/google/callback",
+    passport.authenticate("google", { session: false }),
+    async (req: Request, res: Response) => {
+      try {
+        const user = req.user as any;
 
-      // Generate token
-      const token = generateToken(user._id.toString());
+        // Generate token
+        const token = generateToken(user._id.toString());
 
-      // Redirect to frontend with token
-      res.redirect(
-        `${process.env.CLIENT_URL}/auth/success?token=${token}&user=${encodeURIComponent(
-          JSON.stringify({
-            id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            plan: user.plan,
-            avatar: user.avatar,
-          }),
-        )}`,
-      );
-    } catch (error) {
-      console.error("Google OAuth callback error:", error);
-      res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_error`);
-    }
-  },
-);
+        // Redirect to frontend with token
+        res.redirect(
+          `${process.env.CLIENT_URL}/auth/success?token=${token}&user=${encodeURIComponent(
+            JSON.stringify({
+              id: user._id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              role: user.role,
+              plan: user.plan,
+              avatar: user.avatar,
+            }),
+          )}`,
+        );
+      } catch (error) {
+        console.error("Google OAuth callback error:", error);
+        res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_error`);
+      }
+    },
+  );
+} else {
+  // Provide fallback routes when Google OAuth is not configured
+  router.get("/google", (req: Request, res: Response) => {
+    res.status(501).json({
+      success: false,
+      message: "Google OAuth no está configurado en el servidor",
+    });
+  });
+
+  router.get("/google/callback", (req: Request, res: Response) => {
+    res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_not_configured`);
+  });
+}
 
 // Get current user profile
 router.get("/me", authenticateToken, async (req: Request, res: Response) => {
