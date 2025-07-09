@@ -17,6 +17,17 @@ export interface User {
   plan?: string;
   phone?: string;
   avatar?: string;
+  gender?: string;
+  occupation?: string;
+  activityLevel?: string;
+  medicalConditions?: string;
+  injuries?: string;
+  emergencyContact?: {
+    name: string;
+    phone: string;
+  };
+  memberSince?: string;
+  isActive?: boolean;
 }
 
 interface AuthContextType {
@@ -25,8 +36,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
+  loginWithGoogle: () => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 interface RegisterData {
@@ -48,68 +61,63 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const API_BASE_URL = "/api";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check for stored authentication on mount
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-          // In a real app, you'd validate the token with your backend
-          // For now, we'll mock a user
-          const mockUser: User = {
-            id: "1",
-            email: "user@fitflow.cl",
-            firstName: "Usuario",
-            lastName: "Demo",
-            role: "student",
-            plan: "Plan Pro",
-          };
-          setUser(mockUser);
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        localStorage.removeItem("authToken");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          localStorage.removeItem("authToken");
+        }
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      localStorage.removeItem("authToken");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
-      // Mock API call - replace with real authentication
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Determine role based on email for demo purposes
-      let role: UserRole = "student";
-      if (email.includes("admin")) role = "admin";
-      else if (email.includes("teacher") || email.includes("profesor"))
-        role = "teacher";
+      const data = await response.json();
 
-      const mockUser: User = {
-        id: "1",
-        email,
-        firstName: email.includes("admin")
-          ? "Admin"
-          : email.includes("teacher")
-            ? "Profesor"
-            : "Usuario",
-        lastName: "Demo",
-        role,
-        plan: role === "student" ? "Plan Pro" : undefined,
-      };
+      if (!response.ok) {
+        throw new Error(data.message || "Error al iniciar sesión");
+      }
 
-      setUser(mockUser);
-      localStorage.setItem("authToken", "mock-token-123");
-    } catch (error) {
-      throw new Error("Credenciales inválidas");
+      setUser(data.user);
+      localStorage.setItem("authToken", data.token);
+    } catch (error: any) {
+      throw new Error(error.message || "Error al iniciar sesión");
     } finally {
       setIsLoading(false);
     }
@@ -118,26 +126,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: RegisterData): Promise<void> => {
     setIsLoading(true);
     try {
-      // Mock API call - replace with real registration
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
 
-      const newUser: User = {
-        id: Date.now().toString(),
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: "student",
-        plan: "Plan Prueba", // Default to trial plan
-        phone: userData.phone,
-      };
+      const data = await response.json();
 
-      setUser(newUser);
-      localStorage.setItem("authToken", "mock-token-123");
-    } catch (error) {
-      throw new Error("Error al crear la cuenta");
+      if (!response.ok) {
+        throw new Error(data.message || "Error al registrar usuario");
+      }
+
+      setUser(data.user);
+      localStorage.setItem("authToken", data.token);
+    } catch (error: any) {
+      throw new Error(error.message || "Error al registrar usuario");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const loginWithGoogle = () => {
+    // Redirect to Google OAuth
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   const logout = () => {
@@ -150,15 +164,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Mock API call - replace with real update
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
 
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
-    } catch (error) {
-      throw new Error("Error al actualizar el perfil");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Error al actualizar el perfil");
+      }
+
+      setUser(data.user);
+    } catch (error: any) {
+      throw new Error(error.message || "Error al actualizar el perfil");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const refreshUser = async (): Promise<void> => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error("Refresh user failed:", error);
     }
   };
 
@@ -168,8 +214,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     login,
     register,
+    loginWithGoogle,
     logout,
     updateUser,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
