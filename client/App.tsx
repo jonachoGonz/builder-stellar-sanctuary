@@ -56,21 +56,21 @@ const App = () => (
               }
             />
 
-            {/* Authentication routes without header/footer */}
+            {/* Authentication routes with header/footer */}
             <Route
               path="/login"
               element={
-                <AuthLayout>
+                <PublicLayout>
                   <Auth />
-                </AuthLayout>
+                </PublicLayout>
               }
             />
             <Route
               path="/register"
               element={
-                <AuthLayout>
+                <PublicLayout>
                   <Auth />
-                </AuthLayout>
+                </PublicLayout>
               }
             />
             <Route
