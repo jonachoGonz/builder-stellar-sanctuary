@@ -38,10 +38,10 @@ export function Home() {
       duration: "Una vez",
       popular: false,
       features: [
-        "Evaluación física inicial",
-        "Clase con profesor",
-        "Acceso a instalaciones",
-        "Plan nutricional básico",
+        "Evaluación integral inicial",
+        "Sesión con profesional",
+        "Acceso a servicios básicos",
+        "Consulta nutricional",
       ],
     },
     {
@@ -53,10 +53,10 @@ export function Home() {
       duration: "por mes",
       popular: false,
       features: [
-        "2 clases por semana",
+        "2 sesiones por semana",
         "Seguimiento personalizado",
         "Acceso a app móvil",
-        "Plan nutricional",
+        "Plan nutricional básico",
       ],
     },
     {
@@ -68,11 +68,11 @@ export function Home() {
       duration: "por mes",
       popular: true,
       features: [
-        "3 clases por semana",
+        "3 sesiones por semana",
         "Nutricionista incluido",
-        "Mediciones mensuales",
-        "Acceso premium a app",
-        "Descuentos en productos",
+        "Evaluaciones mensuales",
+        "Acceso a psicología",
+        "Descuentos en terapias",
       ],
     },
     {
@@ -84,11 +84,11 @@ export function Home() {
       duration: "por mes",
       popular: false,
       features: [
-        "4 clases por semana",
-        "Entrenador personal",
+        "4 sesiones por semana",
+        "Profesional personal",
         "Plan nutricional premium",
-        "Suplementación incluida",
-        "Acceso 24/7",
+        "Masoterapia incluida",
+        "Acceso a todos los servicios",
       ],
     },
     {
@@ -100,35 +100,38 @@ export function Home() {
       duration: "por mes",
       popular: false,
       features: [
-        "5 clases por semana",
-        "Entrenador personal exclusivo",
+        "5 sesiones por semana",
+        "Equipo profesional exclusivo",
         "Nutricionista personal",
-        "Masajes de recuperación",
-        "Todos los beneficios incluidos",
+        "Masoterapia ilimitada",
+        "Acceso completo a servicios",
       ],
     },
   ];
 
-  const trainers = [
+  const professionals = [
     {
-      name: "Carlos Mendoza",
-      specialty: "Entrenamiento Funcional",
+      name: "Dr. Carlos Mendoza",
+      specialty: "Kinesiólogo y Entrenador",
       experience: "8 años",
-      certifications: ["ACSM", "CrossFit L2"],
+      certifications: [
+        "Licenciado en Kinesiología",
+        "Cert. Entrenamiento Funcional",
+      ],
       image: "/placeholder.svg",
     },
     {
       name: "María González",
-      specialty: "Yoga & Pilates",
+      specialty: "Nutricionista y Yoga",
       experience: "6 años",
-      certifications: ["RYT-500", "PMA"],
+      certifications: ["Licenciada en Nutrición", "Instructora Yoga RYT-500"],
       image: "/placeholder.svg",
     },
     {
-      name: "Diego Ramirez",
-      specialty: "Musculación",
-      experience: "10 años",
-      certifications: ["NSCA", "NASM"],
+      name: "Ps. Ana Silva",
+      specialty: "Psicóloga Deportiva",
+      experience: "7 años",
+      certifications: ["Psicóloga Clínica", "Especialista en Deporte"],
       image: "/placeholder.svg",
     },
   ];
