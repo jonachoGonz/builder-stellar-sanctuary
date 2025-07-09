@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async (): Promise<void> => {
   try {
     const mongoURI =
-      process.env.MONGODB_URI || "mongodb://localhost:27017/fitflow";
+      process.env.MONGODB_URI || "mongodb://localhost:27017/htkcenter";
 
     await mongoose.connect(mongoURI);
 
