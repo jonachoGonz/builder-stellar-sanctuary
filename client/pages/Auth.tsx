@@ -62,23 +62,51 @@ export function Auth() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      // Handle login
-      console.log("Login attempt:", {
-        email: formData.email,
-        password: formData.password,
-      });
-    } else {
-      // Handle registration
-      setIsVerificationSent(true);
-      console.log("Registration attempt:", formData);
+    setError("");
+
+    try {
+      if (isLogin) {
+        await login(formData.email, formData.password);
+        navigate("/dashboard");
+      } else {
+        // Validate required fields
+        if (
+          !formData.firstName ||
+          !formData.lastName ||
+          !formData.phone ||
+          !formData.birthDate ||
+          !formData.termsAccepted
+        ) {
+          setError("Por favor completa todos los campos obligatorios");
+          return;
+        }
+
+        await register({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          birthDate: formData.birthDate,
+          gender: formData.gender,
+          occupation: formData.occupation,
+          activityLevel: formData.activityLevel,
+          medicalConditions: formData.medicalConditions,
+          injuries: formData.injuries,
+          emergencyContactName: formData.emergencyContactName,
+          emergencyContactPhone: formData.emergencyContactPhone,
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
   const handleGoogleAuth = () => {
-    console.log("Google authentication");
+    loginWithGoogle();
   };
 
   if (isVerificationSent) {
