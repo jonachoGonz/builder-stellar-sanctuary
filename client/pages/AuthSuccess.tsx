@@ -23,8 +23,8 @@ export function AuthSuccess() {
           // Refresh user data to sync with context
           await refreshUser();
 
-          // Redirect to dashboard
-          navigate("/dashboard", { replace: true });
+          // Redirect to profile
+          navigate("/profile", { replace: true });
         } catch (error) {
           console.error("Auth success error:", error);
           navigate("/login?error=auth_error", { replace: true });
