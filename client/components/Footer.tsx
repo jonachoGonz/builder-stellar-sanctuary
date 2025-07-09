@@ -97,11 +97,10 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Planes</h3>
             <ul className="space-y-2">
-              <li className="text-gray-300">Plan 1 - Clase de Prueba</li>
-              <li className="text-gray-300">Plan 2 - 2 clases/semana</li>
-              <li className="text-gray-300">Plan 3 - 3 clases/semana</li>
-              <li className="text-gray-300">Plan 4 - 4 clases/semana</li>
-              <li className="text-gray-300">Plan 5 - 5 clases/semana</li>
+              <li className="text-gray-300">Plan Básico - 2 clases/semana</li>
+              <li className="text-gray-300">Plan Pro - 3 clases/semana</li>
+              <li className="text-gray-300">Plan Elite - 4 clases/semana</li>
+              <li className="text-gray-300">Plan Personalizado - Flexible</li>
             </ul>
           </div>
 
@@ -111,7 +110,7 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-primary" />
-                <span className="text-gray-300">+56 9 1234 5678</span>
+                <span className="text-gray-300">+56994748507</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary" />
@@ -120,7 +119,7 @@ export function Footer() {
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-primary" />
                 <span className="text-gray-300">
-                  Av. Providencia 123, Santiago
+                  José Manuel Infante 1956. Ñuñoa, Santiago, Chile
                 </span>
               </div>
             </div>
