@@ -1,10 +1,31 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Dumbbell, LogIn, UserPlus } from "lucide-react";
+import {
+  Menu,
+  X,
+  Dumbbell,
+  LogIn,
+  UserPlus,
+  User,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import { Button } from "./ui/button";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
