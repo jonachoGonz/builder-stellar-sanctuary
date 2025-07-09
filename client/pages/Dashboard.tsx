@@ -1,16 +1,8 @@
-import { useState } from "react";
-import {
-  Calendar,
-  Clock,
-  User,
-  Target,
-  TrendingUp,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-} from "lucide-react";
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { AdminDashboard } from "./AdminDashboard";
+import { TeacherDashboard } from "./TeacherDashboard";
+import { StudentDashboard } from "./StudentDashboard";
 import { Button } from "../components/ui/button";
 import {
   Card,
