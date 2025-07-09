@@ -238,7 +238,7 @@ export function Home() {
                   </h3>
                   <p className="text-gray-600">
                     Nuestro equipo multidisciplinario de profesionales te
-                    acompaña en cada paso de tu transformaci��n integral.
+                    acompaña en cada paso de tu transformación integral.
                   </p>
                 </div>
               </div>
@@ -536,29 +536,31 @@ export function Home() {
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4">
                         <img
-                          src={trainer.image}
-                          alt={trainer.name}
+                          src={professional.image}
+                          alt={professional.name}
                           className="w-16 h-16 rounded-full object-cover"
                         />
                         <div className="flex-1">
                           <h4 className="text-lg font-semibold text-gym-dark">
-                            {trainer.name}
+                            {professional.name}
                           </h4>
                           <p className="text-primary font-medium">
-                            {trainer.specialty}
+                            {professional.specialty}
                           </p>
                           <p className="text-gray-600 text-sm">
-                            {trainer.experience} de experiencia
+                            {professional.experience} de experiencia
                           </p>
                           <div className="flex items-center mt-2">
-                            {trainer.certifications.map((cert, certIndex) => (
-                              <span
-                                key={certIndex}
-                                className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2"
-                              >
-                                {cert}
-                              </span>
-                            ))}
+                            {professional.certifications.map(
+                              (cert, certIndex) => (
+                                <span
+                                  key={certIndex}
+                                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2"
+                                >
+                                  {cert}
+                                </span>
+                              ),
+                            )}
                           </div>
                         </div>
                         <div className="flex flex-col items-center">
