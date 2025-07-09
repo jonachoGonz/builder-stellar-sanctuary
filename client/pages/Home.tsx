@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import {
-  Dumbbell,
+  Activity,
   Users,
   Trophy,
   Heart,
@@ -14,6 +14,10 @@ import {
   Zap,
   Shield,
   MessageCircle,
+  Brain,
+  Leaf,
+  Sparkles,
+  HandHeart,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -137,14 +141,14 @@ export function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <div className="text-center">
             <h1 className="hero-text gradient-primary bg-clip-text text-transparent mb-6">
-              Transforma Tu Vida
+              Centro de Salud Integral
               <br />
-              <span className="text-white">Alcanza Tu Mejor Versión</span>
+              <span className="text-white">Con Enfoque Personalizado</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Únete a FitFlow y descubre un nuevo estilo de vida con
-              entrenamientos personalizados, profesores expertos y una comunidad
-              que te apoya.
+              Únete a HTK center y descubre un enfoque integral de la salud con
+              profesionales especializados y una comunidad comprometida con tu
+              bienestar.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
@@ -174,11 +178,12 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="section-title text-gym-dark mb-4">
-              Bienvenido a FitFlow
+              Bienvenido a HTK center
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Más que un gimnasio, somos tu compañero en el camino hacia una
-              vida más saludable y plena.
+              Más que un centro de entrenamiento, somos tu aliado integral en el
+              camino hacia una vida más saludable y equilibrada en cuerpo, mente
+              y espíritu.
             </p>
           </div>
 
