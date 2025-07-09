@@ -13,73 +13,45 @@ import {
 import { Badge } from "../components/ui/badge";
 
 export function Dashboard() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<"week" | "month">("week");
+  const { user, isLoading } = useAuth();
 
-  // Mock data for user info
-  const userInfo = {
-    name: "Juan Pérez",
-    plan: "Plan Pro",
-    classesThisWeek: 2,
-    classesLeft: 1,
-    nextClass: "Mañana 10:00 AM",
-    trainer: "Carlos Mendoza",
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Mock calendar data
-  const mockClasses = [
-    {
-      id: 1,
-      date: "2024-01-15",
-      time: "10:00",
-      trainer: "Carlos Mendoza",
-      type: "Entrenamiento Funcional",
-      status: "confirmed",
-    },
-    {
-      id: 2,
-      date: "2024-01-17",
-      time: "15:30",
-      trainer: "María González",
-      type: "Yoga",
-      status: "pending",
-    },
-    {
-      id: 3,
-      date: "2024-01-19",
-      time: "09:00",
-      trainer: "Diego Ramirez",
-      type: "Musculación",
-      status: "available",
-    },
-  ];
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gym-dark mb-4">
+            Acceso Requerido
+          </h2>
+          <p className="text-gray-600">
+            Debes iniciar sesión para acceder al dashboard
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-  const getWeekDays = (date: Date) => {
-    const week = [];
-    const startOfWeek = new Date(date);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
-
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(startOfWeek);
-      day.setDate(startOfWeek.getDate() + i);
-      week.push(day);
-    }
-    return week;
-  };
-
-  const weekDays = getWeekDays(currentDate);
-  const monthName = currentDate.toLocaleDateString("es-ES", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const navigateWeek = (direction: "prev" | "next") => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() + (direction === "next" ? 7 : -7));
-    setCurrentDate(newDate);
-  };
+  // Route to appropriate dashboard based on user role
+  switch (user.role) {
+    case "admin":
+      return <AdminDashboard />;
+    case "teacher":
+      return <TeacherDashboard />;
+    case "student":
+      return <StudentDashboard />;
+    default:
+      return <StudentDashboard />; // Default to student dashboard
+  }
 
   return (
     <div className="min-h-screen bg-muted">
