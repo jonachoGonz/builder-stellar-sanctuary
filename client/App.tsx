@@ -45,97 +45,106 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-        <Routes>
-          {/* Public routes with header/footer */}
-          <Route
-            path="/"
-            element={
-              <PublicLayout>
-                <Home />
-              </PublicLayout>
-            }
-          />
+          <Routes>
+            {/* Public routes with header/footer */}
+            <Route
+              path="/"
+              element={
+                <PublicLayout>
+                  <Home />
+                </PublicLayout>
+              }
+            />
 
-          {/* Authentication routes without header/footer */}
-          <Route
-            path="/login"
-            element={
-              <AuthLayout>
-                <Auth />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <AuthLayout>
-                <Auth />
-              </AuthLayout>
-            }
-          />
+            {/* Authentication routes without header/footer */}
+            <Route
+              path="/login"
+              element={
+                <AuthLayout>
+                  <Auth />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AuthLayout>
+                  <Auth />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/auth/success"
+              element={
+                <AuthLayout>
+                  <AuthSuccess />
+                </AuthLayout>
+              }
+            />
 
-                    {/* Dashboard routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <div className="min-h-screen">
-                <Dashboard />
-              </div>
-            }
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <div className="min-h-screen">
-                <Profile />
-              </div>
-            }
-          />
-
-          {/* Legal pages placeholders */}
-          <Route
-            path="/terms"
-            element={
-              <PublicLayout>
-                <div className="container mx-auto px-4 py-20">
-                  <h1 className="text-4xl font-bold text-gym-dark mb-8">
-                    Términos y Condiciones
-                  </h1>
-                  <div className="prose max-w-none text-gray-600">
-                    <p>Términos y condiciones - Contenido próximamente</p>
-                  </div>
+            {/* Dashboard routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <div className="min-h-screen">
+                  <Dashboard />
                 </div>
-              </PublicLayout>
-            }
-          />
+              }
+            />
 
-          <Route
-            path="/privacy"
-            element={
-              <PublicLayout>
-                <div className="container mx-auto px-4 py-20">
-                  <h1 className="text-4xl font-bold text-gym-dark mb-8">
-                    Política de Privacidad
-                  </h1>
-                  <div className="prose max-w-none text-gray-600">
-                    <p>Política de privacidad - Contenido próximamente</p>
-                  </div>
+            <Route
+              path="/profile"
+              element={
+                <div className="min-h-screen">
+                  <Profile />
                 </div>
-              </PublicLayout>
-            }
-          />
+              }
+            />
 
-          {/* 404 page */}
-          <Route
-            path="*"
-            element={
-              <PublicLayout>
-                <NotFound />
-              </PublicLayout>
-            }
-          />
-        </Routes>
+            {/* Legal pages placeholders */}
+            <Route
+              path="/terms"
+              element={
+                <PublicLayout>
+                  <div className="container mx-auto px-4 py-20">
+                    <h1 className="text-4xl font-bold text-gym-dark mb-8">
+                      Términos y Condiciones
+                    </h1>
+                    <div className="prose max-w-none text-gray-600">
+                      <p>Términos y condiciones - Contenido próximamente</p>
+                    </div>
+                  </div>
+                </PublicLayout>
+              }
+            />
+
+            <Route
+              path="/privacy"
+              element={
+                <PublicLayout>
+                  <div className="container mx-auto px-4 py-20">
+                    <h1 className="text-4xl font-bold text-gym-dark mb-8">
+                      Política de Privacidad
+                    </h1>
+                    <div className="prose max-w-none text-gray-600">
+                      <p>Política de privacidad - Contenido próximamente</p>
+                    </div>
+                  </div>
+                </PublicLayout>
+              }
+            />
+
+            {/* 404 page */}
+            <Route
+              path="*"
+              element={
+                <PublicLayout>
+                  <NotFound />
+                </PublicLayout>
+              }
+            />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
