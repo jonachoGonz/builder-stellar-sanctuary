@@ -17,6 +17,7 @@ export interface User {
   plan?: string;
   phone?: string;
   avatar?: string;
+  birthDate?: string;
   gender?: string;
   occupation?: string;
   activityLevel?: string;
