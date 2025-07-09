@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Calendar,
   Clock,
@@ -46,6 +47,7 @@ import {
 import { Progress } from "../components/ui/progress";
 
 export function StudentDashboard() {
+  const { user, isLoading } = useAuth();
   const [availableClasses, setAvailableClasses] = useState<any[]>([]);
   const [myClasses, setMyClasses] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState(
@@ -56,18 +58,125 @@ export function StudentDashboard() {
   const [filterType, setFilterType] = useState("all");
   const [filterTime, setFilterTime] = useState("all");
 
-  // Mock student data
-  const studentInfo = {
-    name: "Juan Pérez",
-    plan: "Plan Pro",
-    classesThisWeek: 2,
-    classesLimit: 3,
-    nextClass: "Mañana 10:00 AM",
-    memberSince: "Enero 2024",
-    streak: 12,
-    totalClasses: 45,
-    completionRate: 94,
+  // Get student info from real user data
+  const getStudentInfo = () => {
+    if (!user) return null;
+
+    // Calculate plan limits based on plan type
+    const getPlanLimits = (plan?: string) => {
+      switch (plan?.toLowerCase()) {
+        case "plan básico":
+        case "basico":
+          return { limit: 2, name: "Plan Básico" };
+        case "plan pro":
+        case "pro":
+          return { limit: 3, name: "Plan Pro" };
+        case "plan premium":
+        case "premium":
+          return { limit: 5, name: "Plan Premium" };
+        default:
+          return { limit: 2, name: user.plan || "Plan Básico" };
+      }
+    };
+
+    const planInfo = getPlanLimits(user.plan);
+    const memberSince = user.memberSince
+      ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+          month: "long",
+          year: "numeric",
+        })
+      : "Enero 2024";
+
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      plan: planInfo.name,
+      classesThisWeek: myClasses.filter((c) => {
+        const classDate = new Date(c.date);
+        const now = new Date();
+        const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return (
+          classDate >= weekStart &&
+          classDate <= weekEnd &&
+          c.status !== "cancelled"
+        );
+      }).length,
+      classesLimit: planInfo.limit,
+      nextClass: getNextClass(),
+      memberSince,
+      streak: calculateStreak(),
+      totalClasses: myClasses.filter((c) => c.status === "completed").length,
+      completionRate: calculateCompletionRate(),
+    };
   };
+
+  const getNextClass = () => {
+    const upcoming = myClasses
+      .filter((c) => new Date(c.date) > new Date() && c.status === "booked")
+      .sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      )[0];
+
+    if (!upcoming) return "Sin clases programadas";
+
+    const date = new Date(upcoming.date);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    let dateText = "";
+    if (date.toDateString() === today.toDateString()) {
+      dateText = "Hoy";
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      dateText = "Mañana";
+    } else {
+      dateText = date.toLocaleDateString("es-ES");
+    }
+
+    return `${dateText} ${upcoming.startTime}`;
+  };
+
+  const calculateStreak = () => {
+    // Simple streak calculation - days with completed classes
+    const completedClasses = myClasses
+      .filter((c) => c.status === "completed")
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (completedClasses.length === 0) return 0;
+
+    let streak = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    for (const classItem of completedClasses) {
+      const classDate = new Date(classItem.date);
+      classDate.setHours(0, 0, 0, 0);
+
+      const diffTime = currentDate.getTime() - classDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= streak + 1) {
+        streak = Math.max(streak, diffDays);
+      } else {
+        break;
+      }
+    }
+
+    return Math.max(streak, 1);
+  };
+
+  const calculateCompletionRate = () => {
+    const totalBooked = myClasses.filter(
+      (c) => c.status === "booked" || c.status === "completed",
+    ).length;
+    const completed = myClasses.filter((c) => c.status === "completed").length;
+
+    if (totalBooked === 0) return 100;
+    return Math.round((completed / totalBooked) * 100);
+  };
+
+  const studentInfo = getStudentInfo();
 
   // Mock data - replace with real API calls
   useEffect(() => {
@@ -231,7 +340,10 @@ export function StudentDashboard() {
       return;
     }
 
-    if (studentInfo.classesThisWeek >= studentInfo.classesLimit) {
+    if (
+      studentInfo &&
+      studentInfo.classesThisWeek >= studentInfo.classesLimit
+    ) {
       alert(
         "Has alcanzado el límite de clases para esta semana según tu plan.",
       );
@@ -324,6 +436,32 @@ export function StudentDashboard() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !studentInfo) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gym-dark mb-4">
+            Error de Acceso
+          </h2>
+          <p className="text-gray-600">
+            No se pudo cargar la información del usuario
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted">
