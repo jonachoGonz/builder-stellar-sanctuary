@@ -191,22 +191,23 @@ export function Home() {
             <div>
               <img
                 src="/placeholder.svg"
-                alt="Instalaciones FitFlow"
+                alt="Instalaciones HTK center"
                 className="rounded-2xl shadow-2xl w-full h-96 object-cover"
               />
             </div>
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
                 <div className="bg-primary/10 p-3 rounded-lg">
-                  <Dumbbell className="h-6 w-6 text-primary" />
+                  <Activity className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gym-dark mb-2">
-                    Equipamiento de Última Generación
+                    Enfoque Integral Personalizado
                   </h3>
                   <p className="text-gray-600">
-                    Contamos con la tecnología más avanzada para garantizar
-                    entrenamientos efectivos y seguros.
+                    Combinamos entrenamiento, kinesiología, nutrición,
+                    psicología y terapias complementarias en un plan único para
+                    ti.
                   </p>
                 </div>
               </div>
@@ -216,11 +217,11 @@ export function Home() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gym-dark mb-2">
-                    Comunidad Motivadora
+                    Comunidad de Bienestar
                   </h3>
                   <p className="text-gray-600">
-                    Forma parte de una comunidad que celebra cada logro y te
-                    impulsa a superar tus límites.
+                    Forma parte de una comunidad comprometida con el crecimiento
+                    personal y el bienestar integral de todos sus miembros.
                   </p>
                 </div>
               </div>
@@ -230,11 +231,11 @@ export function Home() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gym-dark mb-2">
-                    Ambiente Acogedor
+                    Profesionales Especializados
                   </h3>
                   <p className="text-gray-600">
-                    Un espacio diseñado para que te sientas cómodo y motivado
-                    desde el primer día.
+                    Nuestro equipo multidisciplinario de profesionales te
+                    acompaña en cada paso de tu transformación integral.
                   </p>
                 </div>
               </div>
@@ -248,11 +249,11 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="section-title text-gym-dark mb-4">
-              ¿Por Qué Elegir FitFlow?
+              Nuestros Servicios Integrales
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Descubre lo que nos hace únicos y por qué miles de personas han
-              transformado sus vidas con nosotros.
+              Descubre nuestra amplia gama de servicios diseñados para tu
+              bienestar físico, mental y emocional en un solo lugar.
             </p>
           </div>
 
