@@ -7,7 +7,7 @@ const router = Router();
 
 // Generate JWT token
 const generateToken = (userId: string): string => {
-  const secret = process.env.JWT_SECRET || "fitflow-secret";
+  const secret = process.env.JWT_SECRET || "htk-center-secret";
   return jwt.sign({ userId }, secret, { expiresIn: "7d" });
 };
 
