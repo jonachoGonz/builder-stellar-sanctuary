@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Mail,
   Lock,
@@ -513,7 +514,7 @@ export function Auth() {
                     to="/forgot-password"
                     className="text-sm text-primary hover:underline"
                   >
-                    ¿Olvidaste tu contraseña?
+                    ��Olvidaste tu contraseña?
                   </Link>
                 </div>
               )}
