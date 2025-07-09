@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Users,
   Calendar,
@@ -48,12 +49,88 @@ import {
 import { Label } from "../components/ui/label";
 
 export function AdminDashboard() {
+  const { user, isLoading } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+
+  // Get admin info from real user data
+  const getAdminInfo = () => {
+    if (!user) return null;
+
+    const calculateSystemStats = () => {
+      const totalUsers = users.length;
+      const activeUsers = users.filter((u) => u.isActive).length;
+      const totalStudents = users.filter((u) => u.role === "student").length;
+      const totalTeachers = users.filter((u) => u.role === "teacher").length;
+      const totalClasses = classes.length;
+      const upcomingClasses = classes.filter(
+        (c) => new Date(c.date) > new Date(),
+      ).length;
+
+      // Calculate revenue based on active students and their plans
+      const revenue = users
+        .filter((u) => u.role === "student" && u.isActive)
+        .reduce((total, student) => {
+          const planPrices: { [key: string]: number } = {
+            basic: 29.99,
+            basico: 29.99,
+            pro: 49.99,
+            premium: 79.99,
+          };
+          const price =
+            planPrices[student.plan?.toLowerCase() || "basic"] || 29.99;
+          return total + price;
+        }, 0);
+
+      return {
+        totalUsers,
+        activeUsers,
+        totalStudents,
+        totalTeachers,
+        totalClasses,
+        upcomingClasses,
+        monthlyRevenue: revenue,
+        growthRate: calculateGrowthRate(),
+      };
+    };
+
+    const calculateGrowthRate = () => {
+      // Simple growth calculation based on new users this month
+      const thisMonth = new Date();
+      const newUsersThisMonth = users.filter((u) => {
+        const memberDate = new Date(u.memberSince);
+        return (
+          memberDate.getMonth() === thisMonth.getMonth() &&
+          memberDate.getFullYear() === thisMonth.getFullYear()
+        );
+      }).length;
+
+      const lastMonthTotal = users.length - newUsersThisMonth;
+      if (lastMonthTotal === 0) return 0;
+
+      return Math.round((newUsersThisMonth / lastMonthTotal) * 100);
+    };
+
+    const stats = calculateSystemStats();
+
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      role: "Administrador",
+      ...stats,
+      memberSince: user.memberSince
+        ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+            month: "long",
+            year: "numeric",
+          })
+        : "Enero 2024",
+    };
+  };
+
+  const adminInfo = getAdminInfo();
 
   // Mock data - replace with real API calls
   useEffect(() => {
