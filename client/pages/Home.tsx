@@ -238,7 +238,7 @@ export function Home() {
                   </h3>
                   <p className="text-gray-600">
                     Nuestro equipo multidisciplinario de profesionales te
-                    acompaña en cada paso de tu transformación integral.
+                    acompaña en cada paso de tu transformaci��n integral.
                   </p>
                 </div>
               </div>
@@ -531,7 +531,7 @@ export function Home() {
                 Nuestros Profesionales
               </h3>
               <div className="space-y-6">
-                {trainers.map((trainer, index) => (
+                {professionals.map((professional, index) => (
                   <Card key={index} className="shadow-lg border-0">
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4">
