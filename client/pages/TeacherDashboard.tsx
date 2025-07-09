@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Calendar,
   Clock,
@@ -48,22 +49,93 @@ import {
 import { Textarea } from "../components/ui/textarea";
 
 export function TeacherDashboard() {
+  const { user, isLoading } = useAuth();
   const [classes, setClasses] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<any[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  // Mock teacher data
-  const teacherInfo = {
-    name: "Carlos Mendoza",
-    specialties: ["Entrenamiento Funcional", "CrossFit"],
-    rating: 4.9,
-    totalClasses: 156,
-    totalStudents: 89,
-    maxClassesPerDay: 6,
-    maxStudentsPerClass: 15,
+  // Get teacher info from real user data
+  const getTeacherInfo = () => {
+    if (!user) return null;
+
+    const calculateStats = () => {
+      const totalClasses = classes.filter(
+        (c) => c.status === "completed",
+      ).length;
+      const uniqueStudents = new Set(
+        classes.flatMap((c) => c.students?.map((s: any) => s.id) || []),
+      ).size;
+
+      return {
+        totalClasses,
+        totalStudents: uniqueStudents,
+        upcomingClasses: classes.filter((c) => new Date(c.date) > new Date())
+          .length,
+        completedThisWeek: classes.filter((c) => {
+          const classDate = new Date(c.date);
+          const now = new Date();
+          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekEnd.getDate() + 6);
+          return (
+            classDate >= weekStart &&
+            classDate <= weekEnd &&
+            c.status === "completed"
+          );
+        }).length,
+      };
+    };
+
+    const stats = calculateStats();
+
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      specialties: getTeacherSpecialties(),
+      rating: 4.8, // Default rating - could be calculated from class ratings
+      totalClasses: stats.totalClasses,
+      totalStudents: stats.totalStudents,
+      upcomingClasses: stats.upcomingClasses,
+      completedThisWeek: stats.completedThisWeek,
+      maxClassesPerDay: 6,
+      maxStudentsPerClass: 15,
+      memberSince: user.memberSince
+        ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+            month: "long",
+            year: "numeric",
+          })
+        : "Enero 2024",
+    };
   };
+
+  const getTeacherSpecialties = () => {
+    // Default specialties - in a real app, this would come from user profile
+    const defaultSpecialties = [
+      "Entrenamiento Funcional",
+      "CrossFit",
+      "Musculación",
+    ];
+
+    // Could be based on the types of classes this teacher has created
+    const classTypes = [...new Set(classes.map((c) => c.type || "functional"))];
+    const typeMapping: { [key: string]: string } = {
+      functional: "Entrenamiento Funcional",
+      crossfit: "CrossFit",
+      yoga: "Yoga",
+      pilates: "Pilates",
+      cardio: "Cardio",
+      strength: "Musculación",
+    };
+
+    const specialties = classTypes.map(
+      (type) => typeMapping[type] || "Entrenamiento General",
+    );
+
+    return specialties.length > 0 ? specialties : defaultSpecialties;
+  };
+
+  const teacherInfo = getTeacherInfo();
 
   // Mock data - replace with real API calls
   useEffect(() => {
