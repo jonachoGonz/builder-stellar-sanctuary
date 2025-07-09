@@ -366,12 +366,6 @@ export function Home() {
           <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-4xl font-bold text-primary mb-2">
-                  2000+
-                </div>
-                <div className="text-gray-600">Miembros Activos</div>
-              </div>
-              <div>
                 <div className="text-4xl font-bold text-secondary mb-2">
                   15+
                 </div>
