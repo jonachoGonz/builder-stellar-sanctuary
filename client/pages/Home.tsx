@@ -287,8 +287,8 @@ export function Home() {
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600">
-                  Con nuestro método probado y seguimiento constante, verás
-                  resultados desde la primera semana.
+                  Planes nutricionales personalizados para deportistas y
+                  personas que buscan un estilo de vida saludable y equilibrado.
                 </p>
               </CardContent>
             </Card>
@@ -296,16 +296,65 @@ export function Home() {
             <Card className="card-hover border-0 shadow-lg">
               <CardHeader className="text-center">
                 <div className="mx-auto bg-accent/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-                  <Shield className="h-8 w-8 text-accent" />
+                  <Brain className="h-8 w-8 text-accent" />
                 </div>
                 <CardTitle className="text-xl text-gym-dark">
-                  Seguridad Total
+                  Psicología
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600">
-                  Protocolos de seguridad estrictos y supervisión profesional en
-                  cada entrenamiento.
+                  Apoyo psicológico especializado para fortalecer tu bienestar
+                  mental y emocional en tu proceso de transformación.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-primary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <HandHeart className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">
+                  Masoterapia
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Terapias de masajes especializadas para la recuperación
+                  muscular, relajación y alivio del estrés.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-secondary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <Sparkles className="h-8 w-8 text-secondary" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">Yoga</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Clases de yoga para conectar cuerpo, mente y espíritu,
+                  mejorando flexibilidad, fuerza y paz interior.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-accent/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <Target className="h-8 w-8 text-accent" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">
+                  Muay Thai
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Entrenamiento de Muay Thai para desarrollar fuerza,
+                  disciplina, técnica y confianza en ti mismo.
                 </p>
               </CardContent>
             </Card>
@@ -323,7 +372,9 @@ export function Home() {
                 <div className="text-4xl font-bold text-secondary mb-2">
                   15+
                 </div>
-                <div className="text-gray-600">Profesores Expertos</div>
+                <div className="text-gray-600">
+                  Profesionales Especializados
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-accent mb-2">98%</div>
