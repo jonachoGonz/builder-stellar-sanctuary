@@ -348,7 +348,9 @@ export function AdminDashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profesores</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Profesionales
+              </CardTitle>
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -405,7 +407,7 @@ export function AdminDashboard() {
                     <SelectContent>
                       <SelectItem value="all">Todos</SelectItem>
                       <SelectItem value="student">Estudiantes</SelectItem>
-                      <SelectItem value="teacher">Profesores</SelectItem>
+                      <SelectItem value="teacher">Profesionales</SelectItem>
                       <SelectItem value="admin">Admins</SelectItem>
                     </SelectContent>
                   </Select>
@@ -494,7 +496,7 @@ export function AdminDashboard() {
                   <div key={classItem.id} className="p-3 bg-gray-50 rounded-lg">
                     <div className="font-medium text-sm">{classItem.title}</div>
                     <div className="text-xs text-gray-600 mt-1">
-                      {classItem.instructor} ��� {classItem.time}
+                      {classItem.instructor} • {classItem.time}
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <Badge variant="outline" className="text-xs">
@@ -579,7 +581,7 @@ export function AdminDashboard() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="student">Estudiante</SelectItem>
-                    <SelectItem value="teacher">Profesor</SelectItem>
+                    <SelectItem value="teacher">Profesional</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
                   </SelectContent>
                 </Select>
