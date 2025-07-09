@@ -533,7 +533,7 @@ export function Profile() {
                       <Activity className="h-4 w-4 mr-1" />
                       Nivel de Actividad
                     </Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Select
                         value={editData.activityLevel}
                         onValueChange={(value) =>
@@ -553,11 +553,13 @@ export function Profile() {
                       </Select>
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.activityLevel === "sedentary"
+                        {user.activityLevel === "sedentary"
                           ? "Sedentario"
-                          : userData.activityLevel === "active"
+                          : user.activityLevel === "active"
                             ? "Activo"
-                            : "Muy Activo"}
+                            : user.activityLevel === "very-active"
+                              ? "Muy Activo"
+                              : "No especificado"}
                       </div>
                     )}
                   </div>
@@ -566,11 +568,26 @@ export function Profile() {
                     <Label htmlFor="plan">Plan Actual</Label>
                     <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
                       <div className="font-semibold text-primary">
-                        {userData.plan}
+                        {user.plan || "Plan Trial"}
                       </div>
                       <div className="text-sm text-gray-600">
-                        3 clases por semana
+                        {user.plan === "pro"
+                          ? "3"
+                          : user.plan === "basic"
+                            ? "2"
+                            : user.plan === "elite"
+                              ? "4"
+                              : user.plan === "champion"
+                                ? "5"
+                                : "1"}{" "}
+                        clases por semana
                       </div>
+                      {isAdmin && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Los administradores pueden cambiar planes desde el
+                          dashboard admin
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
