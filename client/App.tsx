@@ -11,9 +11,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 
+// Import contexts
+import { AuthProvider } from "./contexts/AuthContext";
+
 // Import pages
 import { Home } from "./pages/Home";
 import { Auth } from "./pages/Auth";
+import { AuthSuccess } from "./pages/AuthSuccess";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import NotFound from "./pages/NotFound";
