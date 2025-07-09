@@ -34,7 +34,7 @@ export function Home() {
       name: "Plan Básico",
       classes: "2 clases semanales",
       description: "Ideal para comenzar tu transformación",
-      price: "$49.990",
+      price: "$172.800",
       duration: "por mes",
       popular: false,
       features: [
@@ -50,7 +50,7 @@ export function Home() {
       name: "Plan Pro",
       classes: "3 clases semanales",
       description: "El equilibrio perfecto",
-      price: "$69.990",
+      price: "$208.500",
       duration: "por mes",
       popular: true,
       features: [
@@ -66,7 +66,7 @@ export function Home() {
       name: "Plan Elite",
       classes: "4 clases semanales",
       description: "Para resultados serios",
-      price: "$89.990",
+      price: "$268.000",
       duration: "por mes",
       popular: false,
       features: [
