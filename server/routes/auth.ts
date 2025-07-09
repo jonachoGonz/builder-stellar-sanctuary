@@ -6,10 +6,17 @@ import passport from "../config/passport";
 const router = Router();
 
 // Generate JWT token
-const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET!, {
+const generateToken = (userId: string): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+
+  const options: SignOptions = {
     expiresIn: process.env.JWT_EXPIRE || "7d",
-  });
+  };
+
+  return jwt.sign({ userId }, secret, options);
 };
 
 // Register with email/password
