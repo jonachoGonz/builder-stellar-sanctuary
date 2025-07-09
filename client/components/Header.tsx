@@ -41,30 +41,51 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-gray-700 hover:text-primary transition-colors font-medium"
-            >
-              Inicio
-            </Link>
-            <Link
-              to="/#plans"
-              className="text-gray-700 hover:text-primary transition-colors font-medium"
-            >
-              Planes
-            </Link>
-            <Link
-              to="/#about"
-              className="text-gray-700 hover:text-primary transition-colors font-medium"
-            >
-              Nosotros
-            </Link>
-            <Link
-              to="/#contact"
-              className="text-gray-700 hover:text-primary transition-colors font-medium"
-            >
-              Contacto
-            </Link>
+            {isAuthenticated ? (
+              // Authenticated user navigation
+              <>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Mi Perfil
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Mi Dashboard
+                </Link>
+              </>
+            ) : (
+              // Public navigation
+              <>
+                <Link
+                  to="/"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Inicio
+                </Link>
+                <Link
+                  to="/#plans"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Planes
+                </Link>
+                <Link
+                  to="/#about"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Nosotros
+                </Link>
+                <Link
+                  to="/#contact"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Contacto
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Desktop Auth Buttons */}
