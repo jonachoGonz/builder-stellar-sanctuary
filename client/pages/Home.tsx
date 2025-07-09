@@ -482,7 +482,7 @@ export function Home() {
                   <div className="flex items-center space-x-3">
                     <MapPin className="h-5 w-5 text-primary" />
                     <span className="text-gray-700">
-                      Av. Providencia 123, Providencia, Santiago
+                      José Manuel Infante 1956. Ñuñoa, Santiago, Chile
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -494,7 +494,7 @@ export function Home() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="h-5 w-5 text-primary" />
-                    <span className="text-gray-700">+56 9 1234 5678</span>
+                    <span className="text-gray-700">+56994748507</span>
                   </div>
                 </div>
                 <div className="mt-6">
