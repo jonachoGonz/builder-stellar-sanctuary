@@ -35,26 +35,48 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import { WelcomeModal } from "../components/WelcomeModal";
+import { useAuth, usePermissions } from "../contexts/AuthContext";
 
 export function Profile() {
+  const { user, updateUser, isLoading } = useAuth();
+  const { canManageUsers, isStudent, isAdmin } = usePermissions();
   const [isEditing, setIsEditing] = useState(false);
-  const [userData, setUserData] = useState({
-    firstName: "Juan",
-    lastName: "Pérez",
-    email: "juan.perez@email.com",
-    phone: "+56 9 1234 5678",
-    birthDate: "1990-05-15",
-    gender: "male",
-    occupation: "Ingeniero",
-    plan: "Plan Pro",
-    activityLevel: "active",
+  const [editData, setEditData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    birthDate: "",
+    gender: "",
+    occupation: "",
+    activityLevel: "",
     medicalConditions: "",
     injuries: "",
-    emergencyContactName: "María Pérez",
-    emergencyContactPhone: "+56 9 8765 4321",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
   });
 
-  const [editData, setEditData] = useState({ ...userData });
+  // Initialize editData with user data when user is loaded
+  useState(() => {
+    if (user) {
+      setEditData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        birthDate: user.birthDate
+          ? new Date(user.birthDate).toISOString().split("T")[0]
+          : "",
+        gender: user.gender || "",
+        occupation: user.occupation || "",
+        activityLevel: user.activityLevel || "",
+        medicalConditions: user.medicalConditions || "",
+        injuries: user.injuries || "",
+        emergencyContactName: user.emergencyContact?.name || "",
+        emergencyContactPhone: user.emergencyContact?.phone || "",
+      });
+    }
+  });
 
   // Mock user stats
   const userStats = {
