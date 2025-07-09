@@ -20,7 +20,7 @@ export function Footer() {
               <div className="bg-primary p-2 rounded-lg">
                 <Dumbbell className="h-6 w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold">FitFlow</span>
+              <span className="text-2xl font-bold">HTK center</span>
             </div>
             <p className="text-gray-300 mb-4">
               Transforma tu vida con un enfoque integral de la salud y
@@ -115,7 +115,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary" />
-                <span className="text-gray-300">info@fitflow.cl</span>
+                <span className="text-gray-300">info@htkcenter.cl</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-primary" />
@@ -129,7 +129,7 @@ export function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400">
-            © 2024 FitFlow. Todos los derechos reservados.
+            © 2024 HTK center. Todos los derechos reservados.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-primary text-sm">
