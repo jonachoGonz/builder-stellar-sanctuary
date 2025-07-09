@@ -44,6 +44,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthProvider>
         <Routes>
           {/* Public routes with header/footer */}
           <Route
@@ -73,7 +74,7 @@ const App = () => (
             }
           />
 
-          {/* Dashboard routes */}
+                    {/* Dashboard routes */}
           <Route
             path="/dashboard"
             element={
