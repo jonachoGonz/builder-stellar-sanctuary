@@ -33,7 +33,7 @@ export function createServer() {
   // Session configuration
   app.use(
     session({
-      secret: process.env.SESSION_SECRET || "fitflow-secret",
+      secret: process.env.SESSION_SECRET || "htk-center-secret",
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -49,7 +49,7 @@ export function createServer() {
 
   // API routes
   app.get("/api/ping", (_req, res) => {
-    res.json({ message: "Hello from FitFlow Express server!" });
+    res.json({ message: "Hello from HTK center Express server!" });
   });
 
   app.get("/api/demo", handleDemo);
