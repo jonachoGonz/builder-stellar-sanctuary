@@ -23,8 +23,8 @@ export function Footer() {
               <span className="text-2xl font-bold">FitFlow</span>
             </div>
             <p className="text-gray-300 mb-4">
-              Transforma tu vida con entrenamientos personalizados y profesores
-              expertos. Tu mejor versión te espera.
+              Transforma tu vida con un enfoque integral de la salud y
+              profesionales especializados. Tu mejor versión te espera.
             </p>
             <div className="flex space-x-4">
               <a
