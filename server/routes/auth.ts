@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import User from "../models/User";
 import passport from "../config/passport";
 
