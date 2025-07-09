@@ -581,7 +581,7 @@ export function Home() {
               </div>
               <div className="mt-6 text-center">
                 <Button variant="outline" size="lg">
-                  Ver Todos los Profesores
+                  Ver Todos los Profesionales
                 </Button>
               </div>
             </div>
