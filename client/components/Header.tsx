@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Menu,
   X,
-  Dumbbell,
+  Heart,
   LogIn,
   UserPlus,
   User,
