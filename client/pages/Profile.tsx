@@ -420,7 +420,7 @@ export function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">Nombre</Label>
-                    {isEditing ? (
+                    {isEditing && (isStudent || isAdmin) ? (
                       <Input
                         id="firstName"
                         value={editData.firstName}
@@ -430,7 +430,7 @@ export function Profile() {
                       />
                     ) : (
                       <div className="p-3 bg-gray-50 rounded-lg">
-                        {userData.firstName}
+                        {user.firstName || "No especificado"}
                       </div>
                     )}
                   </div>
