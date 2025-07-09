@@ -149,9 +149,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginWithGoogle = () => {
-    // Redirect to Google OAuth
-    window.location.href = `${API_BASE_URL}/auth/google`;
+  const loginWithGoogle = async () => {
+    try {
+      // Check if Google OAuth is available first
+      const response = await fetch(`${API_BASE_URL}/auth/google`);
+      if (response.status === 501) {
+        throw new Error(
+          "Autenticación con Google no disponible en este momento",
+        );
+      }
+      // Redirect to Google OAuth
+      window.location.href = `${API_BASE_URL}/auth/google`;
+    } catch (error) {
+      console.error("Google OAuth error:", error);
+      throw error;
+    }
   };
 
   const logout = () => {
