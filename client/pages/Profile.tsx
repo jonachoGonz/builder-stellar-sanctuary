@@ -115,34 +115,46 @@ export function Profile() {
             </div>
             <div className="flex-1">
               <h1 className="text-4xl font-bold">
-                {userData.firstName} {userData.lastName}
+                ¡Bienvenido, {userData.firstName} {userData.lastName}!
               </h1>
               <div className="flex items-center space-x-4 mt-2">
-                <Badge className="bg-white/20 text-white border-white/30">
+                <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
                   {userData.plan}
                 </Badge>
                 <span className="text-white/80">
                   Miembro desde {userStats.joinDate}
                 </span>
               </div>
+              <p className="text-white/90 mt-2">
+                Tu perfil está configurado y listo. ¡Hora de comenzar a
+                entrenar!
+              </p>
             </div>
-            <Button
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white/10"
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? (
-                <>
-                  <X className="h-4 w-4 mr-2" />
-                  Cancelar
-                </>
-              ) : (
-                <>
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Editar Perfil
-                </>
-              )}
-            </Button>
+            <div className="flex flex-col space-y-2">
+              <Link to="/dashboard">
+                <Button className="bg-white text-primary hover:bg-gray-100 font-semibold">
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Ir a Mi Dashboard
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10"
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                {isEditing ? (
+                  <>
+                    <X className="h-4 w-4 mr-2" />
+                    Cancelar
+                  </>
+                ) : (
+                  <>
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Editar Perfil
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
