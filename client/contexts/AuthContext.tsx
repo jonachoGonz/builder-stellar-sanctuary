@@ -227,6 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     isAuthenticated: !!user,
+    isNewUser,
     login,
     register,
     loginWithGoogle,
