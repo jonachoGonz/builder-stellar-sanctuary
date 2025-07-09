@@ -13,7 +13,7 @@ const generateToken = (userId: string): string => {
   }
 
   const options: SignOptions = {
-    expiresIn: process.env.JWT_EXPIRE || "7d",
+    expiresIn: (process.env.JWT_EXPIRE || "7d") as string,
   };
 
   return jwt.sign({ userId }, secret, options);
