@@ -421,9 +421,12 @@ export function Home() {
               ¿Necesitas un plan personalizado? Contáctanos para opciones
               empresariales y familiares.
             </p>
-            <Button variant="outline" size="lg">
-              <Phone className="h-4 w-4 mr-2" />
-              Contactar Asesor
+            <Button
+              size="lg"
+              className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              WhatsApp
             </Button>
           </div>
         </div>
@@ -561,7 +564,7 @@ export function Home() {
                 size="lg"
                 className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-4"
               >
-                Comenzar Ahora Gratis
+                Comenzar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -572,8 +575,7 @@ export function Home() {
             >
               <Button
                 size="lg"
-                variant="outline"
-                className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary"
+                className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4"
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
                 WhatsApp
