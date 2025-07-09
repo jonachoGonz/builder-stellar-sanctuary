@@ -76,7 +76,7 @@ export function WelcomeModal({
             <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20">
               <div className="flex items-center space-x-3 mb-2">
                 <Users className="h-6 w-6 text-secondary" />
-                <h3 className="font-semibold">Profesores Expertos</h3>
+                <h3 className="font-semibold">Profesionales Expertos</h3>
               </div>
               <p className="text-sm text-gray-600">
                 Entrena con profesionales certificados y experimentados
