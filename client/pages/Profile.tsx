@@ -164,7 +164,24 @@ export function Profile() {
   };
 
   const handleCancel = () => {
-    setEditData({ ...userData });
+    if (user) {
+      setEditData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        birthDate: user.birthDate
+          ? new Date(user.birthDate).toISOString().split("T")[0]
+          : "",
+        gender: user.gender || "",
+        occupation: user.occupation || "",
+        activityLevel: user.activityLevel || "",
+        medicalConditions: user.medicalConditions || "",
+        injuries: user.injuries || "",
+        emergencyContactName: user.emergencyContact?.name || "",
+        emergencyContactPhone: user.emergencyContact?.phone || "",
+      });
+    }
     setIsEditing(false);
   };
 
