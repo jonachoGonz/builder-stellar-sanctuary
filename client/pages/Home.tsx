@@ -13,9 +13,15 @@ import {
   Target,
   Zap,
   Shield,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 
 export function Home() {
   const plans = [
@@ -97,5 +103,466 @@ export function Home() {
         "Todos los beneficios incluidos",
       ],
     },
-  ];\n\n  const trainers = [\n    {\n      name: \"Carlos Mendoza\",\n      specialty: \"Entrenamiento Funcional\",\n      experience: \"8 años\",\n      certifications: [\"ACSM\", \"CrossFit L2\"],\n      image: \"/placeholder.svg\",\n    },\n    {\n      name: \"María González\",\n      specialty: \"Yoga & Pilates\",\n      experience: \"6 años\",\n      certifications: [\"RYT-500\", \"PMA\"],\n      image: \"/placeholder.svg\",\n    },\n    {\n      name: \"Diego Ramirez\",\n      specialty: \"Musculación\",\n      experience: \"10 años\",\n      certifications: [\"NSCA\", \"NASM\"],\n      image: \"/placeholder.svg\",\n    },\n  ];\n\n  return (\n    <div className=\"min-h-screen\">\n      {/* Hero Section */}\n      <section className=\"relative bg-gradient-to-br from-gym-dark via-slate-900 to-black text-white overflow-hidden\">\n        <div className=\"absolute inset-0 bg-black/20\"></div>\n        <div className=\"relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32\">\n          <div className=\"text-center\">\n            <h1 className=\"hero-text gradient-primary bg-clip-text text-transparent mb-6\">\n              Transforma Tu Vida\n              <br />\n              <span className=\"text-white\">Alcanza Tu Mejor Versión</span>\n            </h1>\n            <p className=\"text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto\">\n              Únete a FitFlow y descubre un nuevo estilo de vida con\n              entrenamientos personalizados, profesores expertos y una\n              comunidad que te apoya.\n            </p>\n            <div className=\"flex flex-col sm:flex-row gap-4 justify-center\">\n              <Link to=\"/register\">\n                <Button size=\"lg\" className=\"btn-primary text-lg px-8 py-4\">\n                  Comenzar Ahora\n                  <ArrowRight className=\"ml-2 h-5 w-5\" />\n                </Button>\n              </Link>\n              <Link to=\"#plans\">\n                <Button\n                  size=\"lg\"\n                  variant=\"outline\"\n                  className=\"text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-gym-dark\"\n                >\n                  Ver Planes\n                </Button>\n              </Link>\n            </div>\n          </div>\n        </div>\n        {/* Decorative elements */}\n        <div className=\"absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent\"></div>\n      </section>\n\n      {/* Section 1: Gym Showcase */}\n      <section id=\"about\" className=\"py-20 bg-background\">\n        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n          <div className=\"text-center mb-16\">\n            <h2 className=\"section-title text-gym-dark mb-4\">\n              Bienvenido a FitFlow\n            </h2>\n            <p className=\"text-xl text-gray-600 max-w-3xl mx-auto\">\n              Más que un gimnasio, somos tu compañero en el camino hacia una\n              vida más saludable y plena.\n            </p>\n          </div>\n\n          <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-12 items-center\">\n            <div>\n              <img\n                src=\"/placeholder.svg\"\n                alt=\"Instalaciones FitFlow\"\n                className=\"rounded-2xl shadow-2xl w-full h-96 object-cover\"\n              />\n            </div>\n            <div className=\"space-y-6\">\n              <div className=\"flex items-start space-x-4\">\n                <div className=\"bg-primary/10 p-3 rounded-lg\">\n                  <Dumbbell className=\"h-6 w-6 text-primary\" />\n                </div>\n                <div>\n                  <h3 className=\"text-xl font-semibold text-gym-dark mb-2\">\n                    Equipamiento de Última Generación\n                  </h3>\n                  <p className=\"text-gray-600\">\n                    Contamos con la tecnología más avanzada para garantizar\n                    entrenamientos efectivos y seguros.\n                  </p>\n                </div>\n              </div>\n              <div className=\"flex items-start space-x-4\">\n                <div className=\"bg-secondary/10 p-3 rounded-lg\">\n                  <Users className=\"h-6 w-6 text-secondary\" />\n                </div>\n                <div>\n                  <h3 className=\"text-xl font-semibold text-gym-dark mb-2\">\n                    Comunidad Motivadora\n                  </h3>\n                  <p className=\"text-gray-600\">\n                    Forma parte de una comunidad que celebra cada logro y te\n                    impulsa a superar tus límites.\n                  </p>\n                </div>\n              </div>\n              <div className=\"flex items-start space-x-4\">\n                <div className=\"bg-accent/10 p-3 rounded-lg\">\n                  <Heart className=\"h-6 w-6 text-accent\" />\n                </div>\n                <div>\n                  <h3 className=\"text-xl font-semibold text-gym-dark mb-2\">\n                    Ambiente Acogedor\n                  </h3>\n                  <p className=\"text-gray-600\">\n                    Un espacio diseñado para que te sientas cómodo y motivado\n                    desde el primer día.\n                  </p>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      {/* Section 2: What Makes Us Special */}\n      <section className=\"py-20 bg-muted\">\n        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n          <div className=\"text-center mb-16\">\n            <h2 className=\"section-title text-gym-dark mb-4\">\n              ¿Por Qué Elegir FitFlow?\n            </h2>\n            <p className=\"text-xl text-gray-600 max-w-3xl mx-auto\">\n              Descubre lo que nos hace únicos y por qué miles de personas han\n              transformado sus vidas con nosotros.\n            </p>\n          </div>\n\n          <div className=\"grid grid-cols-1 md:grid-cols-3 gap-8\">\n            <Card className=\"card-hover border-0 shadow-lg\">\n              <CardHeader className=\"text-center\">\n                <div className=\"mx-auto bg-primary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4\">\n                  <Target className=\"h-8 w-8 text-primary\" />\n                </div>\n                <CardTitle className=\"text-xl text-gym-dark\">\n                  Entrenamientos Personalizados\n                </CardTitle>\n              </CardHeader>\n              <CardContent className=\"text-center\">\n                <p className=\"text-gray-600\">\n                  Cada rutina está diseñada específicamente para tus objetivos,\n                  nivel y preferencias personales.\n                </p>\n              </CardContent>\n            </Card>\n\n            <Card className=\"card-hover border-0 shadow-lg\">\n              <CardHeader className=\"text-center\">\n                <div className=\"mx-auto bg-secondary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4\">\n                  <Zap className=\"h-8 w-8 text-secondary\" />\n                </div>\n                <CardTitle className=\"text-xl text-gym-dark\">\n                  Resultados Garantizados\n                </CardTitle>\n              </CardHeader>\n              <CardContent className=\"text-center\">\n                <p className=\"text-gray-600\">\n                  Con nuestro método probado y seguimiento constante, verás\n                  resultados desde la primera semana.\n                </p>\n              </CardContent>\n            </Card>\n\n            <Card className=\"card-hover border-0 shadow-lg\">\n              <CardHeader className=\"text-center\">\n                <div className=\"mx-auto bg-accent/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4\">\n                  <Shield className=\"h-8 w-8 text-accent\" />\n                </div>\n                <CardTitle className=\"text-xl text-gym-dark\">\n                  Seguridad Total\n                </CardTitle>\n              </CardHeader>\n              <CardContent className=\"text-center\">\n                <p className=\"text-gray-600\">\n                  Protocolos de seguridad estrictos y supervisión profesional\n                  en cada entrenamiento.\n                </p>\n              </CardContent>\n            </Card>\n          </div>\n\n          <div className=\"mt-16 bg-white rounded-2xl p-8 shadow-lg\">\n            <div className=\"grid grid-cols-1 md:grid-cols-4 gap-8 text-center\">\n              <div>\n                <div className=\"text-4xl font-bold text-primary mb-2\">2000+</div>\n                <div className=\"text-gray-600\">Miembros Activos</div>\n              </div>\n              <div>\n                <div className=\"text-4xl font-bold text-secondary mb-2\">15+</div>\n                <div className=\"text-gray-600\">Profesores Expertos</div>\n              </div>\n              <div>\n                <div className=\"text-4xl font-bold text-accent mb-2\">98%</div>\n                <div className=\"text-gray-600\">Satisfacción</div>\n              </div>\n              <div>\n                <div className=\"text-4xl font-bold text-gym-dark mb-2\">5</div>\n                <div className=\"text-gray-600\">Años de Experiencia</div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      {/* Section 3: Plans */}\n      <section id=\"plans\" className=\"py-20 bg-background\">\n        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n          <div className=\"text-center mb-16\">\n            <h2 className=\"section-title text-gym-dark mb-4\">\n              Elige Tu Plan Perfecto\n            </h2>\n            <p className=\"text-xl text-gray-600 max-w-3xl mx-auto\">\n              Planes flexibles diseñados para adaptarse a tu estilo de vida y\n              objetivos. Pago mensual, trimestral, semestral o anual.\n            </p>\n          </div>\n\n          <div className=\"grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6\">\n            {plans.map((plan) => (\n              <Card\n                key={plan.id}\n                className={`card-hover relative ${\n                  plan.popular\n                    ? \"border-primary border-2 shadow-2xl scale-105\"\n                    : \"border-gray-200\"\n                }`}\n              >\n                {plan.popular && (\n                  <div className=\"absolute -top-3 left-1/2 transform -translate-x-1/2\">\n                    <span className=\"bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold\">\n                      Más Popular\n                    </span>\n                  </div>\n                )}\n                <CardHeader className=\"text-center\">\n                  <CardTitle className=\"text-xl text-gym-dark\">\n                    {plan.name}\n                  </CardTitle>\n                  <div className=\"text-3xl font-bold text-primary mb-2\">\n                    {plan.price}\n                  </div>\n                  <div className=\"text-gray-600\">{plan.duration}</div>\n                  <div className=\"text-lg font-semibold text-secondary\">\n                    {plan.classes}\n                  </div>\n                </CardHeader>\n                <CardContent>\n                  <p className=\"text-gray-600 mb-4 text-center\">\n                    {plan.description}\n                  </p>\n                  <ul className=\"space-y-2 mb-6\">\n                    {plan.features.map((feature, index) => (\n                      <li key={index} className=\"flex items-center text-sm\">\n                        <CheckCircle className=\"h-4 w-4 text-accent mr-2 flex-shrink-0\" />\n                        <span>{feature}</span>\n                      </li>\n                    ))}\n                  </ul>\n                  <Link to=\"/register\" className=\"block\">\n                    <Button\n                      className={`w-full ${\n                        plan.popular ? \"btn-primary\" : \"btn-secondary\"\n                      }`}\n                    >\n                      Elegir Plan\n                    </Button>\n                  </Link>\n                </CardContent>\n              </Card>\n            ))}\n          </div>\n\n          <div className=\"mt-12 text-center\">\n            <p className=\"text-gray-600 mb-4\">\n              ¿Necesitas un plan personalizado? Contáctanos para opciones\n              empresariales y familiares.\n            </p>\n            <Button variant=\"outline\" size=\"lg\">\n              <Phone className=\"h-4 w-4 mr-2\" />\n              Contactar Asesor\n            </Button>\n          </div>\n        </div>\n      </section>\n\n      {/* Section 4: Location & Professionals */}\n      <section id=\"contact\" className=\"py-20 bg-muted\">\n        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">\n          <div className=\"text-center mb-16\">\n            <h2 className=\"section-title text-gym-dark mb-4\">\n              Ubicación y Profesionales\n            </h2>\n            <p className=\"text-xl text-gray-600 max-w-3xl mx-auto\">\n              Conoce a nuestro equipo de expertos y visítanos en nuestra moderna\n              instalación.\n            </p>\n          </div>\n\n          <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-12\">\n            {/* Location */}\n            <div>\n              <h3 className=\"text-2xl font-bold text-gym-dark mb-6\">\n                Nuestra Ubicación\n              </h3>\n              <div className=\"bg-white rounded-2xl p-6 shadow-lg\">\n                <div className=\"aspect-video bg-gray-200 rounded-lg mb-6 flex items-center justify-center\">\n                  <MapPin className=\"h-12 w-12 text-gray-400\" />\n                  <span className=\"ml-2 text-gray-500\">Mapa Interactivo</span>\n                </div>\n                <div className=\"space-y-4\">\n                  <div className=\"flex items-center space-x-3\">\n                    <MapPin className=\"h-5 w-5 text-primary\" />\n                    <span className=\"text-gray-700\">\n                      Av. Providencia 123, Providencia, Santiago\n                    </span>\n                  </div>\n                  <div className=\"flex items-center space-x-3\">\n                    <Clock className=\"h-5 w-5 text-primary\" />\n                    <div className=\"text-gray-700\">\n                      <div>Lun - Vie: 6:00 - 23:00</div>\n                      <div>Sáb - Dom: 8:00 - 20:00</div>\n                    </div>\n                  </div>\n                  <div className=\"flex items-center space-x-3\">\n                    <Phone className=\"h-5 w-5 text-primary\" />\n                    <span className=\"text-gray-700\">+56 9 1234 5678</span>\n                  </div>\n                </div>\n                <div className=\"mt-6\">\n                  <Button className=\"w-full btn-primary\">\n                    <MapPin className=\"h-4 w-4 mr-2\" />\n                    Ver en Google Maps\n                  </Button>\n                </div>\n              </div>\n            </div>\n\n            {/* Trainers */}\n            <div>\n              <h3 className=\"text-2xl font-bold text-gym-dark mb-6\">\n                Nuestros Profesionales\n              </h3>\n              <div className=\"space-y-6\">\n                {trainers.map((trainer, index) => (\n                  <Card key={index} className=\"shadow-lg border-0\">\n                    <CardContent className=\"p-6\">\n                      <div className=\"flex items-center space-x-4\">\n                        <img\n                          src={trainer.image}\n                          alt={trainer.name}\n                          className=\"w-16 h-16 rounded-full object-cover\"\n                        />\n                        <div className=\"flex-1\">\n                          <h4 className=\"text-lg font-semibold text-gym-dark\">\n                            {trainer.name}\n                          </h4>\n                          <p className=\"text-primary font-medium\">\n                            {trainer.specialty}\n                          </p>\n                          <p className=\"text-gray-600 text-sm\">\n                            {trainer.experience} de experiencia\n                          </p>\n                          <div className=\"flex items-center mt-2\">\n                            {trainer.certifications.map((cert, certIndex) => (\n                              <span\n                                key={certIndex}\n                                className=\"bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2\"\n                              >\n                                {cert}\n                              </span>\n                            ))}\n                          </div>\n                        </div>\n                        <div className=\"flex flex-col items-center\">\n                          <div className=\"flex items-center mb-1\">\n                            {[...Array(5)].map((_, i) => (\n                              <Star\n                                key={i}\n                                className=\"h-4 w-4 text-yellow-400 fill-current\"\n                              />\n                            ))}\n                          </div>\n                          <span className=\"text-sm text-gray-600\">5.0</span>\n                        </div>\n                      </div>\n                    </CardContent>\n                  </Card>\n                ))}\n              </div>\n              <div className=\"mt-6 text-center\">\n                <Button variant=\"outline\" size=\"lg\">\n                  Ver Todos los Profesores\n                </Button>\n              </div>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      {/* CTA Section */}\n      <section className=\"py-20 bg-gradient-to-r from-primary to-blue-600 text-white\">\n        <div className=\"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center\">\n          <h2 className=\"text-4xl md:text-5xl font-bold mb-6\">\n            ¿Listo para Comenzar?\n          </h2>\n          <p className=\"text-xl mb-8 opacity-90\">\n            Únete a miles de personas que ya han transformado sus vidas.\n            ¡Tu primera clase es gratis!\n          </p>\n          <div className=\"flex flex-col sm:flex-row gap-4 justify-center\">\n            <Link to=\"/register\">\n              <Button\n                size=\"lg\"\n                className=\"bg-white text-primary hover:bg-gray-100 text-lg px-8 py-4\"\n              >\n                Comenzar Ahora Gratis\n                <ArrowRight className=\"ml-2 h-5 w-5\" />\n              </Button>\n            </Link>\n            <a href=\"https://wa.me/56912345678\" target=\"_blank\" rel=\"noopener noreferrer\">\n              <Button\n                size=\"lg\"\n                variant=\"outline\"\n                className=\"text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary\"\n              >\n                <MessageCircle className=\"mr-2 h-5 w-5\" />\n                WhatsApp\n              </Button>\n            </a>\n          </div>\n        </div>\n      </section>\n    </div>\n  );\n}",
-        "replace_all": false}]
+  ];
+
+  const trainers = [
+    {
+      name: "Carlos Mendoza",
+      specialty: "Entrenamiento Funcional",
+      experience: "8 años",
+      certifications: ["ACSM", "CrossFit L2"],
+      image: "/placeholder.svg",
+    },
+    {
+      name: "María González",
+      specialty: "Yoga & Pilates",
+      experience: "6 años",
+      certifications: ["RYT-500", "PMA"],
+      image: "/placeholder.svg",
+    },
+    {
+      name: "Diego Ramirez",
+      specialty: "Musculación",
+      experience: "10 años",
+      certifications: ["NSCA", "NASM"],
+      image: "/placeholder.svg",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-gym-dark via-slate-900 to-black text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+          <div className="text-center">
+            <h1 className="hero-text gradient-primary bg-clip-text text-transparent mb-6">
+              Transforma Tu Vida
+              <br />
+              <span className="text-white">Alcanza Tu Mejor Versión</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+              Únete a FitFlow y descubre un nuevo estilo de vida con
+              entrenamientos personalizados, profesores expertos y una comunidad
+              que te apoya.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/register">
+                <Button size="lg" className="btn-primary text-lg px-8 py-4">
+                  Comenzar Ahora
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link to="#plans">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-gym-dark"
+                >
+                  Ver Planes
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+        {/* Decorative elements */}
+        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent"></div>
+      </section>
+
+      {/* Section 1: Gym Showcase */}
+      <section id="about" className="py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title text-gym-dark mb-4">
+              Bienvenido a FitFlow
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Más que un gimnasio, somos tu compañero en el camino hacia una
+              vida más saludable y plena.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <img
+                src="/placeholder.svg"
+                alt="Instalaciones FitFlow"
+                className="rounded-2xl shadow-2xl w-full h-96 object-cover"
+              />
+            </div>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="bg-primary/10 p-3 rounded-lg">
+                  <Dumbbell className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gym-dark mb-2">
+                    Equipamiento de Última Generación
+                  </h3>
+                  <p className="text-gray-600">
+                    Contamos con la tecnología más avanzada para garantizar
+                    entrenamientos efectivos y seguros.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-secondary/10 p-3 rounded-lg">
+                  <Users className="h-6 w-6 text-secondary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gym-dark mb-2">
+                    Comunidad Motivadora
+                  </h3>
+                  <p className="text-gray-600">
+                    Forma parte de una comunidad que celebra cada logro y te
+                    impulsa a superar tus límites.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-accent/10 p-3 rounded-lg">
+                  <Heart className="h-6 w-6 text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gym-dark mb-2">
+                    Ambiente Acogedor
+                  </h3>
+                  <p className="text-gray-600">
+                    Un espacio diseñado para que te sientas cómodo y motivado
+                    desde el primer día.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 2: What Makes Us Special */}
+      <section className="py-20 bg-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title text-gym-dark mb-4">
+              ¿Por Qué Elegir FitFlow?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Descubre lo que nos hace únicos y por qué miles de personas han
+              transformado sus vidas con nosotros.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-primary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <Target className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">
+                  Entrenamientos Personalizados
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Cada rutina está diseñada específicamente para tus objetivos,
+                  nivel y preferencias personales.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-secondary/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <Zap className="h-8 w-8 text-secondary" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">
+                  Resultados Garantizados
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Con nuestro método probado y seguimiento constante, verás
+                  resultados desde la primera semana.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover border-0 shadow-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-accent/10 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                  <Shield className="h-8 w-8 text-accent" />
+                </div>
+                <CardTitle className="text-xl text-gym-dark">
+                  Seguridad Total
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-gray-600">
+                  Protocolos de seguridad estrictos y supervisión profesional en
+                  cada entrenamiento.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-4xl font-bold text-primary mb-2">
+                  2000+
+                </div>
+                <div className="text-gray-600">Miembros Activos</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-secondary mb-2">
+                  15+
+                </div>
+                <div className="text-gray-600">Profesores Expertos</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-accent mb-2">98%</div>
+                <div className="text-gray-600">Satisfacción</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-gym-dark mb-2">5</div>
+                <div className="text-gray-600">Años de Experiencia</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3: Plans */}
+      <section id="plans" className="py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title text-gym-dark mb-4">
+              Elige Tu Plan Perfecto
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Planes flexibles diseñados para adaptarse a tu estilo de vida y
+              objetivos. Pago mensual, trimestral, semestral o anual.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {plans.map((plan) => (
+              <Card
+                key={plan.id}
+                className={`card-hover relative ${
+                  plan.popular
+                    ? "border-primary border-2 shadow-2xl scale-105"
+                    : "border-gray-200"
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
+                      Más Popular
+                    </span>
+                  </div>
+                )}
+                <CardHeader className="text-center">
+                  <CardTitle className="text-xl text-gym-dark">
+                    {plan.name}
+                  </CardTitle>
+                  <div className="text-3xl font-bold text-primary mb-2">
+                    {plan.price}
+                  </div>
+                  <div className="text-gray-600">{plan.duration}</div>
+                  <div className="text-lg font-semibold text-secondary">
+                    {plan.classes}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4 text-center">
+                    {plan.description}
+                  </p>
+                  <ul className="space-y-2 mb-6">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-sm">
+                        <CheckCircle className="h-4 w-4 text-accent mr-2 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/register" className="block">
+                    <Button
+                      className={`w-full ${
+                        plan.popular ? "btn-primary" : "btn-secondary"
+                      }`}
+                    >
+                      Elegir Plan
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">
+              ¿Necesitas un plan personalizado? Contáctanos para opciones
+              empresariales y familiares.
+            </p>
+            <Button variant="outline" size="lg">
+              <Phone className="h-4 w-4 mr-2" />
+              Contactar Asesor
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: Location & Professionals */}
+      <section id="contact" className="py-20 bg-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title text-gym-dark mb-4">
+              Ubicación y Profesionales
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Conoce a nuestro equipo de expertos y visítanos en nuestra moderna
+              instalación.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Location */}
+            <div>
+              <h3 className="text-2xl font-bold text-gym-dark mb-6">
+                Nuestra Ubicación
+              </h3>
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="aspect-video bg-gray-200 rounded-lg mb-6 flex items-center justify-center">
+                  <MapPin className="h-12 w-12 text-gray-400" />
+                  <span className="ml-2 text-gray-500">Mapa Interactivo</span>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <span className="text-gray-700">
+                      Av. Providencia 123, Providencia, Santiago
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <div className="text-gray-700">
+                      <div>Lun - Vie: 6:00 - 23:00</div>
+                      <div>Sáb - Dom: 8:00 - 20:00</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Phone className="h-5 w-5 text-primary" />
+                    <span className="text-gray-700">+56 9 1234 5678</span>
+                  </div>
+                </div>
+                <div className="mt-6">
+                  <Button className="w-full btn-primary">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Ver en Google Maps
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Trainers */}
+            <div>
+              <h3 className="text-2xl font-bold text-gym-dark mb-6">
+                Nuestros Profesionales
+              </h3>
+              <div className="space-y-6">
+                {trainers.map((trainer, index) => (
+                  <Card key={index} className="shadow-lg border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={trainer.image}
+                          alt={trainer.name}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-gym-dark">
+                            {trainer.name}
+                          </h4>
+                          <p className="text-primary font-medium">
+                            {trainer.specialty}
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            {trainer.experience} de experiencia
+                          </p>
+                          <div className="flex items-center mt-2">
+                            {trainer.certifications.map((cert, certIndex) => (
+                              <span
+                                key={certIndex}
+                                className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2"
+                              >
+                                {cert}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center mb-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className="h-4 w-4 text-yellow-400 fill-current"
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-600">5.0</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="mt-6 text-center">
+                <Button variant="outline" size="lg">
+                  Ver Todos los Profesores
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-primary to-blue-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            ¿Listo para Comenzar?
+          </h2>
+          <p className="text-xl mb-8 opacity-90">
+            Únete a miles de personas que ya han transformado sus vidas. ¡Tu
+            primera clase es gratis!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/register">
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-4"
+              >
+                Comenzar Ahora Gratis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <a
+              href="https://wa.me/56912345678"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary"
+              >
+                <MessageCircle className="mr-2 h-5 w-5" />
+                WhatsApp
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
