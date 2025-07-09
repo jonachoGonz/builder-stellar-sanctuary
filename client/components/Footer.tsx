@@ -5,7 +5,6 @@ import {
   Mail,
   MapPin,
   Instagram,
-  Facebook,
   MessageCircle,
 } from "lucide-react";
 
