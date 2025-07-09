@@ -40,7 +40,6 @@ export function Home() {
       features: [
         "2 sesiones por semana",
         "Seguimiento personalizado",
-        "Acceso a app móvil",
         "Plan nutricional básico",
         "Evaluación inicial gratuita",
       ],
@@ -55,10 +54,8 @@ export function Home() {
       popular: true,
       features: [
         "3 sesiones por semana",
-        "Nutricionista incluido",
+        "Plan nutricional",
         "Evaluaciones mensuales",
-        "Acceso a psicología",
-        "Descuentos en terapias",
       ],
     },
     {
@@ -73,7 +70,6 @@ export function Home() {
         "4 sesiones por semana",
         "Profesional personal",
         "Plan nutricional premium",
-        "Masoterapia incluida",
         "Acceso a todos los servicios",
       ],
     },
