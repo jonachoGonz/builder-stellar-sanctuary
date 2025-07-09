@@ -87,6 +87,7 @@ const App = () => (
               path="/dashboard"
               element={
                 <div className="min-h-screen">
+                  <Header />
                   <Dashboard />
                 </div>
               }
@@ -96,6 +97,7 @@ const App = () => (
               path="/profile"
               element={
                 <div className="min-h-screen">
+                  <Header />
                   <Profile />
                 </div>
               }
