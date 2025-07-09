@@ -34,9 +34,9 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="bg-primary p-2 rounded-lg">
-              <Dumbbell className="h-6 w-6 text-white" />
+              <Heart className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gym-dark">FitFlow</span>
+            <span className="text-2xl font-bold text-gym-dark">HTK center</span>
           </Link>
 
           {/* Desktop Navigation */}
