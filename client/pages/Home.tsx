@@ -349,27 +349,6 @@ export function Home() {
               </CardContent>
             </Card>
           </div>
-
-          <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold text-secondary mb-2">
-                  15+
-                </div>
-                <div className="text-gray-600">
-                  Profesionales Especializados
-                </div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-accent mb-2">98%</div>
-                <div className="text-gray-600">Satisfacción</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-gym-dark mb-2">5</div>
-                <div className="text-gray-600">Años de Experiencia</div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
