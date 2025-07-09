@@ -137,9 +137,30 @@ export function Profile() {
     setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setUserData({ ...editData });
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      await updateUser({
+        firstName: editData.firstName,
+        lastName: editData.lastName,
+        phone: editData.phone,
+        birthDate: editData.birthDate,
+        gender: editData.gender as any,
+        occupation: editData.occupation,
+        activityLevel: editData.activityLevel as any,
+        medicalConditions: editData.medicalConditions,
+        injuries: editData.injuries,
+        emergencyContact:
+          editData.emergencyContactName && editData.emergencyContactPhone
+            ? {
+                name: editData.emergencyContactName,
+                phone: editData.emergencyContactPhone,
+              }
+            : undefined,
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   const handleCancel = () => {
