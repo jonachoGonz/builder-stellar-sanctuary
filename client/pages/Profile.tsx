@@ -34,6 +34,7 @@ import {
 } from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
+import { WelcomeModal } from "../components/WelcomeModal";
 
 export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
