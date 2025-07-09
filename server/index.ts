@@ -60,6 +60,9 @@ export function createServer() {
   // Classes routes
   app.use("/api/classes", classRoutes);
 
+  // Test routes (for development/debugging)
+  app.use("/api/test", testRoutes);
+
   // Health check
   app.get("/api/health", (_req, res) => {
     res.json({
