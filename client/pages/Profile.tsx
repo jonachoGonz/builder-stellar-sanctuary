@@ -600,7 +600,7 @@ export function Profile() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="emergencyContactName">Nombre</Label>
-                      {isEditing ? (
+                      {isEditing && (isStudent || isAdmin) ? (
                         <Input
                           id="emergencyContactName"
                           value={editData.emergencyContactName}
@@ -613,13 +613,13 @@ export function Profile() {
                         />
                       ) : (
                         <div className="p-3 bg-gray-50 rounded-lg">
-                          {userData.emergencyContactName}
+                          {user.emergencyContact?.name || "No especificado"}
                         </div>
                       )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="emergencyContactPhone">Teléfono</Label>
-                      {isEditing ? (
+                      {isEditing && (isStudent || isAdmin) ? (
                         <Input
                           id="emergencyContactPhone"
                           value={editData.emergencyContactPhone}
@@ -632,7 +632,7 @@ export function Profile() {
                         />
                       ) : (
                         <div className="p-3 bg-gray-50 rounded-lg">
-                          {userData.emergencyContactPhone}
+                          {user.emergencyContact?.phone || "No especificado"}
                         </div>
                       )}
                     </div>
