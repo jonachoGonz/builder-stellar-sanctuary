@@ -283,7 +283,16 @@ export function Profile() {
                 <div className="flex flex-col justify-center space-y-4">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">
-                      {userData.plan === "Plan Pro" ? "3" : "2"} clases
+                      {user.plan === "pro"
+                        ? "3"
+                        : user.plan === "basic"
+                          ? "2"
+                          : user.plan === "elite"
+                            ? "4"
+                            : user.plan === "champion"
+                              ? "5"
+                              : "1"}{" "}
+                      clases
                     </div>
                     <div className="text-gray-600">por semana</div>
                   </div>
