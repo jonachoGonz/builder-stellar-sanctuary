@@ -223,23 +223,25 @@ export function Profile() {
                   Ir a Mi Dashboard
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? (
-                  <>
-                    <X className="h-4 w-4 mr-2" />
-                    Cancelar
-                  </>
-                ) : (
-                  <>
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Editar Perfil
-                  </>
-                )}
-              </Button>
+              {(isStudent || isAdmin) && (
+                <Button
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  {isEditing ? (
+                    <>
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar
+                    </>
+                  ) : (
+                    <>
+                      <Edit3 className="h-4 w-4 mr-2" />
+                      Editar Perfil
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>
