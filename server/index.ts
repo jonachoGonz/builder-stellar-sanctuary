@@ -9,6 +9,7 @@ import passport from "./config/passport";
 import { handleDemo } from "./routes/demo";
 import authRoutes from "./routes/auth";
 import classRoutes from "./routes/classes";
+import testRoutes from "./routes/test";
 
 // Load environment variables
 dotenv.config();
