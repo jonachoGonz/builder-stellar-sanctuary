@@ -203,13 +203,12 @@ export function AdminDashboard() {
   }, []);
 
   const stats = {
-    totalUsers: users.length,
-    activeStudents: users.filter((u) => u.role === "student" && u.isActive)
-      .length,
-    totalTeachers: users.filter((u) => u.role === "teacher").length,
-    totalClasses: classes.length,
-    revenue: "$2,450,000",
-    growth: "+12%",
+    totalUsers: adminInfo?.totalUsers || 0,
+    activeStudents: adminInfo?.activeUsers || 0,
+    totalTeachers: adminInfo?.totalTeachers || 0,
+    totalClasses: adminInfo?.totalClasses || 0,
+    revenue: `$${adminInfo?.monthlyRevenue?.toLocaleString() || "0"}`,
+    growth: `+${adminInfo?.growthRate || 0}%`,
   };
 
   const filteredUsers = users.filter((user) => {
@@ -495,7 +494,7 @@ export function AdminDashboard() {
                   <div key={classItem.id} className="p-3 bg-gray-50 rounded-lg">
                     <div className="font-medium text-sm">{classItem.title}</div>
                     <div className="text-xs text-gray-600 mt-1">
-                      {classItem.instructor} • {classItem.time}
+                      {classItem.instructor} ��� {classItem.time}
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <Badge variant="outline" className="text-xs">
