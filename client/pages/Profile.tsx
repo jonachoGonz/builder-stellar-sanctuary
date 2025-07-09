@@ -57,7 +57,7 @@ export function Profile() {
   });
 
   // Initialize editData with user data when user is loaded
-  useState(() => {
+  useEffect(() => {
     if (user) {
       setEditData({
         firstName: user.firstName || "",
@@ -76,7 +76,7 @@ export function Profile() {
         emergencyContactPhone: user.emergencyContact?.phone || "",
       });
     }
-  });
+  }, [user]);
 
   // User stats - can be made dynamic later
   const userStats = {
