@@ -35,8 +35,10 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express app as middleware to Vite dev server for API routes only
-      server.middlewares.use("/api", app);
+      // Start Express server on port 3001
+      app.listen(3001, () => {
+        console.log("✅ Express API server running on http://localhost:3001");
+      });
     },
   };
 }
