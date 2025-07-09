@@ -34,6 +34,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isNewUser: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   loginWithGoogle: () => void;
