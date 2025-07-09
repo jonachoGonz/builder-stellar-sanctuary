@@ -176,7 +176,7 @@ export function Home() {
         <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent"></div>
       </section>
 
-      {/* Section 1: Gym Showcase */}
+      {/* Section 1: Health Center Showcase */}
       <section id="about" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
