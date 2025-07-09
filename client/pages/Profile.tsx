@@ -78,15 +78,32 @@ export function Profile() {
     }
   });
 
-  // Mock user stats
+  // User stats - can be made dynamic later
   const userStats = {
     classesCompleted: 45,
     totalClasses: 48,
     currentStreak: 12,
-    joinDate: "Enero 2024",
+    joinDate: user?.memberSince
+      ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+          month: "long",
+          year: "numeric",
+        })
+      : "Enero 2024",
     nextGoal: "50 clases",
     completionRate: 94,
   };
+
+  // Show loading state
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando perfil...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Mock upcoming classes
   const upcomingClasses = [
