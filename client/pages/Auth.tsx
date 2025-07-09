@@ -350,7 +350,7 @@ export function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono *</Label>
+                    <Label htmlFor="phone">Tel��fono *</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
@@ -542,9 +542,17 @@ export function Auth() {
               )}
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full btn-primary">
-                {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button
+                type="submit"
+                className="w-full btn-primary"
+                disabled={isLoading}
+              >
+                {isLoading
+                  ? "Procesando..."
+                  : isLogin
+                    ? "Iniciar Sesión"
+                    : "Crear Cuenta"}
+                {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
 
               {isLogin && (
