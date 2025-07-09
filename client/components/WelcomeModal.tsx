@@ -48,7 +48,7 @@ export function WelcomeModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">
-            🎉 ¡Bienvenido a FitFlow, {userName}!
+            🎉 ¡Bienvenido a HTK center, {userName}!
           </DialogTitle>
         </DialogHeader>
 
