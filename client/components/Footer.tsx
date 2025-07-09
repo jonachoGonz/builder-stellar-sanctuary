@@ -28,7 +28,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/htk_center"
                 className="p-2 bg-gray-800 rounded-lg hover:bg-primary transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
