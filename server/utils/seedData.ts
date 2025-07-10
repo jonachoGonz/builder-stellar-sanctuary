@@ -162,14 +162,29 @@ async function createTestUsers() {
     },
   });
 
-  // Save all users
-  await Promise.all([
-    admin.save(),
-    teacher.save(),
-    nutritionist.save(),
-    psychologist.save(),
-    student.save(),
-  ]);
+  // Save all users using upsert to avoid duplicates
+  const users = [admin, teacher, nutritionist, psychologist, student];
+
+  for (const user of users) {
+    try {
+      await User.findOneAndUpdate({ email: user.email }, user.toObject(), {
+        upsert: true,
+        new: true,
+      });
+    } catch (error) {
+      console.log(`⚠️ Usuario ${user.email} ya existe, actualizando...`);
+      // If user exists but has validation errors, update specific fields
+      await User.findOneAndUpdate(
+        { email: user.email },
+        {
+          role: user.role,
+          specialty: user.specialty,
+          workingHours: user.workingHours,
+          // Add other safe fields to update
+        },
+      );
+    }
+  }
 
   console.log("✅ Usuarios de prueba creados:");
   console.log("   👨‍💼 Admin: admin@htkcenter.com / admin123");
