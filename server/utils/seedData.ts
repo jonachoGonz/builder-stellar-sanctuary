@@ -162,27 +162,38 @@ async function createTestUsers() {
     },
   });
 
-  // Save all users using upsert to avoid duplicates
+  // Save all users properly to ensure password hashing
   const users = [admin, teacher, nutritionist, psychologist, student];
 
   for (const user of users) {
     try {
-      await User.findOneAndUpdate({ email: user.email }, user.toObject(), {
-        upsert: true,
-        new: true,
-      });
+      // Check if user already exists
+      const existingUser = await User.findOne({ email: user.email });
+
+      if (!existingUser) {
+        // Create new user - this will trigger password hashing
+        await user.save();
+        console.log(`✅ Usuario creado: ${user.email}`);
+      } else {
+        // Update existing user but preserve existing password if it exists
+        existingUser.firstName = user.firstName;
+        existingUser.lastName = user.lastName;
+        existingUser.role = user.role;
+        existingUser.specialty = user.specialty;
+        existingUser.workingHours = user.workingHours;
+        existingUser.maxClassesPerDay = user.maxClassesPerDay;
+        existingUser.maxStudentsPerClass = user.maxStudentsPerClass;
+
+        // Only update password if the existing user doesn't have one
+        if (!existingUser.password) {
+          existingUser.password = user.password; // This will trigger hashing on save
+        }
+
+        await existingUser.save();
+        console.log(`🔄 Usuario actualizado: ${user.email}`);
+      }
     } catch (error) {
-      console.log(`⚠️ Usuario ${user.email} ya existe, actualizando...`);
-      // If user exists but has validation errors, update specific fields
-      await User.findOneAndUpdate(
-        { email: user.email },
-        {
-          role: user.role,
-          specialty: user.specialty,
-          workingHours: user.workingHours,
-          // Add other safe fields to update
-        },
-      );
+      console.error(`❌ Error procesando usuario ${user.email}:`, error);
     }
   }
 
