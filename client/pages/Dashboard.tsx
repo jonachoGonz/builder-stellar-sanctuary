@@ -50,9 +50,9 @@ export function Dashboard() {
     case "teacher":
       return <TeacherDashboard />;
     case "nutritionist":
-      return <TeacherDashboard />; // Use same dashboard as teacher with different data
+      return <NutritionistDashboard />;
     case "psychologist":
-      return <TeacherDashboard />; // Use same dashboard as teacher with different data
+      return <PsychologistDashboard />;
     case "student":
       return <StudentDashboard />;
     default:
