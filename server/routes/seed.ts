@@ -260,18 +260,47 @@ router.get("/status", async (req, res) => {
 
     const users = await User.find(
       { email: { $regex: /.*@htkcenter\.com/ } },
-      { email: 1, role: 1, firstName: 1, lastName: 1 },
+      { email: 1, role: 1, firstName: 1, lastName: 1, password: 1 },
     );
 
     res.json({
       userCount,
       appointmentTypesCount,
       configCount,
-      testUsers: users,
+      testUsers: users.map((user) => ({
+        email: user.email,
+        role: user.role,
+        name: `${user.firstName} ${user.lastName}`,
+        hasPassword: !!user.password,
+        passwordLength: user.password?.length || 0,
+      })),
     });
   } catch (error) {
     console.error("Error getting seed status:", error);
     res.status(500).json({ error: "Failed to get seed status" });
+  }
+});
+
+// Force recreate test users (for debugging)
+router.post("/recreate-users", async (req, res) => {
+  try {
+    // Delete existing test users
+    await User.deleteMany({ email: { $regex: /.*@htkcenter\.com/ } });
+    console.log("🗑️ Usuarios de prueba eliminados");
+
+    // Create new users
+    const { users } = await req.body;
+
+    // Recreate users by calling the original seed function
+    const seedResult = await createTestUsers();
+
+    res.json({
+      message: "Test users recreated successfully",
+      result: seedResult,
+    });
+  } catch (error) {
+    console.error("Error recreating users:", error);
+    res.status(500).json({ error: "Failed to recreate users" });
   }
 });
 
