@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/User";
-import { connectDB } from "../config/database";
+import connectDB from "../config/database";
 
 async function testUsers() {
   try {
