@@ -34,6 +34,24 @@ export interface User {
   };
   memberSince?: string;
   isActive?: boolean;
+
+  // Plan management
+  planDuration?: number;
+  totalClasses?: number;
+  usedClasses?: number;
+  remainingClasses?: number;
+  maxMonthlyClasses?: number;
+  planStartDate?: string;
+  planEndDate?: string;
+
+  // Professional fields
+  assignedStudents?: string[];
+  specialty?: string;
+  workingHours?: {
+    start: string;
+    end: string;
+    days: string[];
+  };
 }
 
 interface AuthContextType {
