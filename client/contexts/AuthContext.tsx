@@ -197,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("authToken");
+    navigate("/");
   };
 
   const updateUser = async (userData: Partial<User>): Promise<void> => {
