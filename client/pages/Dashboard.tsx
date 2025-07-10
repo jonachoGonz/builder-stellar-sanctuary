@@ -3,6 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { AdminDashboard } from "./AdminDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
 import { StudentDashboard } from "./StudentDashboard";
+import { NutritionistDashboard } from "./NutritionistDashboard";
+import { PsychologistDashboard } from "./PsychologistDashboard";
 import { Button } from "../components/ui/button";
 import {
   Card,
