@@ -484,10 +484,17 @@ export function Home() {
                   </div>
                 </div>
                 <div className="mt-6">
-                  <Button className="w-full btn-primary">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Ver en Google Maps
-                  </Button>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Jos%C3%A9+Manuel+Infante+1956,+%C3%91u%C3%B1oa,+Santiago,+Chile"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button className="w-full btn-primary">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Ver en Google Maps
+                    </Button>
+                  </a>
                 </div>
               </div>
             </div>
