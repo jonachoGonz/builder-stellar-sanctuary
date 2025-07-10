@@ -47,6 +47,10 @@ export function Dashboard() {
       return <AdminDashboard />;
     case "teacher":
       return <TeacherDashboard />;
+    case "nutritionist":
+      return <TeacherDashboard />; // Use same dashboard as teacher with different data
+    case "psychologist":
+      return <TeacherDashboard />; // Use same dashboard as teacher with different data
     case "student":
       return <StudentDashboard />;
     default:
