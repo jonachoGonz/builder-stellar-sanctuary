@@ -28,7 +28,31 @@ export async function initializeSeedData() {
       );
       await createTestUsers();
     } else {
-      console.log("✅ Todos los usuarios de prueba ya existen");
+      console.log("🔍 Verificando contraseñas de usuarios existentes...");
+      // Check if existing users have proper passwords
+      const usersWithoutPassword = await User.find({
+        email: { $in: testEmails },
+        $or: [
+          { password: { $exists: false } },
+          { password: null },
+          { password: "" },
+        ],
+      });
+
+      if (usersWithoutPassword.length > 0) {
+        console.log(
+          `🔧 Recreando ${usersWithoutPassword.length} usuarios sin contraseña...`,
+        );
+        // Delete users without proper passwords and recreate them
+        await User.deleteMany({
+          email: { $in: usersWithoutPassword.map((u) => u.email) },
+        });
+        await createTestUsers();
+      } else {
+        console.log(
+          "✅ Todos los usuarios de prueba tienen contraseñas válidas",
+        );
+      }
     }
 
     // Always update existing users to ensure they have new fields
