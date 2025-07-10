@@ -109,7 +109,7 @@ export function TeacherDashboard() {
     };
   };
 
-  const getTeacherSpecialties = () => {
+  const getProfessionalSpecialties = () => {
     // Default specialties - in a real app, this would come from user profile
     const defaultSpecialties = [
       "Entrenamiento Funcional",
