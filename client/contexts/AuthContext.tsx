@@ -276,12 +276,25 @@ export function usePermissions() {
 
   return {
     canManageUsers: user?.role === "admin",
-    canManageSchedule: user?.role === "admin" || user?.role === "teacher",
+    canManageSchedule:
+      user?.role === "admin" ||
+      user?.role === "teacher" ||
+      user?.role === "nutritionist" ||
+      user?.role === "psychologist",
     canViewAllClasses: user?.role === "admin",
-    canEditOwnSchedule: user?.role === "teacher",
+    canEditOwnSchedule:
+      user?.role === "teacher" ||
+      user?.role === "nutritionist" ||
+      user?.role === "psychologist",
     canBookClasses: user?.role === "student",
     isAdmin: user?.role === "admin",
     isTeacher: user?.role === "teacher",
     isStudent: user?.role === "student",
+    isNutritionist: user?.role === "nutritionist",
+    isPsychologist: user?.role === "psychologist",
+    isProfessional:
+      user?.role === "teacher" ||
+      user?.role === "nutritionist" ||
+      user?.role === "psychologist",
   };
 }
