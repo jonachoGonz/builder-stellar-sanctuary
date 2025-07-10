@@ -56,8 +56,8 @@ export function TeacherDashboard() {
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  // Get teacher info from real user data
-  const getTeacherInfo = () => {
+  // Get professional info from real user data
+  const getProfessionalInfo = () => {
     if (!user) return null;
 
     const calculateStats = () => {
