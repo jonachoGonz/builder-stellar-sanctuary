@@ -8,16 +8,32 @@ export async function initializeSeedData() {
   try {
     console.log("🌱 Inicializando datos de prueba...");
 
-    // Check if users already exist
-    const existingUsers = await User.countDocuments();
+    // Check if specific test users exist
+    const testEmails = [
+      "admin@htkcenter.com",
+      "profesor@htkcenter.com",
+      "nutri@htkcenter.com",
+      "psicologo@htkcenter.com",
+      "estudiante@htkcenter.com",
+    ];
 
-    if (existingUsers === 0) {
-      console.log("📝 Creando usuarios de prueba...");
+    const existingTestUsers = await User.find({ email: { $in: testEmails } });
+    const missingUsers = testEmails.filter(
+      (email) => !existingTestUsers.find((user) => user.email === email),
+    );
+
+    if (missingUsers.length > 0) {
+      console.log(
+        `📝 Creando ${missingUsers.length} usuarios de prueba faltantes...`,
+      );
       await createTestUsers();
     } else {
-      console.log("👥 Verificando y actualizando usuarios existentes...");
-      await updateExistingUsers();
+      console.log("✅ Todos los usuarios de prueba ya existen");
     }
+
+    // Always update existing users to ensure they have new fields
+    console.log("👥 Verificando y actualizando usuarios existentes...");
+    await updateExistingUsers();
 
     // Check and create configurations
     const existingConfigs = await CenterConfiguration.countDocuments();
