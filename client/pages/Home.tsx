@@ -147,7 +147,7 @@ export function Home() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-gym-dark"
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary"
                 >
                   Ver Planes
                 </Button>
