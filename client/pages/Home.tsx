@@ -452,9 +452,17 @@ export function Home() {
                 Nuestra Ubicación
               </h3>
               <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="aspect-video bg-gray-200 rounded-lg mb-6 flex items-center justify-center">
-                  <MapPin className="h-12 w-12 text-gray-400" />
-                  <span className="ml-2 text-gray-500">Mapa Interactivo</span>
+                <div className="aspect-video rounded-lg mb-6 overflow-hidden">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3325.6911959684546!2d-70.59883912377194!3d-33.46845737333944!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662d09f8b8c5b1b%3A0x8b8c5b1b8b8c5b1b!2sJos%C3%A9%20Manuel%20Infante%201956%2C%20%C3%91u%C3%B1oa%2C%20Regi%C3%B3n%20Metropolitana%2C%20Chile!5e0!3m2!1ses!2scl!4v1234567890123!5m2!1ses!2scl"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="HTK center - José Manuel Infante 1956, Ñuñoa"
+                  ></iframe>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
