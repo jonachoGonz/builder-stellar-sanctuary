@@ -49,9 +49,22 @@ export async function initializeSeedData() {
         });
         await createTestUsers();
       } else {
-        console.log(
-          "✅ Todos los usuarios de prueba tienen contraseñas válidas",
-        );
+        // Even if passwords exist, verify they work by testing one
+        const testUser = await User.findOne({ email: testEmails[0] });
+        if (testUser) {
+          const passwordTest = await testUser.comparePassword("admin123");
+          if (!passwordTest) {
+            console.log(
+              "🔧 Las contraseñas existentes no funcionan, recreando usuarios...",
+            );
+            await User.deleteMany({ email: { $in: testEmails } });
+            await createTestUsers();
+          } else {
+            console.log(
+              "✅ Todos los usuarios de prueba tienen contraseñas válidas",
+            );
+          }
+        }
       }
     }
 
