@@ -19,7 +19,10 @@ export function createServer() {
   const app = express();
 
   // Connect to MongoDB
-  connectDB();
+  connectDB().then(() => {
+    // Initialize seed data after successful DB connection
+    initializeSeedData();
+  });
 
   // Middleware
   app.use(
