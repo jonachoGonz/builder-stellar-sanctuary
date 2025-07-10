@@ -1,9 +1,14 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export type UserRole = "admin" | "teacher" | "student";
+export type UserRole =
+  | "admin"
+  | "teacher"
+  | "student"
+  | "nutritionist"
+  | "psychologist";
 export type ActivityLevel = "sedentary" | "active" | "very-active";
-export type PlanType = "trial" | "basic" | "pro" | "elite" | "champion";
+export type PlanType = "basic" | "pro" | "elite" | "personalized";
 
 export interface IUser extends Document {
   // Basic info
@@ -32,6 +37,25 @@ export interface IUser extends Document {
   plan?: PlanType;
   memberSince: Date;
   isActive: boolean;
+
+  // Plan management (for students)
+  planDuration?: number; // in months
+  totalClasses?: number;
+  usedClasses?: number;
+  remainingClasses?: number;
+  maxMonthlyClasses?: number;
+  planStartDate?: Date;
+  planEndDate?: Date;
+
+  // Professional management
+  assignedStudents?: mongoose.Types.ObjectId[];
+  workingHours?: {
+    start: string;
+    end: string;
+    days: string[]; // ['monday', 'tuesday', etc.]
+  };
+  blockedDates?: Date[];
+  specialty?: string;
 
   // Google OAuth
   googleId?: string;
@@ -84,7 +108,7 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "teacher", "student"],
+      enum: ["admin", "teacher", "student", "nutritionist", "psychologist"],
       default: "student",
     },
     gender: {
@@ -104,8 +128,7 @@ const userSchema = new Schema<IUser>(
     },
     plan: {
       type: String,
-      enum: ["trial", "basic", "pro", "elite", "champion"],
-      default: "trial",
+      enum: ["basic", "pro", "elite", "personalized"],
     },
     memberSince: {
       type: Date,
@@ -126,6 +149,34 @@ const userSchema = new Schema<IUser>(
       type: Number,
       default: 15,
     },
+    // Plan management fields
+    planDuration: Number,
+    totalClasses: Number,
+    usedClasses: {
+      type: Number,
+      default: 0,
+    },
+    remainingClasses: {
+      type: Number,
+      default: 0,
+    },
+    maxMonthlyClasses: Number,
+    planStartDate: Date,
+    planEndDate: Date,
+    // Professional management
+    assignedStudents: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    workingHours: {
+      start: String,
+      end: String,
+      days: [String],
+    },
+    blockedDates: [Date],
+    specialty: String,
   },
   {
     timestamps: true,
