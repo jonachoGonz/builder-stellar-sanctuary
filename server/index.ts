@@ -4,6 +4,7 @@ import session from "express-session";
 import dotenv from "dotenv";
 import connectDB from "./config/database";
 import passport from "./config/passport";
+import { initializeSeedData } from "./utils/seedData";
 
 // Import routes
 import { handleDemo } from "./routes/demo";
