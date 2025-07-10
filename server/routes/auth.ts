@@ -337,4 +337,77 @@ export function authenticateToken(req: Request, res: Response, next: any) {
   });
 }
 
+// Temporary endpoint to fix user passwords (for debugging)
+router.post("/fix-test-users", async (req: Request, res: Response) => {
+  try {
+    console.log("🔧 Fixing test users...");
+
+    const testUsers = [
+      {
+        email: "admin@htkcenter.com",
+        password: "admin123",
+        role: "admin",
+        firstName: "Admin",
+        lastName: "HTK Center",
+      },
+      {
+        email: "profesor@htkcenter.com",
+        password: "profesor123",
+        role: "teacher",
+        firstName: "Carlos",
+        lastName: "Mendoza",
+      },
+      {
+        email: "nutri@htkcenter.com",
+        password: "nutri123",
+        role: "nutritionist",
+        firstName: "María",
+        lastName: "González",
+      },
+      {
+        email: "psicologo@htkcenter.com",
+        password: "psicologo123",
+        role: "psychologist",
+        firstName: "Ana",
+        lastName: "Silva",
+      },
+      {
+        email: "estudiante@htkcenter.com",
+        password: "estudiante123",
+        role: "student",
+        firstName: "Juan",
+        lastName: "Pérez",
+      },
+    ];
+
+    // Delete existing test users
+    await User.deleteMany({ email: { $in: testUsers.map((u) => u.email) } });
+
+    // Create new users with proper password hashing
+    for (const userData of testUsers) {
+      const user = new User({
+        ...userData,
+        phone: "+56994748507",
+        birthDate: new Date("1990-01-01"),
+        memberSince: new Date(),
+        isActive: true,
+      });
+
+      await user.save(); // This will trigger password hashing
+      console.log(`✅ Usuario recreado: ${user.email}`);
+    }
+
+    res.json({
+      success: true,
+      message: "Test users recreated with proper password hashing",
+    });
+  } catch (error) {
+    console.error("Error fixing test users:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fixing test users",
+    });
+  }
+});
+
 export default router;
