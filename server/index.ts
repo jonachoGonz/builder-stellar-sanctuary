@@ -63,6 +63,10 @@ export function createServer() {
   // Test routes (for development/debugging)
   app.use("/api/test", testRoutes);
 
+  // Seed routes (for development/debugging)
+  const seedRoutes = require("./routes/seed").default;
+  app.use("/api/seed", seedRoutes);
+
   // Health check
   app.get("/api/health", (_req, res) => {
     res.json({
