@@ -92,6 +92,24 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 console.log("🔧 AuthContext API Base URL:", API_BASE_URL);
 
+// Test connectivity to the API server
+const testConnectivity = async () => {
+  try {
+    console.log("🌐 Testing API connectivity...");
+    const response = await fetch(`${API_BASE_URL}/auth/google/status`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("📡 Connectivity test result:", { status: response.status, ok: response.ok });
+    return response.ok;
+  } catch (error) {
+    console.error("❌ Connectivity test failed:", error);
+    return false;
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -216,7 +234,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!statusData.configured) {
         throw new Error(
-          "Autenticaci��n con Google no está configurada completamente. " +
+          "Autenticación con Google no está configurada completamente. " +
             (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
               ? "Se requiere configurar el Client Secret de Google."
               : "Configuración de Google OAuth incompleta."),
