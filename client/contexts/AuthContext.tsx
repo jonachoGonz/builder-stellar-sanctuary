@@ -114,27 +114,6 @@ const defaultAuthContext: AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
-// Use environment-specific API base URL
-const getApiBaseUrl = () => {
-  // If explicitly set via environment variable, use that
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-
-  // If we're in production (not localhost), use absolute URL
-  if (
-    typeof window !== "undefined" &&
-    !window.location.hostname.includes("localhost")
-  ) {
-    return `${window.location.origin}/api`;
-  }
-
-  // Default to relative path for local development
-  return "/api";
-};
-
-const API_BASE_URL = getApiBaseUrl();
-
 console.log("🔧 AuthContext API Base URL:", API_BASE_URL);
 console.log(
   "🌍 Current hostname:",
