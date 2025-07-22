@@ -40,7 +40,7 @@ import { Star } from "lucide-react";
 
 export function Profile() {
   const { user, updateUser, isLoading } = useAuth();
-  const { canManageUsers, isStudent, isAdmin } = usePermissions();
+  const { canManageUsers, isStudent, isAdmin, isProfessional } = usePermissions();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     firstName: "",
