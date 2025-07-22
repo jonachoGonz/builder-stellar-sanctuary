@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { ConnectivityTest } from "../components/ConnectivityTest";
 import {
   Mail,
   Lock,
