@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { UserManagementModal } from "../components/UserManagementModal";
-import { CalendarManagement } from "../components/CalendarManagement";
+import { UnifiedCalendar } from "../components/UnifiedCalendar";
 import {
   Users,
   Calendar,
