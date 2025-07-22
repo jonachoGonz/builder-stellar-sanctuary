@@ -403,7 +403,7 @@ export function TeacherDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Clase
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setIsConfigDialogOpen(true)}>
                 <Settings className="h-4 w-4 mr-2" />
                 Configuración
               </Button>
