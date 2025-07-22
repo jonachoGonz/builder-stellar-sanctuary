@@ -50,6 +50,7 @@ import {
 import { Textarea } from "../components/ui/textarea";
 import { CreateAppointmentModal } from "../components/CreateAppointmentModal";
 import { ProfessionalConfigModal } from "../components/ProfessionalConfigModal";
+import { UnifiedCalendar } from "../components/UnifiedCalendar";
 
 export function TeacherDashboard() {
   const { user, isLoading } = useAuth();
@@ -414,7 +415,7 @@ export function TeacherDashboard() {
                   {teacherInfo.specialties.join(" • ")}
                 </Badge>
                 <span className="text-gray-600">
-                  ⭐ {teacherInfo.rating} • {teacherInfo.totalClasses} clases
+                  �� {teacherInfo.rating} • {teacherInfo.totalClasses} clases
                 </span>
               </div>
             </div>
