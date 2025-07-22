@@ -53,9 +53,14 @@ export function TeacherDashboard() {
   const { user, isLoading } = useAuth();
   const [classes, setClasses] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [blockedTimes, setBlockedTimes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Get teacher specialties based on user role and specialty
   const getTeacherSpecialties = () => {
