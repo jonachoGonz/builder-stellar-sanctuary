@@ -62,8 +62,8 @@ export function CalendarManagement() {
       const params = new URLSearchParams({
         dateFrom: startOfWeek.toISOString().split("T")[0],
         dateTo: endOfWeek.toISOString().split("T")[0],
-        ...(filters.student && { studentId: filters.student }),
-        ...(filters.professional && { professionalId: filters.professional }),
+        ...(filters.student && filters.student !== "all" && { studentId: filters.student }),
+        ...(filters.professional && filters.professional !== "all" && { professionalId: filters.professional }),
         ...(filters.type !== "all" && { type: filters.type }),
         ...(filters.status !== "all" && { status: filters.status }),
       });
