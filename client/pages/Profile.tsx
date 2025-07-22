@@ -36,6 +36,7 @@ import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import { WelcomeModal } from "../components/WelcomeModal";
 import { useAuth, usePermissions } from "../contexts/AuthContext";
+import { Star } from "lucide-react";
 
 export function Profile() {
   const { user, updateUser, isLoading } = useAuth();
