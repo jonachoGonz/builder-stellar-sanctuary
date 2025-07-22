@@ -43,7 +43,22 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     : `${API_BASE_URL}${endpoint}`;
 
   try {
+    console.log("🌐 Making API call:", {
+      url,
+      method: mergedOptions.method || 'GET',
+      headers: mergedOptions.headers,
+      bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0
+    });
+
     const response = await fetch(url, mergedOptions);
+
+    console.log("📡 API call response:", {
+      url,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
+
     return response;
   } catch (error: any) {
     console.error(`API call failed for ${url}:`, error);
