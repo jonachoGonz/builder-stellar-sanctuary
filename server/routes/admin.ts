@@ -91,6 +91,17 @@ router.get(
 
       // Build filter query
       const filter: any = {};
+      const currentUser = (req as any).currentUser;
+
+      // If user is not admin, restrict to students only
+      if (currentUser.role !== "admin") {
+        filter.role = "student";
+      } else {
+        // Admin can filter by any role
+        if (role && role !== "all") {
+          filter.role = role;
+        }
+      }
 
       if (search) {
         filter.$or = [
@@ -98,10 +109,6 @@ router.get(
           { lastName: { $regex: search, $options: "i" } },
           { email: { $regex: search, $options: "i" } },
         ];
-      }
-
-      if (role && role !== "all") {
-        filter.role = role;
       }
 
       if (isActive !== undefined && isActive !== "all") {
