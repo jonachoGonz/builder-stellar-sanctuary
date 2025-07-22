@@ -154,4 +154,13 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Prevent double mounting in development
+const container = document.getElementById("root")!;
+if (!container._reactRootContainer) {
+  const root = createRoot(container);
+  container._reactRootContainer = root;
+  root.render(<App />);
+} else {
+  console.log("🔄 Root already exists, updating instead of creating new one");
+  container._reactRootContainer.render(<App />);
+}
