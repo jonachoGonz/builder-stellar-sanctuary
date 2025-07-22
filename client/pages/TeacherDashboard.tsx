@@ -768,7 +768,7 @@ export function TeacherDashboard() {
                 <div>
                   <h3 className="font-semibold mb-4">Estudiantes Inscritos</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {selectedClass.students.map((student: any) => (
+                    {(selectedClass?.students || []).map((student: any) => (
                       <div
                         key={student.id}
                         className="flex items-center justify-between p-2 bg-gray-50 rounded"
@@ -781,13 +781,13 @@ export function TeacherDashboard() {
                     ))}
                   </div>
 
-                  {selectedClass.waitingList.length > 0 && (
+                  {(selectedClass?.waitingList?.length || 0) > 0 && (
                     <div className="mt-4">
                       <h4 className="font-medium text-sm mb-2">
                         Lista de Espera
                       </h4>
                       <div className="space-y-2">
-                        {selectedClass.waitingList.map((student: any) => (
+                        {(selectedClass?.waitingList || []).map((student: any) => (
                           <div
                             key={student.id}
                             className="flex items-center justify-between p-2 bg-yellow-50 rounded"
