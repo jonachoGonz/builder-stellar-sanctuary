@@ -28,7 +28,35 @@ export function createServer() {
   // Middleware
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || "http://localhost:8080",
+      origin: (origin, callback) => {
+        // Allow all origins in development
+        if (process.env.NODE_ENV === "development") {
+          return callback(null, true);
+        }
+
+        // In production, allow the configured client URL and any fly.dev domains
+        const allowedOrigins = [
+          process.env.CLIENT_URL,
+          "http://localhost:8080",
+          "https://localhost:8080",
+        ];
+
+        // Allow any fly.dev domain for cloud deployments
+        if (origin && origin.includes(".fly.dev")) {
+          return callback(null, true);
+        }
+
+        // Allow same-origin requests (no origin header)
+        if (!origin) {
+          return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        callback(new Error("Not allowed by CORS"));
+      },
       credentials: true,
     }),
   );
