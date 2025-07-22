@@ -263,11 +263,11 @@ export function TeacherDashboard() {
 
   const stats = {
     todayClasses: todayClasses.length,
-    weeklyClasses: classes.filter((c) => c.status === "scheduled").length,
-    totalStudents: classes.reduce((acc, c) => acc + c.currentCapacity, 0),
+    weeklyClasses: (classes || []).filter((c) => c?.status === "scheduled").length,
+    totalStudents: (classes || []).reduce((acc, c) => acc + (c?.currentCapacity || 0), 0),
     averageCapacity: Math.round(
-      (classes.reduce((acc, c) => acc + c.currentCapacity, 0) /
-        classes.reduce((acc, c) => acc + c.maxCapacity, 0)) *
+      ((classes || []).reduce((acc, c) => acc + (c?.currentCapacity || 0), 0) /
+        Math.max((classes || []).reduce((acc, c) => acc + (c?.maxCapacity || 0), 0), 1)) *
         100,
     ),
   };
