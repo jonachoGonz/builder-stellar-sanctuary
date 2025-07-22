@@ -910,29 +910,38 @@ export function Profile() {
               <CardContent>
                 <div className="space-y-4">
                   {isProfessional ? (
-                    upcomingProfessionalClasses.map((classItem) => (
+                    (realAppointments.length > 0 ? realAppointments : upcomingProfessionalClasses).map((classItem) => (
                       <div
-                        key={classItem.id}
+                        key={classItem.id || classItem._id}
                         className="p-4 bg-gray-50 rounded-lg"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <div className="font-semibold">{classItem.className}</div>
-                          <div className="text-sm text-gray-500">{classItem.duration}</div>
+                          <div className="font-semibold">
+                            {classItem.title || classItem.className || classItem.type || 'Sesión'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {classItem.duration ? `${classItem.duration} min` : (classItem.duration || '60 min')}
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                           <div>
                             <div className="font-medium">Fecha y Hora:</div>
                             <div>
-                              {new Date(classItem.date).toLocaleDateString("es-ES")} • {classItem.time}
+                              {new Date(classItem.date).toLocaleDateString("es-ES")} • {classItem.startTime || classItem.time}
                             </div>
                           </div>
                           <div>
                             <div className="font-medium">Estudiante:</div>
-                            <div>{classItem.student}</div>
+                            <div>
+                              {classItem.student ?
+                                `${classItem.student.firstName} ${classItem.student.lastName}` :
+                                classItem.student || 'Por asignar'
+                              }
+                            </div>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
-                          <span className="font-medium">Lugar:</span> {classItem.location}
+                          <span className="font-medium">Lugar:</span> {classItem.location || 'Por definir'}
                         </div>
                       </div>
                     ))
