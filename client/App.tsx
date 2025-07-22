@@ -29,11 +29,15 @@ const queryClient = new QueryClient();
 // Layout component for pages with header and footer
 const PublicLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
-    <ErrorBoundary fallback={
-      <div className="bg-white border-b p-4 text-center">
-        <span className="text-gray-600">Navigation temporarily unavailable</span>
-      </div>
-    }>
+    <ErrorBoundary
+      fallback={
+        <div className="bg-white border-b p-4 text-center">
+          <span className="text-gray-600">
+            Navigation temporarily unavailable
+          </span>
+        </div>
+      }
+    >
       <Header />
     </ErrorBoundary>
     <main className="flex-1">{children}</main>

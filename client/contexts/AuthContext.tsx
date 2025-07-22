@@ -91,12 +91,24 @@ const defaultAuthContext: AuthContextType = {
   isLoading: true,
   isAuthenticated: false,
   isNewUser: false,
-  login: async () => { throw new Error("AuthProvider not initialized"); },
-  register: async () => { throw new Error("AuthProvider not initialized"); },
-  loginWithGoogle: () => { throw new Error("AuthProvider not initialized"); },
-  logout: () => { console.warn("Logout called but AuthProvider not initialized"); },
-  updateUser: async () => { throw new Error("AuthProvider not initialized"); },
-  refreshUser: async () => { throw new Error("AuthProvider not initialized"); },
+  login: async () => {
+    throw new Error("AuthProvider not initialized");
+  },
+  register: async () => {
+    throw new Error("AuthProvider not initialized");
+  },
+  loginWithGoogle: () => {
+    throw new Error("AuthProvider not initialized");
+  },
+  logout: () => {
+    console.warn("Logout called but AuthProvider not initialized");
+  },
+  updateUser: async () => {
+    throw new Error("AuthProvider not initialized");
+  },
+  refreshUser: async () => {
+    throw new Error("AuthProvider not initialized");
+  },
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
@@ -405,23 +417,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   try {
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
   } catch (error) {
     console.error("❌ AuthProvider error:", error);
     // Return a fallback provider in case of errors
     return (
-      <AuthContext.Provider value={{
-        user: null,
-        isLoading: false,
-        isAuthenticated: false,
-        isNewUser: false,
-        login: async () => { throw new Error("AuthProvider error"); },
-        register: async () => { throw new Error("AuthProvider error"); },
-        loginWithGoogle: () => { throw new Error("AuthProvider error"); },
-        logout: () => {},
-        updateUser: async () => { throw new Error("AuthProvider error"); },
-        refreshUser: async () => { throw new Error("AuthProvider error"); },
-      }}>
+      <AuthContext.Provider
+        value={{
+          user: null,
+          isLoading: false,
+          isAuthenticated: false,
+          isNewUser: false,
+          login: async () => {
+            throw new Error("AuthProvider error");
+          },
+          register: async () => {
+            throw new Error("AuthProvider error");
+          },
+          loginWithGoogle: () => {
+            throw new Error("AuthProvider error");
+          },
+          logout: () => {},
+          updateUser: async () => {
+            throw new Error("AuthProvider error");
+          },
+          refreshUser: async () => {
+            throw new Error("AuthProvider error");
+          },
+        }}
+      >
         {children}
       </AuthContext.Provider>
     );
@@ -433,7 +459,9 @@ export function useAuth() {
 
   // Check if we're using the default context (not properly initialized)
   if (context === defaultAuthContext) {
-    console.warn("⚠️ Using default AuthContext - AuthProvider may not be properly initialized");
+    console.warn(
+      "⚠️ Using default AuthContext - AuthProvider may not be properly initialized",
+    );
   }
 
   return context;
