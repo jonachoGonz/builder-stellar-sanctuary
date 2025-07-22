@@ -56,6 +56,26 @@ export function TeacherDashboard() {
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  // Get teacher specialties based on user role and specialty
+  const getTeacherSpecialties = () => {
+    if (!user) return [];
+
+    const specialtyMapping = {
+      teacher: ["Fitness", "Personal Training"],
+      nutritionist: ["Nutrition", "Diet Planning"],
+      psychologist: ["Psychology", "Mental Health"],
+    };
+
+    const baseSpecialties = specialtyMapping[user.role as keyof typeof specialtyMapping] || [];
+
+    // Add user's specific specialty if it exists
+    if (user.specialty && !baseSpecialties.includes(user.specialty)) {
+      baseSpecialties.push(user.specialty);
+    }
+
+    return baseSpecialties;
+  };
+
   // Get professional info from real user data
   const getProfessionalInfo = () => {
     if (!user) return null;
