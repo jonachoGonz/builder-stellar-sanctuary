@@ -204,12 +204,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         apiBaseUrl: API_BASE_URL,
         fullUrl: `${API_BASE_URL}/auth/login`,
-        windowLocation: typeof window !== 'undefined' ? {
-          hostname: window.location.hostname,
-          origin: window.location.origin,
-          href: window.location.href
-        } : 'server-side',
-        credentials: { email, password: "***" }
+        windowLocation:
+          typeof window !== "undefined"
+            ? {
+                hostname: window.location.hostname,
+                origin: window.location.origin,
+                href: window.location.href,
+              }
+            : "server-side",
+        credentials: { email, password: "***" },
       });
 
       // Test connectivity first
@@ -217,7 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const testResponse = await apiCall("/auth/google/status");
       console.log("🧪 Connectivity test result:", {
         status: testResponse.status,
-        ok: testResponse.ok
+        ok: testResponse.ok,
       });
 
       const response = await apiCall("/auth/login", {
@@ -244,7 +247,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
 
           errorMessage = errorData.message || errorData.error || errorMessage;
-
         } catch (parseError) {
           console.error("❌ Login failed - Could not parse JSON response:", {
             status: response.status,
@@ -254,15 +256,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           // Use a more user-friendly error message based on status
           if (response.status === 401) {
-            errorMessage = "Credenciales inválidas. Por favor verifica tu email y contraseña.";
+            errorMessage =
+              "Credenciales inválidas. Por favor verifica tu email y contraseña.";
           } else if (response.status === 500) {
             errorMessage = "Error del servidor. Por favor intenta nuevamente.";
           } else if (response.status >= 400 && response.status < 500) {
-            errorMessage = "Error en la solicitud. Por favor verifica los datos.";
+            errorMessage =
+              "Error en la solicitud. Por favor verifica los datos.";
           }
         }
 
-        console.log("🚨 About to throw error:", { errorMessage, type: typeof errorMessage });
+        console.log("🚨 About to throw error:", {
+          errorMessage,
+          type: typeof errorMessage,
+        });
         throw new Error(String(errorMessage));
       }
 
@@ -280,30 +287,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Extract meaningful error message
       let errorMessage = "Error al iniciar sesión";
 
-      if (error && typeof error === 'object') {
-        if (error.message && typeof error.message === 'string') {
+      if (error && typeof error === "object") {
+        if (error.message && typeof error.message === "string") {
           errorMessage = error.message;
-        } else if (error.toString && typeof error.toString === 'function') {
+        } else if (error.toString && typeof error.toString === "function") {
           const stringified = error.toString();
-          if (stringified !== '[object Object]') {
+          if (stringified !== "[object Object]") {
             errorMessage = stringified;
           }
         }
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         errorMessage = error;
       }
 
       // Provide more specific error messages based on error type
       if (error?.name === "TypeError" && errorMessage.includes("fetch")) {
-        errorMessage = "Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.";
+        errorMessage =
+          "Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.";
       } else if (
         errorMessage.includes("NetworkError") ||
         errorMessage.includes("Failed to fetch")
       ) {
-        errorMessage = "No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.";
+        errorMessage =
+          "No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.";
       }
 
-      console.log("🚨 Final error message:", { errorMessage, originalError: error });
+      console.log("🚨 Final error message:", {
+        errorMessage,
+        originalError: error,
+      });
       throw new Error(errorMessage);
     } finally {
       setIsLoading(false);

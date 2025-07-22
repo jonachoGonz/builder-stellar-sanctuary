@@ -59,7 +59,8 @@ const requireAdminOrProfessional = (req: Request, res: Response, next: any) => {
       if (!allowedRoles.includes(foundUser.role)) {
         return res.status(403).json({
           success: false,
-          message: "Acceso denegado. Se requieren privilegios de administrador o profesional",
+          message:
+            "Acceso denegado. Se requieren privilegios de administrador o profesional",
         });
       }
 
@@ -729,7 +730,8 @@ router.post(
       } = req.body;
 
       const currentUser = (req as any).currentUser;
-      const actualProfessionalId = currentUser.role === "admin" ? professionalId : currentUser._id;
+      const actualProfessionalId =
+        currentUser.role === "admin" ? professionalId : currentUser._id;
 
       // Validate required fields
       if (

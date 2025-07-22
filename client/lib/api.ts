@@ -45,9 +45,9 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   try {
     console.log("🌐 Making API call:", {
       url,
-      method: mergedOptions.method || 'GET',
+      method: mergedOptions.method || "GET",
       headers: mergedOptions.headers,
-      bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0
+      bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0,
     });
 
     const response = await fetch(url, mergedOptions);
@@ -56,7 +56,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
       url,
       status: response.status,
       statusText: response.statusText,
-      ok: response.ok
+      ok: response.ok,
     });
 
     return response;

@@ -94,14 +94,17 @@ export function TeacherDashboard() {
         (c) => c?.status === "completed",
       ).length;
       const uniqueStudents = new Set(
-        (classes || []).flatMap((c) => c?.students?.map((s: any) => s?.id) || []),
+        (classes || []).flatMap(
+          (c) => c?.students?.map((s: any) => s?.id) || [],
+        ),
       ).size;
 
       return {
         totalClasses,
         totalStudents: uniqueStudents,
-        upcomingClasses: (classes || []).filter((c) => c?.date && new Date(c.date) > new Date())
-          .length,
+        upcomingClasses: (classes || []).filter(
+          (c) => c?.date && new Date(c.date) > new Date(),
+        ).length,
         completedThisWeek: (classes || []).filter((c) => {
           if (!c?.date || !c?.status) return false;
           const classDate = new Date(c.date);
@@ -148,7 +151,9 @@ export function TeacherDashboard() {
     ];
 
     // Could be based on the types of classes this teacher has created
-    const classTypes = [...new Set((classes || []).map((c) => c?.type || "functional"))];
+    const classTypes = [
+      ...new Set((classes || []).map((c) => c?.type || "functional")),
+    ];
     const typeMapping: { [key: string]: string } = {
       functional: "Entrenamiento Funcional",
       crossfit: "CrossFit",
@@ -178,30 +183,33 @@ export function TeacherDashboard() {
   const loadAppointments = async () => {
     try {
       setLoading(true);
-      const response = await apiCall(`/admin/appointments?professionalId=${user?.id}&limit=100`);
+      const response = await apiCall(
+        `/admin/appointments?professionalId=${user?.id}&limit=100`,
+      );
 
       if (response.ok) {
         const data = await response.json();
         setAppointments(data.data.appointments || []);
 
         // Transform appointments to classes format
-        const transformedClasses = data.data.appointments?.map((apt: any) => ({
-          id: apt._id,
-          title: apt.title || apt.type || 'Sesión',
-          date: apt.date.split('T')[0],
-          startTime: apt.startTime,
-          endTime: apt.endTime,
-          duration: apt.duration || 60,
-          location: apt.location || 'Por definir',
-          status: apt.status,
-          students: apt.student ? [apt.student] : [],
-          notes: apt.notes,
-        })) || [];
+        const transformedClasses =
+          data.data.appointments?.map((apt: any) => ({
+            id: apt._id,
+            title: apt.title || apt.type || "Sesión",
+            date: apt.date.split("T")[0],
+            startTime: apt.startTime,
+            endTime: apt.endTime,
+            duration: apt.duration || 60,
+            location: apt.location || "Por definir",
+            status: apt.status,
+            students: apt.student ? [apt.student] : [],
+            notes: apt.notes,
+          })) || [];
 
         setClasses(transformedClasses);
       }
     } catch (error) {
-      console.error('Error loading appointments:', error);
+      console.error("Error loading appointments:", error);
     } finally {
       setLoading(false);
     }
@@ -209,14 +217,14 @@ export function TeacherDashboard() {
 
   const loadStudents = async () => {
     try {
-      const response = await apiCall('/admin/users?role=student&limit=100');
+      const response = await apiCall("/admin/users?role=student&limit=100");
 
       if (response.ok) {
         const data = await response.json();
         setStudents(data.data.users || []);
       }
     } catch (error) {
-      console.error('Error loading students:', error);
+      console.error("Error loading students:", error);
     }
   };
 
@@ -228,7 +236,7 @@ export function TeacherDashboard() {
 
     days.forEach((day, dayIndex) => {
       times.forEach((time) => {
-        const hasClass = classes.some(c => {
+        const hasClass = classes.some((c) => {
           const classDate = new Date(c.date);
           const currentDate = new Date();
           const dayDiff = (classDate.getDay() + 6) % 7; // Monday = 0
@@ -241,11 +249,13 @@ export function TeacherDashboard() {
           time,
           isBlocked: false, // Will be loaded from user preferences
           hasClass,
-          classTitle: hasClass ? classes.find(c => {
-            const classDate = new Date(c.date);
-            const dayDiff = (classDate.getDay() + 6) % 7;
-            return dayDiff === dayIndex && c.startTime === time;
-          })?.title : '',
+          classTitle: hasClass
+            ? classes.find((c) => {
+                const classDate = new Date(c.date);
+                const dayDiff = (classDate.getDay() + 6) % 7;
+                return dayDiff === dayIndex && c.startTime === time;
+              })?.title
+            : "",
         });
       });
     });
@@ -253,22 +263,31 @@ export function TeacherDashboard() {
     setSchedule(weekSchedule);
   }, [classes]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   const todayClasses = (classes || []).filter(
     (c) => c?.date === today && c?.status === "scheduled",
   );
   const upcomingClasses = (classes || []).filter(
     (c) =>
-      c?.date && new Date(c.date) > new Date(today) && c?.status === "scheduled",
+      c?.date &&
+      new Date(c.date) > new Date(today) &&
+      c?.status === "scheduled",
   );
 
   const stats = {
     todayClasses: todayClasses.length,
-    weeklyClasses: (classes || []).filter((c) => c?.status === "scheduled").length,
-    totalStudents: (classes || []).reduce((acc, c) => acc + (c?.currentCapacity || 0), 0),
+    weeklyClasses: (classes || []).filter((c) => c?.status === "scheduled")
+      .length,
+    totalStudents: (classes || []).reduce(
+      (acc, c) => acc + (c?.currentCapacity || 0),
+      0,
+    ),
     averageCapacity: Math.round(
       ((classes || []).reduce((acc, c) => acc + (c?.currentCapacity || 0), 0) /
-        Math.max((classes || []).reduce((acc, c) => acc + (c?.maxCapacity || 0), 0), 1)) *
+        Math.max(
+          (classes || []).reduce((acc, c) => acc + (c?.maxCapacity || 0), 0),
+          1,
+        )) *
         100,
     ),
   };
@@ -280,8 +299,8 @@ export function TeacherDashboard() {
   const handleCreateAppointment = async (appointmentData: any) => {
     try {
       setLoading(true);
-      const response = await apiCall('/admin/appointments', {
-        method: 'POST',
+      const response = await apiCall("/admin/appointments", {
+        method: "POST",
         body: JSON.stringify({
           ...appointmentData,
           professionalId: user?.id,
@@ -292,10 +311,10 @@ export function TeacherDashboard() {
         await loadAppointments(); // Reload appointments
         setIsCreateDialogOpen(false);
       } else {
-        console.error('Error creating appointment');
+        console.error("Error creating appointment");
       }
     } catch (error) {
-      console.error('Error creating appointment:', error);
+      console.error("Error creating appointment:", error);
     } finally {
       setLoading(false);
     }
@@ -305,20 +324,20 @@ export function TeacherDashboard() {
     try {
       setLoading(true);
       const response = await apiCall(`/auth/profile`, {
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify(config),
       });
 
       if (response.ok) {
         setIsConfigDialogOpen(false);
-        alert('Configuración guardada exitosamente');
+        alert("Configuración guardada exitosamente");
       } else {
-        console.error('Error saving configuration');
-        alert('Error al guardar la configuración');
+        console.error("Error saving configuration");
+        alert("Error al guardar la configuración");
       }
     } catch (error) {
-      console.error('Error saving configuration:', error);
-      alert('Error al guardar la configuración');
+      console.error("Error saving configuration:", error);
+      alert("Error al guardar la configuración");
     } finally {
       setLoading(false);
     }
@@ -404,7 +423,10 @@ export function TeacherDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Clase
               </Button>
-              <Button variant="outline" onClick={() => setIsConfigDialogOpen(true)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsConfigDialogOpen(true)}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Configuración
               </Button>
@@ -788,17 +810,19 @@ export function TeacherDashboard() {
                         Lista de Espera
                       </h4>
                       <div className="space-y-2">
-                        {(selectedClass?.waitingList || []).map((student: any) => (
-                          <div
-                            key={student.id}
-                            className="flex items-center justify-between p-2 bg-yellow-50 rounded"
-                          >
-                            <span className="text-sm">{student.name}</span>
-                            <Button size="sm" variant="outline">
-                              <UserCheck className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
+                        {(selectedClass?.waitingList || []).map(
+                          (student: any) => (
+                            <div
+                              key={student.id}
+                              className="flex items-center justify-between p-2 bg-yellow-50 rounded"
+                            >
+                              <span className="text-sm">{student.name}</span>
+                              <Button size="sm" variant="outline">
+                                <UserCheck className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
                   )}
