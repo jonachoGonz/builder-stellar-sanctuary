@@ -100,7 +100,10 @@ const userSchema = new Schema<IUser>(
     },
     phone: {
       type: String,
-      required: true,
+      required: function(this: IUser) {
+        // Phone is required unless user was created via Google OAuth
+        return !this.googleId;
+      },
     },
     birthDate: {
       type: Date,
