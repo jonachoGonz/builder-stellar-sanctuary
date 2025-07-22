@@ -41,6 +41,7 @@ export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [showConnectivityTest, setShowConnectivityTest] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
