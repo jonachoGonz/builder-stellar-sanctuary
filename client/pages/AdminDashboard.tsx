@@ -225,16 +225,8 @@ export function AdminDashboard() {
     growth: `+${stats?.growthRate || 0}%`,
   };
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesRole = filterRole === "all" || user.role === filterRole;
-
-    return matchesSearch && matchesRole;
-  });
+  // Users are already filtered by the API, so we just use them directly
+  const filteredUsers = users;
 
   const getRoleIcon = (role: string) => {
     switch (role) {
