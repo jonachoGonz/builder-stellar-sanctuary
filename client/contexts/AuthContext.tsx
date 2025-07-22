@@ -186,9 +186,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!statusData.configured) {
         throw new Error(
           "Autenticación con Google no está configurada completamente. " +
-          (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
-            ? "Se requiere configurar el Client Secret de Google."
-            : "Configuración de Google OAuth incompleta.")
+            (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
+              ? "Se requiere configurar el Client Secret de Google."
+              : "Configuración de Google OAuth incompleta."),
         );
       }
 

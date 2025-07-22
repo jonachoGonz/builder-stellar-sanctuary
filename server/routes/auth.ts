@@ -152,10 +152,13 @@ router.get("/google/status", (req: Request, res: Response) => {
     success: true,
     configured: isConfigured,
     clientId: process.env.GOOGLE_CLIENT_ID || "Not set",
-    hasSecret: !!(process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"),
+    hasSecret: !!(
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"
+    ),
     message: isConfigured
       ? "Google OAuth está configurado correctamente"
-      : "Google OAuth necesita configuración adicional"
+      : "Google OAuth necesita configuración adicional",
   });
 });
 
@@ -184,7 +187,9 @@ if (
 
         if (!user) {
           console.error("No user returned from Google OAuth");
-          return res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_no_user`);
+          return res.redirect(
+            `${process.env.CLIENT_URL}/login?error=oauth_no_user`,
+          );
         }
 
         // Generate token
@@ -214,10 +219,16 @@ if (
   // Provide fallback routes when Google OAuth is not configured
   router.get("/google", (req: Request, res: Response) => {
     const missingConfig = [];
-    if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === "placeholder_client_id") {
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      process.env.GOOGLE_CLIENT_ID === "placeholder_client_id"
+    ) {
       missingConfig.push("GOOGLE_CLIENT_ID");
     }
-    if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET === "GOCSPX-your_client_secret_here") {
+    if (
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      process.env.GOOGLE_CLIENT_SECRET === "GOCSPX-your_client_secret_here"
+    ) {
       missingConfig.push("GOOGLE_CLIENT_SECRET");
     }
 
@@ -225,7 +236,7 @@ if (
       success: false,
       message: "Google OAuth no está completamente configurado",
       missingConfig,
-      instructions: "Por favor configura las variables de entorno faltantes"
+      instructions: "Por favor configura las variables de entorno faltantes",
     });
   });
 

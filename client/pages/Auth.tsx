@@ -64,10 +64,14 @@ export function Auth() {
     if (oauthError) {
       switch (oauthError) {
         case "oauth_error":
-          setError("Error durante la autenticación con Google. Inténtalo nuevamente.");
+          setError(
+            "Error durante la autenticación con Google. Inténtalo nuevamente.",
+          );
           break;
         case "oauth_not_configured":
-          setError("Autenticación con Google no está disponible en este momento.");
+          setError(
+            "Autenticación con Google no está disponible en este momento.",
+          );
           break;
         case "oauth_no_user":
           setError("No se pudo obtener la información del usuario de Google.");
