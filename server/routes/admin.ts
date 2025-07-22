@@ -502,4 +502,447 @@ router.post("/users/bulk-action", authenticateToken, requireAdmin, async (req: R
   }
 });
 
+// ==================== APPOINTMENT MANAGEMENT ====================
+
+// Get all appointments with filtering and pagination
+router.get("/appointments", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const studentId = req.query.studentId as string;
+    const professionalId = req.query.professionalId as string;
+    const type = req.query.type as string;
+    const status = req.query.status as string;
+    const dateFrom = req.query.dateFrom as string;
+    const dateTo = req.query.dateTo as string;
+
+    // Build filter query
+    const filter: any = {};
+
+    if (studentId) {
+      filter.student = studentId;
+    }
+
+    if (professionalId) {
+      filter.professional = professionalId;
+    }
+
+    if (type && type !== "all") {
+      filter.type = type;
+    }
+
+    if (status && status !== "all") {
+      filter.status = status;
+    }
+
+    if (dateFrom || dateTo) {
+      filter.date = {};
+      if (dateFrom) {
+        filter.date.$gte = new Date(dateFrom);
+      }
+      if (dateTo) {
+        filter.date.$lte = new Date(dateTo);
+      }
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Get appointments with populated fields
+    const [appointments, totalAppointments] = await Promise.all([
+      Appointment.find(filter)
+        .populate("student", "firstName lastName email plan")
+        .populate("professional", "firstName lastName email role specialty")
+        .populate("createdBy", "firstName lastName email")
+        .sort({ date: -1, startTime: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Appointment.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalAppointments / limit);
+
+    res.json({
+      success: true,
+      data: {
+        appointments,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalAppointments,
+          limit,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
+// Create new appointment
+router.post("/appointments", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const {
+      studentId,
+      professionalId,
+      type,
+      title,
+      description,
+      date,
+      startTime,
+      endTime,
+      duration,
+      location,
+      room,
+      equipment,
+      deductFromPlan,
+    } = req.body;
+
+    const adminUserId = (req as any).user.userId;
+
+    // Validate required fields
+    if (!studentId || !professionalId || !type || !title || !date || !startTime || !endTime) {
+      return res.status(400).json({
+        success: false,
+        message: "Todos los campos requeridos deben ser proporcionados",
+      });
+    }
+
+    // Verify student and professional exist
+    const [student, professional] = await Promise.all([
+      User.findById(studentId),
+      User.findById(professionalId),
+    ]);
+
+    if (!student || student.role !== "student") {
+      return res.status(400).json({
+        success: false,
+        message: "Estudiante no válido",
+      });
+    }
+
+    if (!professional || !["teacher", "nutritionist", "psychologist"].includes(professional.role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Profesional no válido",
+      });
+    }
+
+    // Check for scheduling conflicts
+    const appointmentDate = new Date(date);
+    const conflicts = await Appointment.find({
+      professional: professionalId,
+      date: appointmentDate,
+      status: { $in: ["scheduled"] },
+      $or: [
+        {
+          startTime: { $lte: startTime },
+          endTime: { $gt: startTime },
+        },
+        {
+          startTime: { $lt: endTime },
+          endTime: { $gte: endTime },
+        },
+        {
+          startTime: { $gte: startTime },
+          endTime: { $lte: endTime },
+        },
+      ],
+    });
+
+    if (conflicts.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El profesional ya tiene una cita programada en ese horario",
+      });
+    }
+
+    // Create appointment
+    const appointment = new Appointment({
+      student: studentId,
+      professional: professionalId,
+      type,
+      title,
+      description,
+      date: appointmentDate,
+      startTime,
+      endTime,
+      duration: duration || 60,
+      location,
+      room,
+      equipment: equipment || [],
+      deductFromPlan: deductFromPlan !== undefined ? deductFromPlan : true,
+      planType: student.plan,
+      createdBy: adminUserId,
+    });
+
+    await appointment.save();
+
+    // Populate the created appointment
+    const populatedAppointment = await Appointment.findById(appointment._id)
+      .populate("student", "firstName lastName email plan")
+      .populate("professional", "firstName lastName email role specialty")
+      .populate("createdBy", "firstName lastName email");
+
+    // Update student's class count if it deducts from plan
+    if (deductFromPlan && student.remainingClasses && student.remainingClasses > 0) {
+      await User.findByIdAndUpdate(studentId, {
+        $inc: {
+          usedClasses: 1,
+          remainingClasses: -1,
+        },
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Cita creada exitosamente",
+      data: populatedAppointment,
+    });
+  } catch (error) {
+    console.error("Error creating appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
+// Update appointment
+router.put("/appointments/:id", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const appointmentId = req.params.id;
+    const updateData = { ...req.body };
+
+    // Remove fields that shouldn't be updated directly
+    delete updateData._id;
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+    delete updateData.createdBy;
+
+    const existingAppointment = await Appointment.findById(appointmentId);
+    if (!existingAppointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Cita no encontrada",
+      });
+    }
+
+    // Check for scheduling conflicts if time/date changed
+    if (updateData.date || updateData.startTime || updateData.endTime || updateData.professional) {
+      const checkDate = updateData.date ? new Date(updateData.date) : existingAppointment.date;
+      const checkStartTime = updateData.startTime || existingAppointment.startTime;
+      const checkEndTime = updateData.endTime || existingAppointment.endTime;
+      const checkProfessional = updateData.professional || existingAppointment.professional;
+
+      const conflicts = await Appointment.find({
+        _id: { $ne: appointmentId },
+        professional: checkProfessional,
+        date: checkDate,
+        status: { $in: ["scheduled"] },
+        $or: [
+          {
+            startTime: { $lte: checkStartTime },
+            endTime: { $gt: checkStartTime },
+          },
+          {
+            startTime: { $lt: checkEndTime },
+            endTime: { $gte: checkEndTime },
+          },
+          {
+            startTime: { $gte: checkStartTime },
+            endTime: { $lte: checkEndTime },
+          },
+        ],
+      });
+
+      if (conflicts.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El profesional ya tiene una cita programada en ese horario",
+        });
+      }
+    }
+
+    // Handle plan deduction changes
+    if (updateData.deductFromPlan !== undefined && updateData.deductFromPlan !== existingAppointment.deductFromPlan) {
+      const student = await User.findById(existingAppointment.student);
+      if (student) {
+        if (updateData.deductFromPlan && !existingAppointment.deductFromPlan) {
+          // Now deducting from plan
+          await User.findByIdAndUpdate(student._id, {
+            $inc: {
+              usedClasses: 1,
+              remainingClasses: -1,
+            },
+          });
+        } else if (!updateData.deductFromPlan && existingAppointment.deductFromPlan) {
+          // No longer deducting from plan
+          await User.findByIdAndUpdate(student._id, {
+            $inc: {
+              usedClasses: -1,
+              remainingClasses: 1,
+            },
+          });
+        }
+      }
+    }
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      appointmentId,
+      updateData,
+      { new: true, runValidators: true }
+    )
+      .populate("student", "firstName lastName email plan")
+      .populate("professional", "firstName lastName email role specialty")
+      .populate("createdBy", "firstName lastName email");
+
+    res.json({
+      success: true,
+      message: "Cita actualizada exitosamente",
+      data: updatedAppointment,
+    });
+  } catch (error) {
+    console.error("Error updating appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
+// Delete appointment
+router.delete("/appointments/:id", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const appointmentId = req.params.id;
+
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Cita no encontrada",
+      });
+    }
+
+    // Restore class count if it was deducted from plan
+    if (appointment.deductFromPlan) {
+      await User.findByIdAndUpdate(appointment.student, {
+        $inc: {
+          usedClasses: -1,
+          remainingClasses: 1,
+        },
+      });
+    }
+
+    await Appointment.findByIdAndDelete(appointmentId);
+
+    res.json({
+      success: true,
+      message: "Cita eliminada exitosamente",
+    });
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
+// Get appointment statistics
+router.get("/appointments/stats", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+
+    const [
+      totalAppointments,
+      todayAppointments,
+      weekAppointments,
+      completedAppointments,
+      cancelledAppointments,
+      noShowAppointments,
+    ] = await Promise.all([
+      Appointment.countDocuments(),
+      Appointment.countDocuments({
+        date: {
+          $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          $lt: new Date(new Date().setHours(23, 59, 59, 999)),
+        },
+      }),
+      Appointment.countDocuments({
+        date: { $gte: startOfWeek, $lte: endOfWeek },
+      }),
+      Appointment.countDocuments({ status: "completed" }),
+      Appointment.countDocuments({ status: "cancelled" }),
+      Appointment.countDocuments({ status: "no-show" }),
+    ]);
+
+    // Get appointments by type
+    const appointmentsByType = await Appointment.aggregate([
+      {
+        $group: {
+          _id: "$type",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get appointments by professional
+    const appointmentsByProfessional = await Appointment.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "professional",
+          foreignField: "_id",
+          as: "professionalInfo",
+        },
+      },
+      {
+        $unwind: "$professionalInfo",
+      },
+      {
+        $group: {
+          _id: "$professional",
+          count: { $sum: 1 },
+          name: { $first: { $concat: ["$professionalInfo.firstName", " ", "$professionalInfo.lastName"] } },
+          role: { $first: "$professionalInfo.role" },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        totalAppointments,
+        todayAppointments,
+        weekAppointments,
+        completedAppointments,
+        cancelledAppointments,
+        noShowAppointments,
+        appointmentsByType,
+        appointmentsByProfessional,
+        completionRate: totalAppointments > 0 ? Math.round((completedAppointments / totalAppointments) * 100) : 0,
+        cancellationRate: totalAppointments > 0 ? Math.round((cancelledAppointments / totalAppointments) * 100) : 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching appointment stats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
 export default router;
