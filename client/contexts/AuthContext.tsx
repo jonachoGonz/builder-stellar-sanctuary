@@ -87,7 +87,10 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = "/api";
+// Use environment-specific API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
+
+console.log("🔧 AuthContext API Base URL:", API_BASE_URL);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
