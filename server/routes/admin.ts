@@ -727,7 +727,7 @@ router.post(
       // Validate required fields
       if (
         !studentId ||
-        !professionalId ||
+        !actualProfessionalId ||
         !type ||
         !title ||
         !date ||
@@ -743,7 +743,7 @@ router.post(
       // Verify student and professional exist
       const [student, professional] = await Promise.all([
         User.findById(studentId),
-        User.findById(professionalId),
+        User.findById(actualProfessionalId),
       ]);
 
       if (!student || student.role !== "student") {
@@ -766,7 +766,7 @@ router.post(
       // Check for scheduling conflicts
       const appointmentDate = new Date(date);
       const conflicts = await Appointment.find({
-        professional: professionalId,
+        professional: actualProfessionalId,
         date: appointmentDate,
         status: { $in: ["scheduled"] },
         $or: [
@@ -795,7 +795,7 @@ router.post(
       // Create appointment
       const appointment = new Appointment({
         student: studentId,
-        professional: professionalId,
+        professional: actualProfessionalId,
         type,
         title,
         description,
