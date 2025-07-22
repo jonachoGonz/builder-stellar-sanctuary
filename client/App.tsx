@@ -117,6 +117,16 @@ const App = () => (
               }
             />
 
+            <Route
+              path="/calendar"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <Calendar />
+                </div>
+              }
+            />
+
             {/* Legal pages placeholders */}
             <Route
               path="/terms"
