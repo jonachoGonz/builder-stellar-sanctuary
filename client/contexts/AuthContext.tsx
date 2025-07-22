@@ -277,21 +277,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("🚨 Login error:", error);
 
-      // Provide more specific error messages
-      if (error.name === "TypeError" && error.message.includes("fetch")) {
-        throw new Error(
-          "Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.",
-        );
-      } else if (
-        error.message.includes("NetworkError") ||
-        error.message.includes("Failed to fetch")
-      ) {
-        throw new Error(
-          "No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.",
-        );
-      } else {
-        throw new Error(error.message || "Error al iniciar sesión");
+      // Extract meaningful error message
+      let errorMessage = "Error al iniciar sesión";
+
+      if (error && typeof error === 'object') {
+        if (error.message && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if (error.toString && typeof error.toString === 'function') {
+          const stringified = error.toString();
+          if (stringified !== '[object Object]') {
+            errorMessage = stringified;
+          }
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
       }
+
+      // Provide more specific error messages based on error type
+      if (error?.name === "TypeError" && errorMessage.includes("fetch")) {
+        errorMessage = "Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.";
+      } else if (
+        errorMessage.includes("NetworkError") ||
+        errorMessage.includes("Failed to fetch")
+      ) {
+        errorMessage = "No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.";
+      }
+
+      console.log("🚨 Final error message:", { errorMessage, originalError: error });
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
