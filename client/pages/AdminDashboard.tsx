@@ -239,18 +239,33 @@ export function AdminDashboard() {
     }
   };
 
-  const getRoleBadge = (role: string) => {
+  const getRoleBadge = (role: string, specialty?: string) => {
     const variants = {
       admin: "destructive",
       teacher: "secondary",
+      nutritionist: "default",
+      psychologist: "outline",
       student: "default",
     } as const;
 
+    const roleLabels = {
+      admin: "Admin",
+      teacher: "Entrenador",
+      nutritionist: "Nutricionista",
+      psychologist: "Psicólogo",
+      student: "Estudiante",
+    } as const;
+
     return (
-      <Badge variant={variants[role as keyof typeof variants] || "default"}>
-        {getRoleIcon(role)}
-        <span className="ml-1 capitalize">{role}</span>
-      </Badge>
+      <div className="space-y-1">
+        <Badge variant={variants[role as keyof typeof variants] || "default"}>
+          {getRoleIcon(role)}
+          <span className="ml-1">{roleLabels[role as keyof typeof roleLabels] || role}</span>
+        </Badge>
+        {specialty && ["teacher", "nutritionist", "psychologist"].includes(role) && (
+          <div className="text-xs text-gray-500">{specialty}</div>
+        )}
+      </div>
     );
   };
 
