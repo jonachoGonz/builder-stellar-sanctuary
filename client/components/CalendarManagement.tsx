@@ -323,7 +323,7 @@ export function CalendarManagement() {
                 <SelectValue placeholder="Filtrar por profesional" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los profesionales</SelectItem>
+                <SelectItem value="all">Todos los profesionales</SelectItem>
                 {professionals.map((professional) => (
                   <SelectItem key={professional._id} value={professional._id}>
                     {professional.firstName} {professional.lastName} (
