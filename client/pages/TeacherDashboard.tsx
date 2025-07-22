@@ -253,12 +253,12 @@ export function TeacherDashboard() {
   }, [classes]);
 
   const today = new Date().toISOString().split('T')[0];
-  const todayClasses = classes.filter(
-    (c) => c.date === today && c.status === "scheduled",
+  const todayClasses = (classes || []).filter(
+    (c) => c?.date === today && c?.status === "scheduled",
   );
-  const upcomingClasses = classes.filter(
+  const upcomingClasses = (classes || []).filter(
     (c) =>
-      new Date(c.date) > new Date(today) && c.status === "scheduled",
+      c?.date && new Date(c.date) > new Date(today) && c?.status === "scheduled",
   );
 
   const stats = {
