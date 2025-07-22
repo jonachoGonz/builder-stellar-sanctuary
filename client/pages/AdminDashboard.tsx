@@ -80,10 +80,8 @@ export function AdminDashboard() {
       const activeUsers = users.filter((u) => u.isActive).length;
       const totalStudents = users.filter((u) => u.role === "student").length;
       const totalTeachers = users.filter((u) => u.role === "teacher").length;
-      const totalClasses = classes.length;
-      const upcomingClasses = classes.filter(
-        (c) => new Date(c.date) > new Date(),
-      ).length;
+      const totalClasses = 0; // Will be loaded from appointments API
+      const upcomingClasses = 0; // Will be loaded from appointments API
 
       // Calculate revenue based on active students and their plans
       const revenue = users
