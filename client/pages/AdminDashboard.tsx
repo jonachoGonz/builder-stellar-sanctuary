@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { UserManagementModal } from "../components/UserManagementModal";
 import {
   Users,
   Calendar,
@@ -14,6 +15,8 @@ import {
   Plus,
   Search,
   Filter,
+  RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -51,11 +54,20 @@ import { Label } from "../components/ui/label";
 export function AdminDashboard() {
   const { user, isLoading } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalUsers: 0,
+    limit: 20,
+  });
+  const [error, setError] = useState("");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
@@ -132,83 +144,85 @@ export function AdminDashboard() {
 
   const adminInfo = getAdminInfo();
 
-  // Mock data - replace with real API calls
+  // Load users and stats from API
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setError("No se encontró token de autenticación");
+        return;
+      }
+
+      const params = new URLSearchParams({
+        page: pagination.currentPage.toString(),
+        limit: pagination.limit.toString(),
+        search: searchTerm,
+        role: filterRole !== "all" ? filterRole : "",
+      });
+
+      const response = await fetch(`/api/admin/users?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al cargar usuarios");
+      }
+
+      const data = await response.json();
+      setUsers(data.data.users);
+      setPagination(data.data.pagination);
+    } catch (error: any) {
+      console.error("Error loading users:", error);
+      setError(error.message || "Error al cargar usuarios");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      const response = await fetch("/api/admin/stats", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data.data);
+      }
+    } catch (error) {
+      console.error("Error loading stats:", error);
+    }
+  };
+
   useEffect(() => {
-    const mockUsers = [
-      {
-        id: "1",
-        firstName: "Juan",
-        lastName: "Pérez",
-        email: "juan@email.com",
-        role: "student",
-        plan: "pro",
-        isActive: true,
-        memberSince: "2024-01-15",
-      },
-      {
-        id: "2",
-        firstName: "María",
-        lastName: "González",
-        email: "maria@email.com",
-        role: "teacher",
-        plan: null,
-        isActive: true,
-        memberSince: "2023-12-01",
-      },
-      {
-        id: "3",
-        firstName: "Carlos",
-        lastName: "Mendoza",
-        email: "carlos@email.com",
-        role: "teacher",
-        plan: null,
-        isActive: true,
-        memberSince: "2023-10-15",
-      },
-      {
-        id: "4",
-        firstName: "Ana",
-        lastName: "Silva",
-        email: "ana@email.com",
-        role: "student",
-        plan: "basic",
-        isActive: false,
-        memberSince: "2024-02-01",
-      },
-    ];
+    loadUsers();
+    loadStats();
+  }, [pagination.currentPage, searchTerm, filterRole]);
 
-    const mockClasses = [
-      {
-        id: "1",
-        title: "Entrenamiento Funcional",
-        instructor: "Carlos Mendoza",
-        date: "2024-01-16",
-        time: "10:00",
-        capacity: "12/15",
-        status: "scheduled",
-      },
-      {
-        id: "2",
-        title: "Yoga Matutino",
-        instructor: "María González",
-        date: "2024-01-16",
-        time: "08:00",
-        capacity: "8/12",
-        status: "scheduled",
-      },
-    ];
+  useEffect(() => {
+    // Reset to first page when search/filter changes
+    if (pagination.currentPage !== 1) {
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }
+  }, [searchTerm, filterRole]);
 
-    setUsers(mockUsers);
-    setClasses(mockClasses);
-  }, []);
-
-  const stats = {
-    totalUsers: adminInfo?.totalUsers || 0,
-    activeStudents: adminInfo?.activeUsers || 0,
-    totalTeachers: adminInfo?.totalTeachers || 0,
-    totalClasses: adminInfo?.totalClasses || 0,
-    revenue: `$${adminInfo?.monthlyRevenue?.toLocaleString() || "0"}`,
-    growth: `+${adminInfo?.growthRate || 0}%`,
+  const displayStats = {
+    totalUsers: stats?.totalUsers || 0,
+    activeStudents: stats?.usersByRole?.students || 0,
+    totalTeachers: stats?.professionals || 0,
+    revenue: `$${stats?.monthlyRevenue?.toLocaleString() || "0"}`,
+    growth: `+${stats?.growthRate || 0}%`,
   };
 
   const filteredUsers = users.filter((user) => {
@@ -248,14 +262,72 @@ export function AdminDashboard() {
     );
   };
 
-  const handleEditUser = (user: any) => {
-    setSelectedUser(user);
+  const handleCreateUser = () => {
+    setSelectedUser(null);
+    setModalMode("create");
     setIsUserDialogOpen(true);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    if (confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
-      setUsers(users.filter((u) => u.id !== userId));
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setModalMode("edit");
+    setIsUserDialogOpen(true);
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al eliminar usuario");
+      }
+
+      // Reload users after deletion
+      await loadUsers();
+      await loadStats();
+    } catch (error: any) {
+      alert(error.message || "Error al eliminar usuario");
+    }
+  };
+
+  const handleSaveUser = async (userData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const isEdit = modalMode === "edit" && selectedUser;
+
+      const url = isEdit ? `/api/admin/users/${selectedUser._id}` : "/api/admin/users";
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al guardar usuario");
+      }
+
+      // Reload users and stats after save
+      await loadUsers();
+      await loadStats();
+    } catch (error: any) {
+      throw new Error(error.message || "Error al guardar usuario");
     }
   };
 
@@ -300,9 +372,13 @@ export function AdminDashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Button className="btn-primary">
+              <Button className="btn-primary" onClick={handleCreateUser}>
                 <UserPlus className="h-4 w-4 mr-2" />
                 Nuevo Usuario
+              </Button>
+              <Button variant="outline" onClick={() => { loadUsers(); loadStats(); }}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Actualizar
               </Button>
               <Button variant="outline">
                 <Settings className="h-4 w-4 mr-2" />
@@ -324,7 +400,7 @@ export function AdminDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <div className="text-2xl font-bold">{displayStats.totalUsers}</div>
               <p className="text-xs text-muted-foreground">
                 +3 desde la semana pasada
               </p>
@@ -339,7 +415,7 @@ export function AdminDashboard() {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.activeStudents}</div>
+              <div className="text-2xl font-bold">{displayStats.activeStudents}</div>
               <p className="text-xs text-muted-foreground">
                 85% de retención mensual
               </p>
@@ -354,7 +430,7 @@ export function AdminDashboard() {
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalTeachers}</div>
+              <div className="text-2xl font-bold">{displayStats.totalTeachers}</div>
               <p className="text-xs text-muted-foreground">
                 Promedio 4.8/5 estrellas
               </p>
@@ -369,9 +445,9 @@ export function AdminDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.revenue}</div>
+              <div className="text-2xl font-bold">{displayStats.revenue}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.growth} vs mes anterior
+                {displayStats.growth} vs mes anterior
               </p>
             </CardContent>
           </Card>
@@ -384,7 +460,7 @@ export function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Gestión de Usuarios</CardTitle>
-                  <Button size="sm" className="btn-primary">
+                  <Button size="sm" className="btn-primary" onClick={handleCreateUser}>
                     <Plus className="h-4 w-4 mr-2" />
                     Agregar Usuario
                   </Button>
@@ -414,6 +490,19 @@ export function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
+                {error && (
+                  <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    {error}
+                  </div>
+                )}
+
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+                    <span>Cargando usuarios...</span>
+                  </div>
+                ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -426,7 +515,7 @@ export function AdminDashboard() {
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
+                      <TableRow key={user._id}>
                         <TableCell>
                           <div>
                             <div className="font-medium">
@@ -466,7 +555,7 @@ export function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleDeleteUser(user.id)}
+                              onClick={() => handleDeleteUser(user._id)}
                               className="text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-3 w-3" />
@@ -477,49 +566,76 @@ export function AdminDashboard() {
                     ))}
                   </TableBody>
                 </Table>
+                )}
+
+                {/* Pagination */}
+                {!loading && pagination.totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-sm text-gray-600">
+                      Mostrando {users.length} de {pagination.totalUsers} usuarios
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                        disabled={!pagination.hasPrev}
+                      >
+                        Anterior
+                      </Button>
+                      <span className="text-sm">
+                        Página {pagination.currentPage} de {pagination.totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                        disabled={!pagination.hasNext}
+                      >
+                        Siguiente
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Quick Actions & Classes */}
+          {/* Quick Actions & Stats */}
           <div className="space-y-6">
-            {/* Today's Classes */}
+            {/* Role Distribution */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Clases de Hoy
+                  <Users className="h-5 w-5 mr-2" />
+                  Distribución por Rol
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {classes.map((classItem) => (
-                  <div key={classItem.id} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="font-medium text-sm">{classItem.title}</div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {classItem.instructor} • {classItem.time}
+              <CardContent className="space-y-3">
+                {stats?.usersByRole && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Estudiantes</span>
+                      <span className="font-medium">{stats.usersByRole.students}</span>
                     </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <Badge variant="outline" className="text-xs">
-                        {classItem.capacity}
-                      </Badge>
-                      <Badge
-                        variant={
-                          classItem.status === "scheduled"
-                            ? "default"
-                            : "secondary"
-                        }
-                        className="text-xs"
-                      >
-                        {classItem.status === "scheduled"
-                          ? "Programada"
-                          : "Completada"}
-                      </Badge>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Entrenadores</span>
+                      <span className="font-medium">{stats.usersByRole.teachers}</span>
                     </div>
-                  </div>
-                ))}
-                <Button variant="outline" className="w-full" size="sm">
-                  Ver Todas las Clases
-                </Button>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Nutricionistas</span>
+                      <span className="font-medium">{stats.usersByRole.nutritionists}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Psicólogos</span>
+                      <span className="font-medium">{stats.usersByRole.psychologists}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Administradores</span>
+                      <span className="font-medium">{stats.usersByRole.admins}</span>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -551,71 +667,14 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* User Edit Dialog */}
-      <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar Usuario</DialogTitle>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">Nombre</Label>
-                  <Input id="firstName" defaultValue={selectedUser.firstName} />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Apellido</Label>
-                  <Input id="lastName" defaultValue={selectedUser.lastName} />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" defaultValue={selectedUser.email} />
-              </div>
-              <div>
-                <Label htmlFor="role">Rol</Label>
-                <Select defaultValue={selectedUser.role}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Estudiante</SelectItem>
-                    <SelectItem value="teacher">Profesional</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {selectedUser.role === "student" && (
-                <div>
-                  <Label htmlFor="plan">Plan</Label>
-                  <Select defaultValue={selectedUser.plan}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="trial">Trial</SelectItem>
-                      <SelectItem value="basic">Básico</SelectItem>
-                      <SelectItem value="pro">Pro</SelectItem>
-                      <SelectItem value="elite">Elite</SelectItem>
-                      <SelectItem value="champion">Champion</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsUserDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button className="btn-primary">Guardar Cambios</Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* User Management Modal */}
+      <UserManagementModal
+        isOpen={isUserDialogOpen}
+        onClose={() => setIsUserDialogOpen(false)}
+        user={selectedUser}
+        onSave={handleSaveUser}
+        mode={modalMode}
+      />
     </div>
   );
 }
