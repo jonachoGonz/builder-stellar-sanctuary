@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
+import { UnifiedCalendar } from "../components/UnifiedCalendar";
 
 export function StudentDashboard() {
   const { user, isLoading } = useAuth();
