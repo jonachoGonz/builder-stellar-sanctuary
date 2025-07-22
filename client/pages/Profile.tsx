@@ -501,42 +501,82 @@ export function Profile() {
               </CardContent>
             </Card>
 
-            {/* Achievements */}
+            {/* Achievements / Evaluation */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Award className="h-5 w-5 mr-2 text-gym-gold" />
-                  Logros
+                  {isProfessional ? (
+                    <>
+                      <Star className="h-5 w-5 mr-2 text-yellow-400" />
+                      Evaluación
+                    </>
+                  ) : (
+                    <>
+                      <Award className="h-5 w-5 mr-2 text-gym-gold" />
+                      Logros
+                    </>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-gym-gold/5 rounded-lg">
-                  <Award className="h-6 w-6 text-gym-gold" />
-                  <div>
-                    <div className="font-medium">Primera Semana</div>
-                    <div className="text-sm text-gray-600">
-                      Completaste tu primera semana
+                {isProfessional ? (
+                  <>
+                    <div className="text-center p-6 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <div className="flex items-center justify-center space-x-1 mb-2">
+                        {renderStarRating(professionalStats.averageRating)}
+                      </div>
+                      <div className="text-3xl font-bold text-yellow-600 mb-1">
+                        {professionalStats.averageRating.toFixed(1)}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Evaluación promedio de estudiantes
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Basado en {professionalStats.totalStudents} evaluaciones
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg">
-                  <Target className="h-6 w-6 text-primary" />
-                  <div>
-                    <div className="font-medium">Meta Cumplida</div>
-                    <div className="text-sm text-gray-600">
-                      40 clases completadas
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="text-lg font-bold text-green-600">95%</div>
+                        <div className="text-xs text-gray-600">Satisfacción</div>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-lg font-bold text-blue-600">98%</div>
+                        <div className="text-xs text-gray-600">Recomendación</div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-secondary/5 rounded-lg">
-                  <Heart className="h-6 w-6 text-secondary" />
-                  <div>
-                    <div className="font-medium">Constancia</div>
-                    <div className="text-sm text-gray-600">
-                      10 días consecutivos
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center space-x-3 p-3 bg-gym-gold/5 rounded-lg">
+                      <Award className="h-6 w-6 text-gym-gold" />
+                      <div>
+                        <div className="font-medium">Primera Semana</div>
+                        <div className="text-sm text-gray-600">
+                          Completaste tu primera semana
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                    <div className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg">
+                      <Target className="h-6 w-6 text-primary" />
+                      <div>
+                        <div className="font-medium">Meta Cumplida</div>
+                        <div className="text-sm text-gray-600">
+                          40 clases completadas
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 bg-secondary/5 rounded-lg">
+                      <Heart className="h-6 w-6 text-secondary" />
+                      <div>
+                        <div className="font-medium">Constancia</div>
+                        <div className="text-sm text-gray-600">
+                          10 días consecutivos
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
