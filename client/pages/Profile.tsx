@@ -428,48 +428,76 @@ export function Profile() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - User Stats */}
           <div className="space-y-6">
-            {/* Progress Stats */}
+            {/* Progress Stats / Professional Stats */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-                  Mi Progreso
+                  {isProfessional ? "Clases Realizadas" : "Mi Progreso"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Clases Completadas</span>
-                    <span className="font-medium">
-                      {userStats.classesCompleted}/{userStats.totalClasses}
-                    </span>
-                  </div>
-                  <Progress value={userStats.completionRate} className="h-2" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-primary/5 rounded-lg">
-                    <div className="text-2xl font-bold text-primary">
-                      {userStats.currentStreak}
+                {isProfessional ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-primary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-primary">
+                          {professionalStats.totalClassesTaught}
+                        </div>
+                        <div className="text-sm text-gray-600">Total de clases</div>
+                      </div>
+                      <div className="text-center p-4 bg-secondary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-secondary">
+                          {professionalStats.totalStudents}
+                        </div>
+                        <div className="text-sm text-gray-600">Total de alumnos</div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">Días seguidos</div>
-                  </div>
-                  <div className="text-center p-4 bg-secondary/5 rounded-lg">
-                    <div className="text-2xl font-bold text-secondary">
-                      {userStats.completionRate}%
-                    </div>
-                    <div className="text-sm text-gray-600">Asistencia</div>
-                  </div>
-                </div>
 
-                <div className="text-center">
-                  <div className="text-sm text-gray-600 mb-1">
-                    Próximo objetivo
-                  </div>
-                  <div className="font-semibold text-accent">
-                    {userStats.nextGoal}
-                  </div>
-                </div>
+                    <div className="text-center p-4 bg-accent/5 rounded-lg">
+                      <div className="text-2xl font-bold text-accent">
+                        {professionalStats.classesThisMonth}
+                      </div>
+                      <div className="text-sm text-gray-600">Clases este mes</div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Clases Completadas</span>
+                        <span className="font-medium">
+                          {userStats.classesCompleted}/{userStats.totalClasses}
+                        </span>
+                      </div>
+                      <Progress value={userStats.completionRate} className="h-2" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-primary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-primary">
+                          {userStats.currentStreak}
+                        </div>
+                        <div className="text-sm text-gray-600">Días seguidos</div>
+                      </div>
+                      <div className="text-center p-4 bg-secondary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-secondary">
+                          {userStats.completionRate}%
+                        </div>
+                        <div className="text-sm text-gray-600">Asistencia</div>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-sm text-gray-600 mb-1">
+                        Próximo objetivo
+                      </div>
+                      <div className="font-semibold text-accent">
+                        {userStats.nextGoal}
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
