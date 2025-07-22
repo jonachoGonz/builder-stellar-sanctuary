@@ -281,10 +281,15 @@ export function Profile() {
               </h1>
               <div className="flex items-center space-x-4 mt-2">
                 <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
-                  {user.plan || "Plan Trial"}
+                  {isProfessional ? getRoleDisplayName(user.role) : (user.plan || "Plan Trial")}
                 </Badge>
+                {isProfessional && user.specialty && (
+                  <Badge className="bg-white/10 text-white border-white/20 px-3 py-1">
+                    {user.specialty}
+                  </Badge>
+                )}
                 <span className="text-white/80">
-                  Miembro desde {userStats.joinDate}
+                  Miembro desde {isProfessional ? professionalStats.joinDate : userStats.joinDate}
                 </span>
               </div>
               <p className="text-white/90 mt-2">
