@@ -87,8 +87,6 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-console.log("🔍 AuthContext created:", AuthContext);
-
 // Use environment-specific API base URL
 const getApiBaseUrl = () => {
   // If explicitly set via environment variable, use that
