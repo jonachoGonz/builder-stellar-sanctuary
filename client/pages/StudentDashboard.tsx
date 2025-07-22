@@ -561,6 +561,14 @@ export function StudentDashboard() {
           </Card>
         </div>
 
+        {/* Unified Calendar */}
+        <div className="mb-8">
+          <UnifiedCalendar
+            showCreateButton={false}
+            showConfigButton={false}
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Available Classes */}
           <div className="lg:col-span-2">
