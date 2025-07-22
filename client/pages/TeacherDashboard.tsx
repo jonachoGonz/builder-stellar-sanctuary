@@ -155,7 +155,7 @@ export function TeacherDashboard() {
     return specialties.length > 0 ? specialties : defaultSpecialties;
   };
 
-  const teacherInfo = getTeacherInfo();
+  const teacherInfo = getProfessionalInfo();
 
   // Mock data - replace with real API calls
   useEffect(() => {
