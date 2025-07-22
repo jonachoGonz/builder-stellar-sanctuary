@@ -85,7 +85,21 @@ interface RegisterData {
   activityLevel?: string;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create AuthContext with a default value to prevent undefined errors
+const defaultAuthContext: AuthContextType = {
+  user: null,
+  isLoading: true,
+  isAuthenticated: false,
+  isNewUser: false,
+  login: async () => { throw new Error("AuthProvider not initialized"); },
+  register: async () => { throw new Error("AuthProvider not initialized"); },
+  loginWithGoogle: () => { throw new Error("AuthProvider not initialized"); },
+  logout: () => { console.warn("Logout called but AuthProvider not initialized"); },
+  updateUser: async () => { throw new Error("AuthProvider not initialized"); },
+  refreshUser: async () => { throw new Error("AuthProvider not initialized"); },
+};
+
+const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 // Use environment-specific API base URL
 const getApiBaseUrl = () => {
