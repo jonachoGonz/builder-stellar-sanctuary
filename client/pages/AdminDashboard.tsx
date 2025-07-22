@@ -537,14 +537,16 @@ export function AdminDashboard() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{getRoleBadge(user.role)}</TableCell>
+                        <TableCell>{getRoleBadge(user.role, user.specialty)}</TableCell>
                         <TableCell>
-                          {user.plan ? (
+                          {user.role === "student" && user.plan ? (
                             <Badge variant="outline" className="capitalize">
                               {user.plan}
                             </Badge>
+                          ) : user.role === "student" ? (
+                            <Badge variant="secondary">Sin plan</Badge>
                           ) : (
-                            "-"
+                            <Badge variant="outline" className="text-xs">Profesional</Badge>
                           )}
                         </TableCell>
                         <TableCell>
