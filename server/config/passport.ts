@@ -6,7 +6,8 @@ import User, { IUser } from "../models/User";
 if (
   process.env.GOOGLE_CLIENT_ID &&
   process.env.GOOGLE_CLIENT_SECRET &&
-  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id"
+  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id" &&
+  process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"
 ) {
   passport.use(
     new GoogleStrategy(
