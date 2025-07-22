@@ -538,7 +538,7 @@ export function Profile() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-center p-3 bg-green-50 rounded-lg">
                         <div className="text-lg font-bold text-green-600">95%</div>
-                        <div className="text-xs text-gray-600">Satisfacción</div>
+                        <div className="text-xs text-gray-600">Satisfacci��n</div>
                       </div>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <div className="text-lg font-bold text-blue-600">98%</div>
@@ -854,30 +854,61 @@ export function Profile() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {upcomingClasses.map((classItem) => (
-                    <div
-                      key={classItem.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                    >
-                      <div>
-                        <div className="font-semibold">{classItem.type}</div>
-                        <div className="text-sm text-gray-600">
-                          {classItem.trainer} • {classItem.location}
+                  {isProfessional ? (
+                    upcomingProfessionalClasses.map((classItem) => (
+                      <div
+                        key={classItem.id}
+                        className="p-4 bg-gray-50 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-semibold">{classItem.className}</div>
+                          <div className="text-sm text-gray-500">{classItem.duration}</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                          <div>
+                            <div className="font-medium">Fecha y Hora:</div>
+                            <div>
+                              {new Date(classItem.date).toLocaleDateString("es-ES")} • {classItem.time}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="font-medium">Estudiante:</div>
+                            <div>{classItem.student}</div>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                          <span className="font-medium">Lugar:</span> {classItem.location}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-medium">
-                          {new Date(classItem.date).toLocaleDateString("es-ES")}
+                    ))
+                  ) : (
+                    upcomingClasses.map((classItem) => (
+                      <div
+                        key={classItem.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                      >
+                        <div>
+                          <div className="font-semibold">{classItem.type}</div>
+                          <div className="text-sm text-gray-600">
+                            {classItem.trainer} • {classItem.location}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {classItem.time}
+                        <div className="text-right">
+                          <div className="font-medium">
+                            {new Date(classItem.date).toLocaleDateString("es-ES")}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {classItem.time}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
                 <div className="mt-4 text-center">
-                  <Button variant="outline">Ver Todas las Clases</Button>
+                  <Button variant="outline">
+                    {isProfessional ? "Ver Todo Mi Calendario" : "Ver Todas las Clases"}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
