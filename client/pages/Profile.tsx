@@ -80,8 +80,59 @@ export function Profile() {
         emergencyContactName: user.emergencyContact?.name || "",
         emergencyContactPhone: user.emergencyContact?.phone || "",
       });
+
+      // Load real data for professionals
+      if (isProfessional) {
+        loadProfessionalData();
+      }
     }
-  }, [user]);
+  }, [user, isProfessional]);
+
+  const loadProfessionalData = async () => {
+    try {
+      setDataLoading(true);
+
+      // Load upcoming appointments for this professional
+      const appointmentsResponse = await apiCall(`/admin/appointments?professionalId=${user?.id}&status=scheduled&limit=3`);
+
+      if (appointmentsResponse.ok) {
+        const appointmentsData = await appointmentsResponse.json();
+        setRealAppointments(appointmentsData.data.appointments || []);
+      }
+
+      // Load professional stats
+      const statsResponse = await apiCall(`/admin/appointments?professionalId=${user?.id}&limit=1000`);
+
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        const appointments = statsData.data.appointments || [];
+
+        const stats = {
+          totalClassesTaught: appointments.filter(apt => apt.status === 'completed').length,
+          totalStudents: new Set(appointments.map(apt => apt.student?._id).filter(Boolean)).size,
+          averageRating: 4.7, // This would come from actual rating data
+          classesThisMonth: appointments.filter(apt => {
+            const aptDate = new Date(apt.date);
+            const now = new Date();
+            return aptDate.getMonth() === now.getMonth() &&
+                   aptDate.getFullYear() === now.getFullYear();
+          }).length,
+          joinDate: user?.memberSince
+            ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+                month: "long",
+                year: "numeric",
+              })
+            : "Enero 2024",
+        };
+
+        setRealStats(stats);
+      }
+    } catch (error) {
+      console.error('Error loading professional data:', error);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
   // User stats - can be made dynamic later
   const userStats = {
