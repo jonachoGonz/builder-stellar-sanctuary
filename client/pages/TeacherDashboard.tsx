@@ -66,7 +66,8 @@ export function TeacherDashboard() {
       psychologist: ["Psychology", "Mental Health"],
     };
 
-    const baseSpecialties = specialtyMapping[user.role as keyof typeof specialtyMapping] || [];
+    const baseSpecialties =
+      specialtyMapping[user.role as keyof typeof specialtyMapping] || [];
 
     // Add user's specific specialty if it exists
     if (user.specialty && !baseSpecialties.includes(user.specialty)) {

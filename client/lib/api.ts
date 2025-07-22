@@ -6,7 +6,7 @@ export const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  
+
   // If we're in production (not localhost), use absolute URL
   if (
     typeof window !== "undefined" &&
@@ -14,7 +14,7 @@ export const getApiBaseUrl = () => {
   ) {
     return `${window.location.origin}/api`;
   }
-  
+
   // Default to relative path for local development
   return "/api";
 };
@@ -24,7 +24,7 @@ export const API_BASE_URL = getApiBaseUrl();
 // Helper function to make authenticated API calls
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   const token = localStorage.getItem("authToken");
-  
+
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -38,8 +38,10 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     },
   };
 
-  const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
-  
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : `${API_BASE_URL}${endpoint}`;
+
   try {
     const response = await fetch(url, mergedOptions);
     return response;

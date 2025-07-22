@@ -103,7 +103,9 @@ export function AppointmentModal({
   const loadUsers = async () => {
     try {
       // Load students
-      const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
+      const studentsResponse = await apiCall(
+        "/admin/users?role=student&limit=100",
+      );
 
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();

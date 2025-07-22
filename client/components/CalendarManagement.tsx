@@ -63,8 +63,12 @@ export function CalendarManagement() {
       const params = new URLSearchParams({
         dateFrom: startOfWeek.toISOString().split("T")[0],
         dateTo: endOfWeek.toISOString().split("T")[0],
-        ...(filters.student && filters.student !== "all" && { studentId: filters.student }),
-        ...(filters.professional && filters.professional !== "all" && { professionalId: filters.professional }),
+        ...(filters.student &&
+          filters.student !== "all" && { studentId: filters.student }),
+        ...(filters.professional &&
+          filters.professional !== "all" && {
+            professionalId: filters.professional,
+          }),
         ...(filters.type !== "all" && { type: filters.type }),
         ...(filters.status !== "all" && { status: filters.status }),
       });
@@ -85,7 +89,9 @@ export function CalendarManagement() {
   const loadUsers = async () => {
     try {
       // Load students
-      const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
+      const studentsResponse = await apiCall(
+        "/admin/users?role=student&limit=100",
+      );
 
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
