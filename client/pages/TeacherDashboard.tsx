@@ -48,6 +48,8 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Textarea } from "../components/ui/textarea";
+import { CreateAppointmentModal } from "../components/CreateAppointmentModal";
+import { ProfessionalConfigModal } from "../components/ProfessionalConfigModal";
 
 export function TeacherDashboard() {
   const { user, isLoading } = useAuth();
