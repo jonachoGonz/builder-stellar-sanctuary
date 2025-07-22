@@ -62,6 +62,9 @@ export function createServer() {
   // Authentication routes
   app.use("/api/auth", authRoutes);
 
+  // Admin routes
+  app.use("/api/admin", adminRoutes);
+
   // Classes routes
   app.use("/api/classes", classRoutes);
 
