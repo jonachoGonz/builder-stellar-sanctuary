@@ -120,7 +120,7 @@ console.log(
   typeof window !== "undefined" ? window.location.hostname : "unknown",
 );
 console.log(
-  "🔗 Current origin:",
+  "�� Current origin:",
   typeof window !== "undefined" ? window.location.origin : "unknown",
 );
 
@@ -203,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("🔍 Attempting login with:", {
         email,
         url: `${API_BASE_URL}/auth/login`,
+        credentials: { email, password: "***" }
       });
 
       const response = await apiCall("/auth/login", {
@@ -212,7 +213,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       console.log("📡 Login response:", {
         status: response.status,
+        statusText: response.statusText,
         ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries()),
       });
 
       if (!response.ok) {
