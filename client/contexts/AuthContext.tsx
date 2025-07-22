@@ -107,21 +107,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem("authToken");
       if (token) {
+        console.log("🔍 Checking auth with token:", token.substring(0, 20) + "...");
+
         const response = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
+        console.log("📡 Auth check response:", { status: response.status, ok: response.ok });
+
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
+          console.log("✅ Auth check successful:", data.user?.email);
         } else {
+          console.log("🔓 Token invalid, removing...");
           localStorage.removeItem("authToken");
         }
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("❌ Auth check failed:", error);
       localStorage.removeItem("authToken");
     } finally {
       setIsLoading(false);
@@ -210,7 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!statusData.configured) {
         throw new Error(
-          "Autenticación con Google no está configurada completamente. " +
+          "Autenticaci��n con Google no está configurada completamente. " +
             (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
               ? "Se requiere configurar el Client Secret de Google."
               : "Configuración de Google OAuth incompleta."),
