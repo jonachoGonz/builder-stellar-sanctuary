@@ -148,7 +148,7 @@ export function TeacherDashboard() {
     ];
 
     // Could be based on the types of classes this teacher has created
-    const classTypes = [...new Set(classes.map((c) => c.type || "functional"))];
+    const classTypes = [...new Set((classes || []).map((c) => c?.type || "functional"))];
     const typeMapping: { [key: string]: string } = {
       functional: "Entrenamiento Funcional",
       crossfit: "CrossFit",
