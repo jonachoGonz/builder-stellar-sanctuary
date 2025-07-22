@@ -216,21 +216,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Login failed:", {
-          status: response.status,
-          error: errorText,
-        });
+        let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(
-            errorData.message ||
-              `Error ${response.status}: ${response.statusText}`,
-          );
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
         } catch (parseError) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+          // If JSON parsing fails, try text
+          try {
+            const errorText = await response.text();
+            console.error("❌ Login failed:", {
+              status: response.status,
+              error: errorText,
+            });
+          } catch (textError) {
+            console.error("❌ Login failed:", {
+              status: response.status,
+              error: "Unable to parse error response",
+            });
+          }
         }
+
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
