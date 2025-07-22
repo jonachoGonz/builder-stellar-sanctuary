@@ -219,12 +219,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         try {
+          // Clone the response so we can try multiple parsing methods
+          const responseClone = response.clone();
           const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
+          errorMessage = errorData.message || errorData.error || errorMessage;
+
+          console.error("❌ Login failed:", {
+            status: response.status,
+            error: errorData,
+          });
         } catch (parseError) {
           // If JSON parsing fails, try text
           try {
             const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
             console.error("❌ Login failed:", {
               status: response.status,
               error: errorText,
