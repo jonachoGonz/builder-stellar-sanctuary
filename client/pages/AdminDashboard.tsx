@@ -494,8 +494,10 @@ export function AdminDashboard() {
                     <SelectContent>
                       <SelectItem value="all">Todos</SelectItem>
                       <SelectItem value="student">Estudiantes</SelectItem>
-                      <SelectItem value="teacher">Profesionales</SelectItem>
-                      <SelectItem value="admin">Admins</SelectItem>
+                      <SelectItem value="teacher">Entrenadores</SelectItem>
+                      <SelectItem value="nutritionist">Nutricionistas</SelectItem>
+                      <SelectItem value="psychologist">Psicólogos</SelectItem>
+                      <SelectItem value="admin">Administradores</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
