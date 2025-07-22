@@ -58,6 +58,32 @@ export function Auth() {
     termsAccepted: false,
   });
 
+  // Handle OAuth errors from URL params
+  useState(() => {
+    const oauthError = searchParams.get("error");
+    if (oauthError) {
+      switch (oauthError) {
+        case "oauth_error":
+          setError("Error durante la autenticación con Google. Inténtalo nuevamente.");
+          break;
+        case "oauth_not_configured":
+          setError("Autenticación con Google no está disponible en este momento.");
+          break;
+        case "oauth_no_user":
+          setError("No se pudo obtener la información del usuario de Google.");
+          break;
+        case "auth_error":
+          setError("Error procesando la autenticación. Inténtalo nuevamente.");
+          break;
+        case "missing_params":
+          setError("Error en la respuesta de autenticación.");
+          break;
+        default:
+          setError("Error durante la autenticación.");
+      }
+    }
+  });
+
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
