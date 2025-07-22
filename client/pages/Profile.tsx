@@ -37,6 +37,7 @@ import { Progress } from "../components/ui/progress";
 import { WelcomeModal } from "../components/WelcomeModal";
 import { useAuth, usePermissions } from "../contexts/AuthContext";
 import { Star } from "lucide-react";
+import { apiCall } from "../lib/api";
 
 export function Profile() {
   const { user, updateUser, isLoading } = useAuth();
@@ -538,7 +539,7 @@ export function Profile() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-center p-3 bg-green-50 rounded-lg">
                         <div className="text-lg font-bold text-green-600">95%</div>
-                        <div className="text-xs text-gray-600">Satisfacci��n</div>
+                        <div className="text-xs text-gray-600">Satisfacción</div>
                       </div>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <div className="text-lg font-bold text-blue-600">98%</div>
