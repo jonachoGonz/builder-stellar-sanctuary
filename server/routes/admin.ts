@@ -609,7 +609,7 @@ router.post(
 router.get(
   "/appointments",
   authenticateToken,
-  requireAdmin,
+  requireAdminOrProfessional,
   async (req: Request, res: Response) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -623,13 +623,20 @@ router.get(
 
       // Build filter query
       const filter: any = {};
+      const currentUser = (req as any).currentUser;
+
+      // If user is not admin, restrict to their own appointments only
+      if (currentUser.role !== "admin") {
+        filter.professional = currentUser._id;
+      } else {
+        // Admin can filter by any professional
+        if (professionalId) {
+          filter.professional = professionalId;
+        }
+      }
 
       if (studentId) {
         filter.student = studentId;
-      }
-
-      if (professionalId) {
-        filter.professional = professionalId;
       }
 
       if (type && type !== "all") {
