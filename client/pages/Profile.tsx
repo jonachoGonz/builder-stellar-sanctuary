@@ -335,54 +335,88 @@ export function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
                 <Award className="h-6 w-6 mr-2 text-primary" />
-                Tu Plan: {user.plan || "Plan Trial"}
+                {isProfessional ? `Tu Rol: ${getRoleDisplayName(user.role)}` : `Tu Plan: ${user.plan || "Plan Trial"}`}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-semibold mb-4">
-                    ¿Qué puedes hacer ahora?
+                    {isProfessional ? "¿Qué puedes hacer como profesional?" : "¿Qué puedes hacer ahora?"}
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      <span>Ver y reservar clases disponibles</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      <span>Acceder a tu calendario personal</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      <span>Revisar tu progreso y estadísticas</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      <span>Conectar con profesionales expertos</span>
-                    </div>
+                    {isProfessional ? (
+                      <>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Gestionar tu calendario de clases</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Ver y actualizar información de estudiantes</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Revisar tus estadísticas y evaluaciones</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Programar sesiones con tus estudiantes</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Ver y reservar clases disponibles</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Acceder a tu calendario personal</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Revisar tu progreso y estadísticas</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-accent" />
+                          <span>Conectar con profesionales expertos</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col justify-center space-y-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">
-                      {user.plan === "pro"
-                        ? "3"
-                        : user.plan === "basic"
-                          ? "2"
-                          : user.plan === "elite"
-                            ? "4"
-                            : user.plan === "champion"
-                              ? "5"
-                              : "1"}{" "}
-                      clases
-                    </div>
-                    <div className="text-gray-600">por semana</div>
+                    {isProfessional ? (
+                      <>
+                        <div className="text-3xl font-bold text-primary mb-2">
+                          {professionalStats.totalStudents}
+                        </div>
+                        <div className="text-gray-600">estudiantes activos</div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-3xl font-bold text-primary mb-2">
+                          {user.plan === "pro"
+                            ? "3"
+                            : user.plan === "basic"
+                              ? "2"
+                              : user.plan === "elite"
+                                ? "4"
+                                : user.plan === "champion"
+                                  ? "5"
+                                  : "1"}{" "}
+                          clases
+                        </div>
+                        <div className="text-gray-600">por semana</div>
+                      </>
+                    )}
                   </div>
                   <Link to="/dashboard" className="w-full">
                     <Button className="w-full btn-primary text-lg py-3">
                       <LayoutDashboard className="h-5 w-5 mr-2" />
-                      Comenzar a Entrenar
+                      {isProfessional ? "Ir a Mi Dashboard" : "Comenzar a Entrenar"}
                     </Button>
                   </Link>
                 </div>
