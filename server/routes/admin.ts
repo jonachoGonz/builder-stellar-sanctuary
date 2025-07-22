@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import User from "../models/User";
+import Appointment from "../models/Appointment";
 import { authenticateToken } from "./auth";
 
 const router = Router();
