@@ -578,16 +578,16 @@ export function Profile() {
                   <>
                     <div className="text-center p-6 bg-yellow-50 rounded-lg border border-yellow-200">
                       <div className="flex items-center justify-center space-x-1 mb-2">
-                        {renderStarRating(professionalStats.averageRating)}
+                        {renderStarRating(realStats ? realStats.averageRating : professionalStats.averageRating)}
                       </div>
                       <div className="text-3xl font-bold text-yellow-600 mb-1">
-                        {professionalStats.averageRating.toFixed(1)}
+                        {realStats ? realStats.averageRating.toFixed(1) : professionalStats.averageRating.toFixed(1)}
                       </div>
                       <div className="text-sm text-gray-600">
                         Evaluación promedio de estudiantes
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        Basado en {professionalStats.totalStudents} evaluaciones
+                        Basado en {realStats ? realStats.totalStudents : professionalStats.totalStudents} evaluaciones
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
