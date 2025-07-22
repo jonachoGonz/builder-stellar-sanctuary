@@ -14,6 +14,7 @@ import { handleDemo } from "./routes/demo";
 import authRoutes from "./routes/auth";
 import classRoutes from "./routes/classes";
 import testRoutes from "./routes/test";
+import adminRoutes from "./routes/admin";
 
 export function createServer() {
   const app = express();
