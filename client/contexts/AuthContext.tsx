@@ -128,6 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
+      console.log("🔍 Attempting login with:", { email, url: `${API_BASE_URL}/auth/login` });
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -136,16 +138,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      console.log("📡 Login response:", { status: response.status, ok: response.ok });
 
       if (!response.ok) {
-        throw new Error(data.message || "Error al iniciar sesión");
+        const errorText = await response.text();
+        console.error("❌ Login failed:", { status: response.status, error: errorText });
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        } catch (parseError) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
       }
+
+      const data = await response.json();
+      console.log("✅ Login successful:", { userId: data.user?.id, email: data.user?.email });
 
       setUser(data.user);
       localStorage.setItem("authToken", data.token);
     } catch (error: any) {
-      throw new Error(error.message || "Error al iniciar sesión");
+      console.error("🚨 Login error:", error);
+
+      // Provide more specific error messages
+      if (error.name === "TypeError" && error.message.includes("fetch")) {
+        throw new Error("Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.");
+      } else if (error.message.includes("NetworkError") || error.message.includes("Failed to fetch")) {
+        throw new Error("No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.");
+      } else {
+        throw new Error(error.message || "Error al iniciar sesión");
+      }
     } finally {
       setIsLoading(false);
     }
