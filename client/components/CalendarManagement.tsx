@@ -84,16 +84,8 @@ export function CalendarManagement() {
 
   const loadUsers = async () => {
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) return;
-
       // Load students
-      const studentsResponse = await fetch(
-        "/api/admin/users?role=student&limit=100",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
 
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
@@ -101,9 +93,7 @@ export function CalendarManagement() {
       }
 
       // Load professionals
-      const professionalsResponse = await fetch("/api/admin/users?limit=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const professionalsResponse = await apiCall("/admin/users?limit=100");
 
       if (professionalsResponse.ok) {
         const professionalsData = await professionalsResponse.json();
