@@ -43,6 +43,9 @@ export function Profile() {
   const { user, updateUser, isLoading } = useAuth();
   const { canManageUsers, isStudent, isAdmin, isProfessional } = usePermissions();
   const [isEditing, setIsEditing] = useState(false);
+  const [realAppointments, setRealAppointments] = useState<any[]>([]);
+  const [realStats, setRealStats] = useState<any>(null);
+  const [dataLoading, setDataLoading] = useState(false);
   const [editData, setEditData] = useState({
     firstName: "",
     lastName: "",
