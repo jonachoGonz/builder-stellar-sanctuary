@@ -202,7 +202,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("🔍 Attempting login with:", {
         email,
-        url: `${API_BASE_URL}/auth/login`,
+        apiBaseUrl: API_BASE_URL,
+        fullUrl: `${API_BASE_URL}/auth/login`,
+        windowLocation: typeof window !== 'undefined' ? {
+          hostname: window.location.hostname,
+          origin: window.location.origin,
+          href: window.location.href
+        } : 'server-side',
         credentials: { email, password: "***" }
       });
 
