@@ -497,13 +497,13 @@ export function Profile() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-4 bg-primary/5 rounded-lg">
                         <div className="text-2xl font-bold text-primary">
-                          {professionalStats.totalClassesTaught}
+                          {realStats ? realStats.totalClassesTaught : professionalStats.totalClassesTaught}
                         </div>
                         <div className="text-sm text-gray-600">Total de clases</div>
                       </div>
                       <div className="text-center p-4 bg-secondary/5 rounded-lg">
                         <div className="text-2xl font-bold text-secondary">
-                          {professionalStats.totalStudents}
+                          {realStats ? realStats.totalStudents : professionalStats.totalStudents}
                         </div>
                         <div className="text-sm text-gray-600">Total de alumnos</div>
                       </div>
@@ -511,7 +511,7 @@ export function Profile() {
 
                     <div className="text-center p-4 bg-accent/5 rounded-lg">
                       <div className="text-2xl font-bold text-accent">
-                        {professionalStats.classesThisMonth}
+                        {realStats ? realStats.classesThisMonth : professionalStats.classesThisMonth}
                       </div>
                       <div className="text-sm text-gray-600">Clases este mes</div>
                     </div>
