@@ -150,7 +150,7 @@ export function Profile() {
     );
   }
 
-  // Mock upcoming classes
+  // Mock upcoming classes for students
   const upcomingClasses = [
     {
       id: 1,
@@ -175,6 +175,37 @@ export function Profile() {
       trainer: "Diego Ramirez",
       type: "Musculación",
       location: "Área de Pesas",
+    },
+  ];
+
+  // Mock upcoming classes for professionals
+  const upcomingProfessionalClasses = [
+    {
+      id: 1,
+      className: "Entrenamiento Funcional",
+      date: "2024-01-16",
+      time: "10:00",
+      duration: "60 min",
+      student: "Ana García",
+      location: "Sala Principal",
+    },
+    {
+      id: 2,
+      className: "Consulta Nutricional",
+      date: "2024-01-18",
+      time: "15:30",
+      duration: "45 min",
+      student: "Carlos Ruiz",
+      location: "Consultorio 2",
+    },
+    {
+      id: 3,
+      className: "Sesión de Yoga",
+      date: "2024-01-20",
+      time: "09:00",
+      duration: "90 min",
+      student: "María López",
+      location: "Sala Zen",
     },
   ];
 
