@@ -117,8 +117,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for stored authentication on mount
-    checkAuth();
+    // Test connectivity first, then check auth
+    const initializeAuth = async () => {
+      const isConnected = await testConnectivity();
+      if (isConnected) {
+        console.log("✅ API connectivity confirmed");
+        checkAuth();
+      } else {
+        console.error("❌ API not reachable, skipping auth check");
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const checkAuth = async () => {
