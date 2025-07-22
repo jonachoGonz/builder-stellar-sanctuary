@@ -2,6 +2,11 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User, { IUser } from "../models/User";
 
+// Debug environment variables
+console.log("🔍 Google OAuth Environment Check:");
+console.log("   CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("   CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET ? "***" + process.env.GOOGLE_CLIENT_SECRET.slice(-4) : "undefined");
+
 // Only configure Google OAuth if credentials are provided
 if (
   process.env.GOOGLE_CLIENT_ID &&
