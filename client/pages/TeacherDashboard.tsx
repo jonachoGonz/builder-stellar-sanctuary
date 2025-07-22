@@ -274,6 +274,30 @@ export function TeacherDashboard() {
     setIsCreateDialogOpen(true);
   };
 
+  const handleCreateAppointment = async (appointmentData: any) => {
+    try {
+      setLoading(true);
+      const response = await apiCall('/admin/appointments', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...appointmentData,
+          professionalId: user?.id,
+        }),
+      });
+
+      if (response.ok) {
+        await loadAppointments(); // Reload appointments
+        setIsCreateDialogOpen(false);
+      } else {
+        console.error('Error creating appointment');
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditClass = (classItem: any) => {
     setSelectedClass(classItem);
     setIsEditDialogOpen(true);
