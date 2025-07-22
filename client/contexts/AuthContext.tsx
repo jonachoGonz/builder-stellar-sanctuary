@@ -128,11 +128,8 @@ console.log(
 const testConnectivity = async () => {
   try {
     console.log("🌐 Testing API connectivity...");
-    const response = await fetch(`${API_BASE_URL}/auth/google/status`, {
+    const response = await apiCall("/auth/google/status", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
     console.log("📡 Connectivity test result:", {
       status: response.status,
@@ -176,11 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           token.substring(0, 20) + "...",
         );
 
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiCall("/auth/me");
 
         console.log("📡 Auth check response:", {
           status: response.status,
@@ -297,7 +290,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       // Check if Google OAuth is available first
-      const statusResponse = await fetch(`${API_BASE_URL}/auth/google/status`);
+      const statusResponse = await apiCall("/auth/google/status");
       const statusData = await statusResponse.json();
 
       if (!statusData.configured) {
@@ -333,13 +326,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      const response = await apiCall("/auth/profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(userData),
       });
 
@@ -362,11 +350,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiCall("/auth/me");
 
       if (response.ok) {
         const data = await response.json();
