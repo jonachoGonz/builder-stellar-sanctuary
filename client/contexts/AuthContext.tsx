@@ -120,7 +120,7 @@ console.log(
   typeof window !== "undefined" ? window.location.hostname : "unknown",
 );
 console.log(
-  "�� Current origin:",
+  "🔗 Current origin:",
   typeof window !== "undefined" ? window.location.origin : "unknown",
 );
 
@@ -222,29 +222,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         try {
-          // Clone the response so we can try multiple parsing methods
-          const responseClone = response.clone();
           const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-
-          console.error("❌ Login failed:", {
+          console.error("❌ Login failed - JSON response:", {
             status: response.status,
+            statusText: response.statusText,
             error: errorData,
           });
+
+          errorMessage = errorData.message || errorData.error || errorMessage;
+
         } catch (parseError) {
-          // If JSON parsing fails, try text
-          try {
-            const errorText = await response.text();
-            errorMessage = errorText || errorMessage;
-            console.error("❌ Login failed:", {
-              status: response.status,
-              error: errorText,
-            });
-          } catch (textError) {
-            console.error("❌ Login failed:", {
-              status: response.status,
-              error: "Unable to parse error response",
-            });
+          console.error("❌ Login failed - Could not parse JSON response:", {
+            status: response.status,
+            statusText: response.statusText,
+            parseError: parseError.message,
+          });
+
+          // Use a more user-friendly error message based on status
+          if (response.status === 401) {
+            errorMessage = "Credenciales inválidas. Por favor verifica tu email y contraseña.";
+          } else if (response.status === 500) {
+            errorMessage = "Error del servidor. Por favor intenta nuevamente.";
+          } else if (response.status >= 400 && response.status < 500) {
+            errorMessage = "Error en la solicitud. Por favor verifica los datos.";
           }
         }
 
