@@ -576,9 +576,9 @@ export function TeacherDashboard() {
                               {classItem.currentCapacity}/
                               {classItem.maxCapacity} estudiantes
                             </span>
-                            {classItem.waitingList.length > 0 && (
+                            {(classItem.waitingList?.length || 0) > 0 && (
                               <Badge variant="outline" className="text-xs">
-                                {classItem.waitingList.length} en espera
+                                {classItem.waitingList?.length || 0} en espera
                               </Badge>
                             )}
                           </div>
