@@ -35,8 +35,8 @@ export function CalendarManagement() {
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [filters, setFilters] = useState({
-    student: "",
-    professional: "",
+    student: "all",
+    professional: "all",
     type: "all",
     status: "all",
   });
