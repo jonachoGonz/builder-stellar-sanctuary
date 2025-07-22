@@ -551,7 +551,27 @@ export function UnifiedCalendar({
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                   Cerrar
                 </Button>
-                {/* TODO: Add edit and cancel appointment functionality */}
+                {(isAdmin ||
+                  (isProfessional && selectedAppointment.professional?._id === user?.id) ||
+                  (isStudent && selectedAppointment.student?._id === user?.id)
+                ) && (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() => handleCancelAppointment(selectedAppointment._id)}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancelar Cita
+                    </Button>
+                    {(isAdmin || (isProfessional && selectedAppointment.professional?._id === user?.id)) && (
+                      <Button onClick={() => handleEditAppointment(selectedAppointment)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Editar
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
