@@ -304,7 +304,7 @@ export function CalendarManagement() {
                 <SelectValue placeholder="Filtrar por estudiante" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los estudiantes</SelectItem>
+                <SelectItem value="all">Todos los estudiantes</SelectItem>
                 {students.map((student) => (
                   <SelectItem key={student._id} value={student._id}>
                     {student.firstName} {student.lastName}
