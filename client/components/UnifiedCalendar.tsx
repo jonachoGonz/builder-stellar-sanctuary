@@ -258,6 +258,38 @@ export function UnifiedCalendar({
     }
   };
 
+  const handleCancelAppointment = async (appointmentId: string) => {
+    if (!confirm("¿Estás seguro de que quieres cancelar esta cita?")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await apiCall(`/admin/appointments/${appointmentId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "cancelled" }),
+      });
+
+      if (response.ok) {
+        await loadAppointments();
+        setIsEditModalOpen(false);
+        alert("Cita cancelada exitosamente");
+      }
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
+      alert("Error al cancelar la cita");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditAppointment = (appointment: any) => {
+    // Close current modal and open create modal with appointment data
+    setIsEditModalOpen(false);
+    // TODO: Open create modal in edit mode
+    alert("Funcionalidad de edición próximamente disponible");
+  };
+
   const getSlotStyles = (slot: TimeSlot) => {
     if (slot.isBlocked) {
       return "bg-red-100 border-red-300 text-red-700 cursor-not-allowed";
