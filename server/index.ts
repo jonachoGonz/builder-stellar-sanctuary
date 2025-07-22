@@ -85,6 +85,15 @@ export function createServer() {
     res.json({ message: "Hello from HTK center Express server!" });
   });
 
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "OK",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      server: "HTK Center API"
+    });
+  });
+
   app.get("/api/demo", handleDemo);
 
   // Authentication routes
