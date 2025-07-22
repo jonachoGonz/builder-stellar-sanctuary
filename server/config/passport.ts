@@ -6,11 +6,6 @@ import dotenv from "dotenv";
 // Ensure environment variables are loaded
 dotenv.config();
 
-// Debug environment variables
-console.log("🔍 Google OAuth Environment Check:");
-console.log("   CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("   CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET ? "***" + process.env.GOOGLE_CLIENT_SECRET.slice(-4) : "undefined");
-
 // Only configure Google OAuth if credentials are provided
 if (
   process.env.GOOGLE_CLIENT_ID &&
