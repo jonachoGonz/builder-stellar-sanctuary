@@ -702,7 +702,7 @@ router.get(
 router.post(
   "/appointments",
   authenticateToken,
-  requireAdmin,
+  requireAdminOrProfessional,
   async (req: Request, res: Response) => {
     try {
       const {
@@ -721,7 +721,8 @@ router.post(
         deductFromPlan,
       } = req.body;
 
-      const adminUserId = (req as any).user.userId;
+      const currentUser = (req as any).currentUser;
+      const actualProfessionalId = currentUser.role === "admin" ? professionalId : currentUser._id;
 
       // Validate required fields
       if (
