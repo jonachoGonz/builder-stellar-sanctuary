@@ -268,7 +268,22 @@ export function Auth() {
           <CardContent>
             {error && (
               <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
-                {error}
+                <div>{error}</div>
+                {(error.includes("conexión") || error.includes("servidor") || error.includes("fetch")) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowConnectivityTest(!showConnectivityTest)}
+                    className="mt-2 text-xs underline text-blue-600 hover:text-blue-800"
+                  >
+                    {showConnectivityTest ? "Ocultar" : "Mostrar"} prueba de conectividad
+                  </button>
+                )}
+              </div>
+            )}
+
+            {showConnectivityTest && (
+              <div className="mb-4">
+                <ConnectivityTest />
               </div>
             )}
 
