@@ -180,12 +180,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       // Check if Google OAuth is available first
-      const response = await fetch(`${API_BASE_URL}/auth/google`);
-      if (response.status === 501) {
+      const statusResponse = await fetch(`${API_BASE_URL}/auth/google/status`);
+      const statusData = await statusResponse.json();
+
+      if (!statusData.configured) {
         throw new Error(
-          "Autenticación con Google no disponible en este momento",
+          "Autenticación con Google no está configurada completamente. " +
+          (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
+            ? "Se requiere configurar el Client Secret de Google."
+            : "Configuración de Google OAuth incompleta.")
         );
       }
+
       // Redirect to Google OAuth
       window.location.href = `${API_BASE_URL}/auth/google`;
     } catch (error) {
