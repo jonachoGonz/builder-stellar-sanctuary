@@ -103,6 +103,7 @@ export function TeacherDashboard() {
         upcomingClasses: (classes || []).filter((c) => c?.date && new Date(c.date) > new Date())
           .length,
         completedThisWeek: (classes || []).filter((c) => {
+          if (!c?.date || !c?.status) return false;
           const classDate = new Date(c.date);
           const now = new Date();
           const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
