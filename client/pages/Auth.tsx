@@ -107,15 +107,11 @@ export function Auth() {
 
   const handleGoogleAuth = async () => {
     try {
-      // Check if Google OAuth is available
-      const response = await fetch("/api/auth/google");
-      if (response.status === 501) {
-        setError("Autenticación con Google no disponible temporalmente");
-        return;
-      }
-      loginWithGoogle();
-    } catch (error) {
-      setError("Error al conectar con Google");
+      setError("");
+      await loginWithGoogle();
+    } catch (error: any) {
+      console.error("Google OAuth error:", error);
+      setError(error.message || "Error al conectar con Google");
     }
   };
 
