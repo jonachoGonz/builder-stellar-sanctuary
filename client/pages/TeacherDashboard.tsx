@@ -300,6 +300,29 @@ export function TeacherDashboard() {
     }
   };
 
+  const handleSaveConfig = async (config: any) => {
+    try {
+      setLoading(true);
+      const response = await apiCall(`/auth/profile`, {
+        method: 'PUT',
+        body: JSON.stringify(config),
+      });
+
+      if (response.ok) {
+        setIsConfigDialogOpen(false);
+        alert('Configuración guardada exitosamente');
+      } else {
+        console.error('Error saving configuration');
+        alert('Error al guardar la configuración');
+      }
+    } catch (error) {
+      console.error('Error saving configuration:', error);
+      alert('Error al guardar la configuración');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditClass = (classItem: any) => {
     setSelectedClass(classItem);
     setIsEditDialogOpen(true);
