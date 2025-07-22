@@ -773,7 +773,7 @@ export function AdminDashboard() {
           </>
         )}
 
-        {activeTab === "calendar" && <CalendarManagement />}
+        {activeTab === "calendar" && <UnifiedCalendar />}
       </div>
 
       {/* User Management Modal */}
