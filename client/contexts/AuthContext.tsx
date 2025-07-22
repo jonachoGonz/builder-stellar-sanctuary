@@ -140,6 +140,7 @@ const testConnectivity = async () => {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  console.log("🔄 AuthProvider initializing...");
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
