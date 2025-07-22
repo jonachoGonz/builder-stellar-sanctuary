@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AppointmentModal } from "./AppointmentModal";
+import { apiCall } from "../lib/api";
 import {
   Calendar,
   Plus,
