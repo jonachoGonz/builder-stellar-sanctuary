@@ -90,19 +90,19 @@ export function TeacherDashboard() {
     if (!user) return null;
 
     const calculateStats = () => {
-      const totalClasses = classes.filter(
-        (c) => c.status === "completed",
+      const totalClasses = (classes || []).filter(
+        (c) => c?.status === "completed",
       ).length;
       const uniqueStudents = new Set(
-        classes.flatMap((c) => c.students?.map((s: any) => s.id) || []),
+        (classes || []).flatMap((c) => c?.students?.map((s: any) => s?.id) || []),
       ).size;
 
       return {
         totalClasses,
         totalStudents: uniqueStudents,
-        upcomingClasses: classes.filter((c) => new Date(c.date) > new Date())
+        upcomingClasses: (classes || []).filter((c) => c?.date && new Date(c.date) > new Date())
           .length,
-        completedThisWeek: classes.filter((c) => {
+        completedThisWeek: (classes || []).filter((c) => {
           const classDate = new Date(c.date);
           const now = new Date();
           const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
