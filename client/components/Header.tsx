@@ -25,7 +25,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+
+  // Add error boundary for auth context
+  let user = null;
+  let isAuthenticated = false;
+  let logout = () => {};
+
+  try {
+    const auth = useAuth();
+    user = auth.user;
+    isAuthenticated = auth.isAuthenticated;
+    logout = auth.logout;
+  } catch (error) {
+    console.error("Header: AuthContext not available:", error);
+    // Fallback to unauthenticated state
+  }
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
