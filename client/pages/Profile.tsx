@@ -446,7 +446,7 @@ export function Profile() {
                     {isProfessional ? (
                       <>
                         <div className="text-3xl font-bold text-primary mb-2">
-                          {professionalStats.totalStudents}
+                          {realStats ? realStats.totalStudents : professionalStats.totalStudents}
                         </div>
                         <div className="text-gray-600">estudiantes activos</div>
                       </>
