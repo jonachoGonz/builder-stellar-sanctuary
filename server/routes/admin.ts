@@ -35,6 +35,47 @@ const requireAdmin = (req: Request, res: Response, next: any) => {
     });
 };
 
+// Middleware to allow admins and professionals to access appointment data
+const requireAdminOrProfessional = (req: Request, res: Response, next: any) => {
+  const user = (req as any).user;
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Token de acceso requerido",
+    });
+  }
+
+  // Check if user has appropriate privileges
+  User.findById(user.userId)
+    .then((foundUser) => {
+      if (!foundUser) {
+        return res.status(403).json({
+          success: false,
+          message: "Usuario no encontrado",
+        });
+      }
+
+      const allowedRoles = ["admin", "teacher", "nutritionist", "psychologist"];
+      if (!allowedRoles.includes(foundUser.role)) {
+        return res.status(403).json({
+          success: false,
+          message: "Acceso denegado. Se requieren privilegios de administrador o profesional",
+        });
+      }
+
+      // Store user data for use in route handlers
+      (req as any).currentUser = foundUser;
+      next();
+    })
+    .catch((error) => {
+      console.error("Error checking user privileges:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    });
+};
+
 // Get all users with pagination and filtering
 router.get(
   "/users",
