@@ -47,7 +47,7 @@ if (
             firstName: profile.name?.givenName || "",
             lastName: profile.name?.familyName || "",
             avatar: profile.photos?.[0].value,
-            phone: "", // Will be required to complete profile
+            phone: "Por completar", // Will be required to complete profile later
             birthDate: new Date("1990-01-01"), // Default, will be required to complete
             role: "student",
             plan: "trial",
