@@ -748,28 +748,48 @@ export function Profile() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="plan">Plan Actual</Label>
+                    <Label htmlFor="role">
+                      {isProfessional ? "Rol / Especialidad" : "Plan Actual"}
+                    </Label>
                     <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                      <div className="font-semibold text-primary">
-                        {user.plan || "Plan Trial"}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {user.plan === "pro"
-                          ? "3"
-                          : user.plan === "basic"
-                            ? "2"
-                            : user.plan === "elite"
-                              ? "4"
-                              : user.plan === "champion"
-                                ? "5"
-                                : "1"}{" "}
-                        clases por semana
-                      </div>
-                      {isAdmin && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          Los administradores pueden cambiar planes desde el
-                          dashboard admin
-                        </div>
+                      {isProfessional ? (
+                        <>
+                          <div className="font-semibold text-primary">
+                            {getRoleDisplayName(user.role)}
+                          </div>
+                          {user.specialty && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              Especialidad: {user.specialty}
+                            </div>
+                          )}
+                          <div className="text-xs text-gray-500 mt-1">
+                            Profesional certificado
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-semibold text-primary">
+                            {user.plan || "Plan Trial"}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {user.plan === "pro"
+                              ? "3"
+                              : user.plan === "basic"
+                                ? "2"
+                                : user.plan === "elite"
+                                  ? "4"
+                                  : user.plan === "champion"
+                                    ? "5"
+                                    : "1"}{" "}
+                            clases por semana
+                          </div>
+                          {isAdmin && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Los administradores pueden cambiar planes desde el
+                              dashboard admin
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
