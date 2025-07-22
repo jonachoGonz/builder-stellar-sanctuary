@@ -699,98 +699,23 @@ export function TeacherDashboard() {
         </div>
       </div>
 
-      {/* Create Class Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Crear Nueva Clase</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">Título de la Clase</Label>
-                <Input id="title" placeholder="Ej: Entrenamiento Funcional" />
-              </div>
-              <div>
-                <Label htmlFor="type">Tipo de Clase</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="functional">
-                      Entrenamiento Funcional
-                    </SelectItem>
-                    <SelectItem value="crossfit">CrossFit</SelectItem>
-                    <SelectItem value="strength">Musculación</SelectItem>
-                    <SelectItem value="cardio">Cardio</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+      {/* Create Appointment Modal */}
+      <CreateAppointmentModal
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        students={students}
+        onCreateAppointment={handleCreateAppointment}
+        loading={loading}
+      />
 
-            <div>
-              <Label htmlFor="description">Descripción</Label>
-              <Textarea
-                id="description"
-                placeholder="Descripción de la clase..."
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="date">Fecha</Label>
-                <Input id="date" type="date" />
-              </div>
-              <div>
-                <Label htmlFor="startTime">Hora Inicio</Label>
-                <Input id="startTime" type="time" />
-              </div>
-              <div>
-                <Label htmlFor="duration">Duración (min)</Label>
-                <Input id="duration" type="number" placeholder="60" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="capacity">Capacidad Máxima</Label>
-                <Input
-                  id="capacity"
-                  type="number"
-                  placeholder="15"
-                  max={teacherInfo.maxStudentsPerClass}
-                />
-              </div>
-              <div>
-                <Label htmlFor="location">Ubicación</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sala" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="main">Sala Principal</SelectItem>
-                    <SelectItem value="crossfit">Área CrossFit</SelectItem>
-                    <SelectItem value="yoga">Sala Zen</SelectItem>
-                    <SelectItem value="weights">Área de Pesas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button className="btn-primary">Crear Clase</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Professional Configuration Modal */}
+      <ProfessionalConfigModal
+        isOpen={isConfigDialogOpen}
+        onClose={() => setIsConfigDialogOpen(false)}
+        user={user}
+        onSaveConfig={handleSaveConfig}
+        loading={loading}
+      />
 
       {/* Edit Class Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
