@@ -69,9 +69,7 @@ export function CalendarManagement() {
         ...(filters.status !== "all" && { status: filters.status }),
       });
 
-      const response = await fetch(`/api/admin/appointments?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiCall(`/admin/appointments?${params}`);
 
       if (response.ok) {
         const data = await response.json();
