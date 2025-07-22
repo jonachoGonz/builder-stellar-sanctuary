@@ -431,25 +431,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    // In development, this might happen due to hot reloading
-    if (import.meta.env.DEV) {
-      console.warn("⚠️ AuthContext not found - using fallback values (likely hot reload issue)");
-      return {
-        user: null,
-        isLoading: false,
-        isAuthenticated: false,
-        isNewUser: false,
-        login: async () => { throw new Error("AuthProvider not available"); },
-        register: async () => { throw new Error("AuthProvider not available"); },
-        loginWithGoogle: () => { throw new Error("AuthProvider not available"); },
-        logout: () => { console.warn("Logout called but AuthProvider not available"); },
-        updateUser: async () => { throw new Error("AuthProvider not available"); },
-        refreshUser: async () => { throw new Error("AuthProvider not available"); },
-      };
-    }
-    throw new Error("useAuth must be used within an AuthProvider");
+
+  // Check if we're using the default context (not properly initialized)
+  if (context === defaultAuthContext) {
+    console.warn("⚠️ Using default AuthContext - AuthProvider may not be properly initialized");
   }
+
   return context;
 }
 
