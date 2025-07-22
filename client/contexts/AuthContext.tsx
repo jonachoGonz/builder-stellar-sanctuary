@@ -182,7 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           },
         });
 
-        console.log("���� Auth check response:", {
+        console.log("📡 Auth check response:", {
           status: response.status,
           ok: response.ok,
         });
@@ -274,11 +274,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: RegisterData): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await apiCall("/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(userData),
       });
 
