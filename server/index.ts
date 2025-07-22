@@ -1,7 +1,10 @@
+// Load environment variables first
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import dotenv from "dotenv";
 import connectDB from "./config/database";
 import passport from "./config/passport";
 import { initializeSeedData } from "./utils/seedData";
@@ -11,9 +14,6 @@ import { handleDemo } from "./routes/demo";
 import authRoutes from "./routes/auth";
 import classRoutes from "./routes/classes";
 import testRoutes from "./routes/test";
-
-// Load environment variables
-dotenv.config();
 
 export function createServer() {
   const app = express();
