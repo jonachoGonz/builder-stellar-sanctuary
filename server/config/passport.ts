@@ -1,6 +1,10 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User, { IUser } from "../models/User";
+import dotenv from "dotenv";
+
+// Ensure environment variables are loaded
+dotenv.config();
 
 // Debug environment variables
 console.log("🔍 Google OAuth Environment Check:");
