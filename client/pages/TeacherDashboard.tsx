@@ -164,90 +164,99 @@ export function TeacherDashboard() {
 
   const teacherInfo = getProfessionalInfo();
 
-  // Mock data - replace with real API calls
+  // Load real data from API
   useEffect(() => {
-    const mockClasses = [
-      {
-        id: "1",
-        title: "Entrenamiento Funcional Matutino",
-        date: "2024-01-16",
-        startTime: "08:00",
-        endTime: "09:00",
-        duration: 60,
-        maxCapacity: 15,
-        currentCapacity: 12,
-        location: "Sala Principal",
-        status: "scheduled",
-        students: [
-          { id: "1", name: "Juan Pérez", email: "juan@email.com" },
-          { id: "2", name: "María Silva", email: "maria@email.com" },
-          { id: "3", name: "Carlos López", email: "carlos@email.com" },
-        ],
-        waitingList: [{ id: "4", name: "Ana García", email: "ana@email.com" }],
-      },
-      {
-        id: "2",
-        title: "CrossFit Avanzado",
-        date: "2024-01-16",
-        startTime: "18:00",
-        endTime: "19:00",
-        duration: 60,
-        maxCapacity: 12,
-        currentCapacity: 10,
-        location: "Área CrossFit",
-        status: "scheduled",
-        students: [
-          { id: "5", name: "Pedro Ruiz", email: "pedro@email.com" },
-          { id: "6", name: "Laura Mendez", email: "laura@email.com" },
-        ],
-        waitingList: [],
-      },
-      {
-        id: "3",
-        title: "Entrenamiento Funcional",
-        date: "2024-01-15",
-        startTime: "10:00",
-        endTime: "11:00",
-        duration: 60,
-        maxCapacity: 15,
-        currentCapacity: 14,
-        location: "Sala Principal",
-        status: "completed",
-        students: [],
-        waitingList: [],
-      },
-    ];
+    if (user) {
+      loadAppointments();
+      loadStudents();
+    }
+  }, [user]);
 
-    setClasses(mockClasses);
+  const loadAppointments = async () => {
+    try {
+      setLoading(true);
+      const response = await apiCall(`/admin/appointments?professionalId=${user?.id}&limit=100`);
 
-    // Generate weekly schedule
+      if (response.ok) {
+        const data = await response.json();
+        setAppointments(data.data.appointments || []);
+
+        // Transform appointments to classes format
+        const transformedClasses = data.data.appointments?.map((apt: any) => ({
+          id: apt._id,
+          title: apt.title || apt.type || 'Sesión',
+          date: apt.date.split('T')[0],
+          startTime: apt.startTime,
+          endTime: apt.endTime,
+          duration: apt.duration || 60,
+          location: apt.location || 'Por definir',
+          status: apt.status,
+          students: apt.student ? [apt.student] : [],
+          notes: apt.notes,
+        })) || [];
+
+        setClasses(transformedClasses);
+      }
+    } catch (error) {
+      console.error('Error loading appointments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStudents = async () => {
+    try {
+      const response = await apiCall('/admin/users?role=student&limit=100');
+
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(data.data.users || []);
+      }
+    } catch (error) {
+      console.error('Error loading students:', error);
+    }
+  };
+
+  // Generate weekly schedule grid
+  useEffect(() => {
     const weekSchedule = [];
     const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
     const times = ["08:00", "10:00", "16:00", "18:00", "20:00"];
 
     days.forEach((day, dayIndex) => {
       times.forEach((time) => {
+        const hasClass = classes.some(c => {
+          const classDate = new Date(c.date);
+          const currentDate = new Date();
+          const dayDiff = (classDate.getDay() + 6) % 7; // Monday = 0
+          return dayDiff === dayIndex && c.startTime === time;
+        });
+
         weekSchedule.push({
           day,
           dayIndex,
           time,
-          isBlocked: Math.random() > 0.7, // 30% chance of being blocked
-          hasClass: Math.random() > 0.6, // 40% chance of having a class
-          classTitle:
-            Math.random() > 0.5 ? "Entrenamiento Funcional" : "CrossFit",
+          isBlocked: false, // Will be loaded from user preferences
+          hasClass,
+          classTitle: hasClass ? classes.find(c => {
+            const classDate = new Date(c.date);
+            const dayDiff = (classDate.getDay() + 6) % 7;
+            return dayDiff === dayIndex && c.startTime === time;
+          })?.title : '',
         });
       });
     });
 
     setSchedule(weekSchedule);
-  }, []);
+  }, [classes]);
 
+  const today = new Date().toISOString().split('T')[0];
   const todayClasses = classes.filter(
-    (c) => c.date === "2024-01-16" && c.status === "scheduled",
+    (c) => c.date === today && c.status === "scheduled",
   );
   const upcomingClasses = classes.filter(
     (c) =>
-      new Date(c.date) > new Date("2024-01-16") && c.status === "scheduled",
+      new Date(c.date) > new Date(today) && c.status === "scheduled",
   );
 
   const stats = {
