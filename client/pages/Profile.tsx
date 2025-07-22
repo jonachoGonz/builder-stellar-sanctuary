@@ -94,6 +94,50 @@ export function Profile() {
     completionRate: 94,
   };
 
+  // Professional stats - for teachers, nutritionists, psychologists
+  const professionalStats = {
+    totalClassesTaught: 127,
+    totalStudents: 35,
+    averageRating: 4.7,
+    classesThisMonth: 23,
+    joinDate: user?.memberSince
+      ? new Date(user.memberSince).toLocaleDateString("es-ES", {
+          month: "long",
+          year: "numeric",
+        })
+      : "Enero 2024",
+  };
+
+  // Get role display name
+  const getRoleDisplayName = (role: string) => {
+    const roleMap = {
+      teacher: "Entrenador Personal",
+      nutritionist: "Nutricionista",
+      psychologist: "Psicólogo",
+      admin: "Administrador",
+      student: "Estudiante",
+    };
+    return roleMap[role as keyof typeof roleMap] || role;
+  };
+
+  // Render star rating
+  const renderStarRating = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />);
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400/50 text-yellow-400" />);
+      } else {
+        stars.push(<Star key={i} className="h-4 w-4 text-gray-300" />);
+      }
+    }
+    return stars;
+  };
+
   // Show loading state
   if (isLoading || !user) {
     return (
