@@ -234,6 +234,10 @@ export function AdminDashboard() {
         return <Shield className="h-4 w-4" />;
       case "teacher":
         return <GraduationCap className="h-4 w-4" />;
+      case "nutritionist":
+        return <Users className="h-4 w-4" />;
+      case "psychologist":
+        return <User className="h-4 w-4" />;
       default:
         return <User className="h-4 w-4" />;
     }
