@@ -23,7 +23,7 @@ export function ConnectivityTest() {
 
     // Test 1: Health check
     try {
-      const response = await fetch("/api/health");
+      const response = await apiCall("/health");
       const data = await response.json();
       testResults.tests.health = {
         status: response.ok ? "success" : "error",
@@ -40,7 +40,7 @@ export function ConnectivityTest() {
 
     // Test 2: Auth status
     try {
-      const response = await fetch("/api/auth/google/status");
+      const response = await apiCall("/auth/google/status");
       const data = await response.json();
       testResults.tests.authStatus = {
         status: response.ok ? "success" : "error",
@@ -57,11 +57,8 @@ export function ConnectivityTest() {
 
     // Test 3: Login endpoint (without credentials)
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await apiCall("/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ email: "", password: "" }),
       });
       const data = await response.text();
