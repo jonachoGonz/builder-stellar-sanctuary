@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   Select,
   SelectContent,
@@ -51,7 +46,7 @@ export function UserManagementModal({
     isActive: true,
     password: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<any>({});
 
@@ -64,7 +59,9 @@ export function UserManagementModal({
           lastName: user.lastName || "",
           email: user.email || "",
           phone: user.phone || "",
-          birthDate: user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] : "",
+          birthDate: user.birthDate
+            ? new Date(user.birthDate).toISOString().split("T")[0]
+            : "",
           role: user.role || "student",
           plan: user.plan || "trial",
           specialty: user.specialty || "",
@@ -101,7 +98,7 @@ export function UserManagementModal({
   }, [isOpen, mode, user]);
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error for this field
     if (errors[field]) {
       setErrors((prev: any) => ({ ...prev, [field]: "" }));
@@ -109,21 +106,21 @@ export function UserManagementModal({
   };
 
   const handleWorkingHoursChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      workingHours: { ...prev.workingHours, [field]: value }
+      workingHours: { ...prev.workingHours, [field]: value },
     }));
   };
 
   const handleDayToggle = (day: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       workingHours: {
         ...prev.workingHours,
         days: prev.workingHours.days.includes(day)
-          ? prev.workingHours.days.filter(d => d !== day)
-          : [...prev.workingHours.days, day]
-      }
+          ? prev.workingHours.days.filter((d) => d !== day)
+          : [...prev.workingHours.days, day],
+      },
     }));
   };
 
@@ -158,7 +155,7 @@ export function UserManagementModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -166,7 +163,7 @@ export function UserManagementModal({
     setLoading(true);
     try {
       const submitData = { ...formData };
-      
+
       // Don't send empty password on edit
       if (mode === "edit" && !submitData.password) {
         delete submitData.password;
@@ -181,12 +178,14 @@ export function UserManagementModal({
     }
   };
 
-  const isProfessional = ["teacher", "nutritionist", "psychologist"].includes(formData.role);
+  const isProfessional = ["teacher", "nutritionist", "psychologist"].includes(
+    formData.role,
+  );
   const isStudent = formData.role === "student";
 
   const dayLabels = {
     monday: "Lunes",
-    tuesday: "Martes", 
+    tuesday: "Martes",
     wednesday: "Miércoles",
     thursday: "Jueves",
     friday: "Viernes",
@@ -207,18 +206,22 @@ export function UserManagementModal({
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Información Básica</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="firstName">Nombre *</Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
                   className={errors.firstName ? "border-destructive" : ""}
                 />
                 {errors.firstName && (
-                  <p className="text-sm text-destructive mt-1">{errors.firstName}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.firstName}
+                  </p>
                 )}
               </div>
 
@@ -227,11 +230,15 @@ export function UserManagementModal({
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
                   className={errors.lastName ? "border-destructive" : ""}
                 />
                 {errors.lastName && (
-                  <p className="text-sm text-destructive mt-1">{errors.lastName}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.lastName}
+                  </p>
                 )}
               </div>
             </div>
@@ -267,7 +274,9 @@ export function UserManagementModal({
                   id="birthDate"
                   type="date"
                   value={formData.birthDate}
-                  onChange={(e) => handleInputChange("birthDate", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("birthDate", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -279,11 +288,15 @@ export function UserManagementModal({
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className={errors.password ? "border-destructive" : ""}
                 />
                 {errors.password && (
-                  <p className="text-sm text-destructive mt-1">{errors.password}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.password}
+                  </p>
                 )}
               </div>
             )}
@@ -292,7 +305,7 @@ export function UserManagementModal({
           {/* Role and Plan/Specialty */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Rol y Configuración</h3>
-            
+
             <div>
               <Label htmlFor="role">Rol *</Label>
               <Select
@@ -327,7 +340,9 @@ export function UserManagementModal({
                     <SelectItem value="basic">Básico - $172.800</SelectItem>
                     <SelectItem value="pro">Pro - $208.500</SelectItem>
                     <SelectItem value="elite">Elite - $268.000</SelectItem>
-                    <SelectItem value="champion">Champion - $350.000</SelectItem>
+                    <SelectItem value="champion">
+                      Champion - $350.000
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -339,12 +354,16 @@ export function UserManagementModal({
                 <Input
                   id="specialty"
                   value={formData.specialty}
-                  onChange={(e) => handleInputChange("specialty", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("specialty", e.target.value)
+                  }
                   placeholder="Ej: Entrenamiento Funcional, Nutrición Deportiva, etc."
                   className={errors.specialty ? "border-destructive" : ""}
                 />
                 {errors.specialty && (
-                  <p className="text-sm text-destructive mt-1">{errors.specialty}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.specialty}
+                  </p>
                 )}
               </div>
             )}
@@ -353,7 +372,9 @@ export function UserManagementModal({
               <Switch
                 id="isActive"
                 checked={formData.isActive}
-                onCheckedChange={(checked) => handleInputChange("isActive", checked)}
+                onCheckedChange={(checked) =>
+                  handleInputChange("isActive", checked)
+                }
               />
               <Label htmlFor="isActive">Usuario Activo</Label>
             </div>
@@ -363,7 +384,7 @@ export function UserManagementModal({
           {isProfessional && (
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Horarios de Trabajo</h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="startTime">Hora de Inicio</Label>
@@ -371,7 +392,9 @@ export function UserManagementModal({
                     id="startTime"
                     type="time"
                     value={formData.workingHours.start}
-                    onChange={(e) => handleWorkingHoursChange("start", e.target.value)}
+                    onChange={(e) =>
+                      handleWorkingHoursChange("start", e.target.value)
+                    }
                   />
                 </div>
 
@@ -381,7 +404,9 @@ export function UserManagementModal({
                     id="endTime"
                     type="time"
                     value={formData.workingHours.end}
-                    onChange={(e) => handleWorkingHoursChange("end", e.target.value)}
+                    onChange={(e) =>
+                      handleWorkingHoursChange("end", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -396,7 +421,9 @@ export function UserManagementModal({
                         checked={formData.workingHours.days.includes(day)}
                         onCheckedChange={() => handleDayToggle(day)}
                       />
-                      <Label htmlFor={day} className="text-sm">{label}</Label>
+                      <Label htmlFor={day} className="text-sm">
+                        {label}
+                      </Label>
                     </div>
                   ))}
                 </div>
@@ -421,12 +448,12 @@ export function UserManagementModal({
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="btn-primary"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : mode === "create" ? "Crear Usuario" : "Guardar Cambios"}
+            <Button type="submit" className="btn-primary" disabled={loading}>
+              {loading
+                ? "Guardando..."
+                : mode === "create"
+                  ? "Crear Usuario"
+                  : "Guardar Cambios"}
             </Button>
           </div>
         </form>

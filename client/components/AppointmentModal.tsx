@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   Select,
   SelectContent,
@@ -47,7 +42,7 @@ export function AppointmentModal({
     room: "",
     deductFromPlan: true,
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<any>({});
   const [students, setStudents] = useState<any[]>([]);
@@ -70,13 +65,18 @@ export function AppointmentModal({
           type: appointment.type || "personal-training",
           title: appointment.title || "",
           description: appointment.description || "",
-          date: appointment.date ? new Date(appointment.date).toISOString().split('T')[0] : "",
+          date: appointment.date
+            ? new Date(appointment.date).toISOString().split("T")[0]
+            : "",
           startTime: appointment.startTime || "",
           endTime: appointment.endTime || "",
           duration: appointment.duration || 60,
           location: appointment.location || "",
           room: appointment.room || "",
-          deductFromPlan: appointment.deductFromPlan !== undefined ? appointment.deductFromPlan : true,
+          deductFromPlan:
+            appointment.deductFromPlan !== undefined
+              ? appointment.deductFromPlan
+              : true,
         });
       } else {
         // Reset to defaults for create mode
@@ -105,10 +105,13 @@ export function AppointmentModal({
       if (!token) return;
 
       // Load students
-      const studentsResponse = await fetch("/api/admin/users?role=student&limit=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const studentsResponse = await fetch(
+        "/api/admin/users?role=student&limit=100",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
         setStudents(studentsData.data.users);
@@ -118,11 +121,12 @@ export function AppointmentModal({
       const professionalsResponse = await fetch("/api/admin/users?limit=100", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (professionalsResponse.ok) {
         const professionalsData = await professionalsResponse.json();
-        const professionalUsers = professionalsData.data.users.filter((user: any) => 
-          ["teacher", "nutritionist", "psychologist"].includes(user.role)
+        const professionalUsers = professionalsData.data.users.filter(
+          (user: any) =>
+            ["teacher", "nutritionist", "psychologist"].includes(user.role),
         );
         setProfessionals(professionalUsers);
       }
@@ -132,22 +136,22 @@ export function AppointmentModal({
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Auto-calculate end time when start time or duration changes
     if (field === "startTime" || field === "duration") {
       const startTime = field === "startTime" ? value : formData.startTime;
       const duration = field === "duration" ? value : formData.duration;
-      
+
       if (startTime && duration) {
-        const [hours, minutes] = startTime.split(':').map(Number);
+        const [hours, minutes] = startTime.split(":").map(Number);
         const startMinutes = hours * 60 + minutes;
         const endMinutes = startMinutes + parseInt(duration);
         const endHours = Math.floor(endMinutes / 60);
         const endMins = endMinutes % 60;
-        const endTime = `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
-        
-        setFormData(prev => ({ ...prev, endTime }));
+        const endTime = `${endHours.toString().padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`;
+
+        setFormData((prev) => ({ ...prev, endTime }));
       }
     }
 
@@ -161,10 +165,12 @@ export function AppointmentModal({
     const newErrors: any = {};
 
     if (!formData.studentId) newErrors.studentId = "Estudiante es requerido";
-    if (!formData.professionalId) newErrors.professionalId = "Profesional es requerido";
+    if (!formData.professionalId)
+      newErrors.professionalId = "Profesional es requerido";
     if (!formData.title.trim()) newErrors.title = "Título es requerido";
     if (!formData.date) newErrors.date = "Fecha es requerida";
-    if (!formData.startTime) newErrors.startTime = "Hora de inicio es requerida";
+    if (!formData.startTime)
+      newErrors.startTime = "Hora de inicio es requerida";
     if (!formData.endTime) newErrors.endTime = "Hora de fin es requerida";
 
     setErrors(newErrors);
@@ -173,7 +179,7 @@ export function AppointmentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -212,15 +218,19 @@ export function AppointmentModal({
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Información de la Cita</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="student">Estudiante *</Label>
                 <Select
                   value={formData.studentId}
-                  onValueChange={(value) => handleInputChange("studentId", value)}
+                  onValueChange={(value) =>
+                    handleInputChange("studentId", value)
+                  }
                 >
-                  <SelectTrigger className={errors.studentId ? "border-destructive" : ""}>
+                  <SelectTrigger
+                    className={errors.studentId ? "border-destructive" : ""}
+                  >
                     <SelectValue placeholder="Seleccionar estudiante" />
                   </SelectTrigger>
                   <SelectContent>
@@ -232,7 +242,9 @@ export function AppointmentModal({
                   </SelectContent>
                 </Select>
                 {errors.studentId && (
-                  <p className="text-sm text-destructive mt-1">{errors.studentId}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.studentId}
+                  </p>
                 )}
               </div>
 
@@ -240,21 +252,33 @@ export function AppointmentModal({
                 <Label htmlFor="professional">Profesional *</Label>
                 <Select
                   value={formData.professionalId}
-                  onValueChange={(value) => handleInputChange("professionalId", value)}
+                  onValueChange={(value) =>
+                    handleInputChange("professionalId", value)
+                  }
                 >
-                  <SelectTrigger className={errors.professionalId ? "border-destructive" : ""}>
+                  <SelectTrigger
+                    className={
+                      errors.professionalId ? "border-destructive" : ""
+                    }
+                  >
                     <SelectValue placeholder="Seleccionar profesional" />
                   </SelectTrigger>
                   <SelectContent>
                     {professionals.map((professional) => (
-                      <SelectItem key={professional._id} value={professional._id}>
-                        {professional.firstName} {professional.lastName} ({professional.role})
+                      <SelectItem
+                        key={professional._id}
+                        value={professional._id}
+                      >
+                        {professional.firstName} {professional.lastName} (
+                        {professional.role})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 {errors.professionalId && (
-                  <p className="text-sm text-destructive mt-1">{errors.professionalId}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.professionalId}
+                  </p>
                 )}
               </div>
             </div>
@@ -297,7 +321,9 @@ export function AppointmentModal({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Detalles adicionales sobre la cita..."
                 rows={3}
               />
@@ -307,7 +333,7 @@ export function AppointmentModal({
           {/* Scheduling */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Programación</h3>
-            
+
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="date">Fecha *</Label>
@@ -329,11 +355,15 @@ export function AppointmentModal({
                   id="startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => handleInputChange("startTime", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("startTime", e.target.value)
+                  }
                   className={errors.startTime ? "border-destructive" : ""}
                 />
                 {errors.startTime && (
-                  <p className="text-sm text-destructive mt-1">{errors.startTime}</p>
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.startTime}
+                  </p>
                 )}
               </div>
 
@@ -341,7 +371,9 @@ export function AppointmentModal({
                 <Label htmlFor="duration">Duración (min)</Label>
                 <Select
                   value={formData.duration.toString()}
-                  onValueChange={(value) => handleInputChange("duration", parseInt(value))}
+                  onValueChange={(value) =>
+                    handleInputChange("duration", parseInt(value))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -363,7 +395,9 @@ export function AppointmentModal({
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
                   placeholder="Ej: Sala principal, Consultorio 1"
                 />
               </div>
@@ -383,9 +417,13 @@ export function AppointmentModal({
               <Switch
                 id="deductFromPlan"
                 checked={formData.deductFromPlan}
-                onCheckedChange={(checked) => handleInputChange("deductFromPlan", checked)}
+                onCheckedChange={(checked) =>
+                  handleInputChange("deductFromPlan", checked)
+                }
               />
-              <Label htmlFor="deductFromPlan">Descontar del plan del estudiante</Label>
+              <Label htmlFor="deductFromPlan">
+                Descontar del plan del estudiante
+              </Label>
             </div>
           </div>
 
@@ -406,12 +444,12 @@ export function AppointmentModal({
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="btn-primary"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : mode === "create" ? "Programar Cita" : "Guardar Cambios"}
+            <Button type="submit" className="btn-primary" disabled={loading}>
+              {loading
+                ? "Guardando..."
+                : mode === "create"
+                  ? "Programar Cita"
+                  : "Guardar Cambios"}
             </Button>
           </div>
         </form>

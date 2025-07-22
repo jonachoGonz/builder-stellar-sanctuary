@@ -16,12 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
   Select,
   SelectContent,
@@ -65,8 +60,8 @@ export function CalendarManagement() {
       endOfWeek.setDate(startOfWeek.getDate() + 6);
 
       const params = new URLSearchParams({
-        dateFrom: startOfWeek.toISOString().split('T')[0],
-        dateTo: endOfWeek.toISOString().split('T')[0],
+        dateFrom: startOfWeek.toISOString().split("T")[0],
+        dateTo: endOfWeek.toISOString().split("T")[0],
         ...(filters.student && { studentId: filters.student }),
         ...(filters.professional && { professionalId: filters.professional }),
         ...(filters.type !== "all" && { type: filters.type }),
@@ -94,10 +89,13 @@ export function CalendarManagement() {
       if (!token) return;
 
       // Load students
-      const studentsResponse = await fetch("/api/admin/users?role=student&limit=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const studentsResponse = await fetch(
+        "/api/admin/users?role=student&limit=100",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
       if (studentsResponse.ok) {
         const studentsData = await studentsResponse.json();
         setStudents(studentsData.data.users);
@@ -107,11 +105,12 @@ export function CalendarManagement() {
       const professionalsResponse = await fetch("/api/admin/users?limit=100", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (professionalsResponse.ok) {
         const professionalsData = await professionalsResponse.json();
-        const professionalUsers = professionalsData.data.users.filter((user: any) => 
-          ["teacher", "nutritionist", "psychologist"].includes(user.role)
+        const professionalUsers = professionalsData.data.users.filter(
+          (user: any) =>
+            ["teacher", "nutritionist", "psychologist"].includes(user.role),
         );
         setProfessionals(professionalUsers);
       }
@@ -156,9 +155,9 @@ export function CalendarManagement() {
     try {
       const token = localStorage.getItem("authToken");
       const isEdit = modalMode === "edit" && selectedAppointment;
-      
-      const url = isEdit 
-        ? `/api/admin/appointments/${selectedAppointment._id}` 
+
+      const url = isEdit
+        ? `/api/admin/appointments/${selectedAppointment._id}`
         : "/api/admin/appointments";
       const method = isEdit ? "PUT" : "POST";
 
@@ -191,7 +190,7 @@ export function CalendarManagement() {
   const getWeekDays = () => {
     const startOfWeek = new Date(currentDate);
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-    
+
     const days = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
@@ -202,7 +201,7 @@ export function CalendarManagement() {
   };
 
   const getAppointmentsForDay = (date: Date) => {
-    return appointments.filter(appointment => {
+    return appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.date);
       return appointmentDate.toDateString() === date.toDateString();
     });
@@ -210,20 +209,29 @@ export function CalendarManagement() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "scheduled": return "bg-blue-100 text-blue-800";
-      case "completed": return "bg-green-100 text-green-800";
-      case "cancelled": return "bg-red-100 text-red-800";
-      case "no-show": return "bg-gray-100 text-gray-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "scheduled":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      case "no-show":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "personal-training": return "bg-purple-100 text-purple-800";
-      case "nutrition-followup": return "bg-orange-100 text-orange-800";
-      case "psychology-session": return "bg-pink-100 text-pink-800";
-      default: return "bg-blue-100 text-blue-800";
+      case "personal-training":
+        return "bg-purple-100 text-purple-800";
+      case "nutrition-followup":
+        return "bg-orange-100 text-orange-800";
+      case "psychology-session":
+        return "bg-pink-100 text-pink-800";
+      default:
+        return "bg-blue-100 text-blue-800";
     }
   };
 
@@ -246,24 +254,34 @@ export function CalendarManagement() {
               Nueva Cita
             </Button>
           </div>
-          
+
           {/* Date Navigation */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" onClick={() => navigateWeek("prev")}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateWeek("prev")}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="font-medium">
-                {startOfWeek.toLocaleDateString("es-ES", { 
-                  day: "numeric", 
-                  month: "long" 
-                })} - {endOfWeek.toLocaleDateString("es-ES", { 
-                  day: "numeric", 
-                  month: "long", 
-                  year: "numeric" 
+                {startOfWeek.toLocaleDateString("es-ES", {
+                  day: "numeric",
+                  month: "long",
+                })}{" "}
+                -{" "}
+                {endOfWeek.toLocaleDateString("es-ES", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
                 })}
               </span>
-              <Button variant="outline" size="sm" onClick={() => navigateWeek("next")}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateWeek("next")}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -278,7 +296,9 @@ export function CalendarManagement() {
           <div className="grid grid-cols-4 gap-4">
             <Select
               value={filters.student}
-              onValueChange={(value) => setFilters(prev => ({ ...prev, student: value }))}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, student: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar por estudiante" />
@@ -295,7 +315,9 @@ export function CalendarManagement() {
 
             <Select
               value={filters.professional}
-              onValueChange={(value) => setFilters(prev => ({ ...prev, professional: value }))}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, professional: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar por profesional" />
@@ -304,7 +326,8 @@ export function CalendarManagement() {
                 <SelectItem value="">Todos los profesionales</SelectItem>
                 {professionals.map((professional) => (
                   <SelectItem key={professional._id} value={professional._id}>
-                    {professional.firstName} {professional.lastName} ({professional.role})
+                    {professional.firstName} {professional.lastName} (
+                    {professional.role})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -312,23 +335,33 @@ export function CalendarManagement() {
 
             <Select
               value={filters.type}
-              onValueChange={(value) => setFilters(prev => ({ ...prev, type: value }))}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, type: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Tipo de cita" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="personal-training">Entrenamiento Personal</SelectItem>
-                <SelectItem value="nutrition-followup">Seguimiento Nutricional</SelectItem>
-                <SelectItem value="psychology-session">Sesión de Psicología</SelectItem>
+                <SelectItem value="personal-training">
+                  Entrenamiento Personal
+                </SelectItem>
+                <SelectItem value="nutrition-followup">
+                  Seguimiento Nutricional
+                </SelectItem>
+                <SelectItem value="psychology-session">
+                  Sesión de Psicología
+                </SelectItem>
                 <SelectItem value="trial-class">Clase de Prueba</SelectItem>
               </SelectContent>
             </Select>
 
             <Select
               value={filters.status}
-              onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, status: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Estado" />
@@ -361,9 +394,7 @@ export function CalendarManagement() {
                   <div className="font-medium text-sm">
                     {day.toLocaleDateString("es-ES", { weekday: "long" })}
                   </div>
-                  <div className="text-lg font-bold">
-                    {day.getDate()}
-                  </div>
+                  <div className="text-lg font-bold">{day.getDate()}</div>
                 </div>
               ))}
 
@@ -408,11 +439,11 @@ export function CalendarManagement() {
                               </Button>
                             </div>
                           </div>
-                          
+
                           <div className="text-sm font-medium truncate">
                             {appointment.title}
                           </div>
-                          
+
                           <div className="text-xs text-gray-600 space-y-1">
                             <div className="flex items-center">
                               <Clock className="h-3 w-3 mr-1" />
@@ -420,11 +451,13 @@ export function CalendarManagement() {
                             </div>
                             <div className="flex items-center">
                               <User className="h-3 w-3 mr-1" />
-                              {appointment.student?.firstName} {appointment.student?.lastName}
+                              {appointment.student?.firstName}{" "}
+                              {appointment.student?.lastName}
                             </div>
                             <div className="flex items-center">
                               <User className="h-3 w-3 mr-1" />
-                              {appointment.professional?.firstName} {appointment.professional?.lastName}
+                              {appointment.professional?.firstName}{" "}
+                              {appointment.professional?.lastName}
                             </div>
                             {appointment.location && (
                               <div className="flex items-center">
@@ -433,8 +466,10 @@ export function CalendarManagement() {
                               </div>
                             )}
                           </div>
-                          
-                          <Badge className={`text-xs mt-1 ${getStatusColor(appointment.status)}`}>
+
+                          <Badge
+                            className={`text-xs mt-1 ${getStatusColor(appointment.status)}`}
+                          >
                             {appointment.status === "scheduled" && "Programada"}
                             {appointment.status === "completed" && "Completada"}
                             {appointment.status === "cancelled" && "Cancelada"}
