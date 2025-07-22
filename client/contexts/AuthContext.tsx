@@ -262,7 +262,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        throw new Error(errorMessage);
+        console.log("🚨 About to throw error:", { errorMessage, type: typeof errorMessage });
+        throw new Error(String(errorMessage));
       }
 
       const data = await response.json();
