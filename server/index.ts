@@ -90,7 +90,7 @@ export function createServer() {
       status: "OK",
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
-      server: "HTK Center API"
+      server: "HTK Center API",
     });
   });
 

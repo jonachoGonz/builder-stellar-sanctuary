@@ -117,11 +117,7 @@ export function ConnectivityTest() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
-          onClick={runTests} 
-          disabled={testing}
-          className="w-full"
-        >
+        <Button onClick={runTests} disabled={testing} className="w-full">
           {testing && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
           {testing ? "Ejecutando pruebas..." : "Ejecutar Pruebas"}
         </Button>
@@ -129,58 +125,68 @@ export function ConnectivityTest() {
         {results && (
           <div className="space-y-4">
             <div className="text-sm text-gray-600">
-              <strong>Timestamp:</strong> {new Date(results.timestamp).toLocaleString()}
+              <strong>Timestamp:</strong>{" "}
+              {new Date(results.timestamp).toLocaleString()}
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium">Información del Entorno:</h4>
               <div className="text-sm space-y-1 bg-gray-50 p-3 rounded">
-                <div><strong>Hostname:</strong> {results.environment.hostname}</div>
-                <div><strong>Origin:</strong> {results.environment.origin}</div>
-                <div><strong>User Agent:</strong> {results.environment.userAgent}</div>
+                <div>
+                  <strong>Hostname:</strong> {results.environment.hostname}
+                </div>
+                <div>
+                  <strong>Origin:</strong> {results.environment.origin}
+                </div>
+                <div>
+                  <strong>User Agent:</strong> {results.environment.userAgent}
+                </div>
               </div>
             </div>
 
             <div className="space-y-3">
               <h4 className="font-medium">Resultados de las Pruebas:</h4>
-              
-              {Object.entries(results.tests).map(([testName, result]: [string, any]) => (
-                <div key={testName} className="border rounded p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      {getStatusIcon(result.status)}
-                      <span className="ml-2 font-medium capitalize">{testName}</span>
+
+              {Object.entries(results.tests).map(
+                ([testName, result]: [string, any]) => (
+                  <div key={testName} className="border rounded p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        {getStatusIcon(result.status)}
+                        <span className="ml-2 font-medium capitalize">
+                          {testName}
+                        </span>
+                      </div>
+                      {getStatusBadge(result.status)}
                     </div>
-                    {getStatusBadge(result.status)}
+
+                    {result.error && (
+                      <div className="text-red-600 text-sm mb-2">
+                        <strong>Error:</strong> {result.error}
+                      </div>
+                    )}
+
+                    {result.note && (
+                      <div className="text-blue-600 text-sm mb-2">
+                        <strong>Nota:</strong> {result.note}
+                      </div>
+                    )}
+
+                    {result.data && (
+                      <details className="text-sm">
+                        <summary className="cursor-pointer text-gray-600">
+                          Ver datos de respuesta
+                        </summary>
+                        <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
+                          {typeof result.data === "string"
+                            ? result.data
+                            : JSON.stringify(result.data, null, 2)}
+                        </pre>
+                      </details>
+                    )}
                   </div>
-                  
-                  {result.error && (
-                    <div className="text-red-600 text-sm mb-2">
-                      <strong>Error:</strong> {result.error}
-                    </div>
-                  )}
-                  
-                  {result.note && (
-                    <div className="text-blue-600 text-sm mb-2">
-                      <strong>Nota:</strong> {result.note}
-                    </div>
-                  )}
-                  
-                  {result.data && (
-                    <details className="text-sm">
-                      <summary className="cursor-pointer text-gray-600">
-                        Ver datos de respuesta
-                      </summary>
-                      <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
-                        {typeof result.data === "string" 
-                          ? result.data 
-                          : JSON.stringify(result.data, null, 2)
-                        }
-                      </pre>
-                    </details>
-                  )}
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         )}

@@ -269,13 +269,18 @@ export function Auth() {
             {error && (
               <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                 <div>{error}</div>
-                {(error.includes("conexión") || error.includes("servidor") || error.includes("fetch")) && (
+                {(error.includes("conexión") ||
+                  error.includes("servidor") ||
+                  error.includes("fetch")) && (
                   <button
                     type="button"
-                    onClick={() => setShowConnectivityTest(!showConnectivityTest)}
+                    onClick={() =>
+                      setShowConnectivityTest(!showConnectivityTest)
+                    }
                     className="mt-2 text-xs underline text-blue-600 hover:text-blue-800"
                   >
-                    {showConnectivityTest ? "Ocultar" : "Mostrar"} prueba de conectividad
+                    {showConnectivityTest ? "Ocultar" : "Mostrar"} prueba de
+                    conectividad
                   </button>
                 )}
               </div>

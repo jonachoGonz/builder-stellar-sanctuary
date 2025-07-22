@@ -95,7 +95,10 @@ const getApiBaseUrl = () => {
   }
 
   // If we're in production (not localhost), use absolute URL
-  if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+  if (
+    typeof window !== "undefined" &&
+    !window.location.hostname.includes("localhost")
+  ) {
     return `${window.location.origin}/api`;
   }
 
@@ -106,8 +109,14 @@ const getApiBaseUrl = () => {
 const API_BASE_URL = getApiBaseUrl();
 
 console.log("🔧 AuthContext API Base URL:", API_BASE_URL);
-console.log("🌍 Current hostname:", typeof window !== "undefined" ? window.location.hostname : "unknown");
-console.log("🔗 Current origin:", typeof window !== "undefined" ? window.location.origin : "unknown");
+console.log(
+  "🌍 Current hostname:",
+  typeof window !== "undefined" ? window.location.hostname : "unknown",
+);
+console.log(
+  "🔗 Current origin:",
+  typeof window !== "undefined" ? window.location.origin : "unknown",
+);
 
 // Test connectivity to the API server
 const testConnectivity = async () => {
@@ -119,7 +128,10 @@ const testConnectivity = async () => {
         "Content-Type": "application/json",
       },
     });
-    console.log("📡 Connectivity test result:", { status: response.status, ok: response.ok });
+    console.log("📡 Connectivity test result:", {
+      status: response.status,
+      ok: response.ok,
+    });
     return response.ok;
   } catch (error) {
     console.error("❌ Connectivity test failed:", error);
@@ -153,7 +165,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem("authToken");
       if (token) {
-        console.log("🔍 Checking auth with token:", token.substring(0, 20) + "...");
+        console.log(
+          "🔍 Checking auth with token:",
+          token.substring(0, 20) + "...",
+        );
 
         const response = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: {
@@ -161,7 +176,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           },
         });
 
-        console.log("📡 Auth check response:", { status: response.status, ok: response.ok });
+        console.log("📡 Auth check response:", {
+          status: response.status,
+          ok: response.ok,
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -183,7 +201,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
-      console.log("🔍 Attempting login with:", { email, url: `${API_BASE_URL}/auth/login` });
+      console.log("🔍 Attempting login with:", {
+        email,
+        url: `${API_BASE_URL}/auth/login`,
+      });
 
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
@@ -193,22 +214,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("📡 Login response:", { status: response.status, ok: response.ok });
+      console.log("📡 Login response:", {
+        status: response.status,
+        ok: response.ok,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Login failed:", { status: response.status, error: errorText });
+        console.error("❌ Login failed:", {
+          status: response.status,
+          error: errorText,
+        });
 
         try {
           const errorData = JSON.parse(errorText);
-          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+          throw new Error(
+            errorData.message ||
+              `Error ${response.status}: ${response.statusText}`,
+          );
         } catch (parseError) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
       }
 
       const data = await response.json();
-      console.log("✅ Login successful:", { userId: data.user?.id, email: data.user?.email });
+      console.log("✅ Login successful:", {
+        userId: data.user?.id,
+        email: data.user?.email,
+      });
 
       setUser(data.user);
       localStorage.setItem("authToken", data.token);
@@ -217,9 +250,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Provide more specific error messages
       if (error.name === "TypeError" && error.message.includes("fetch")) {
-        throw new Error("Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.");
-      } else if (error.message.includes("NetworkError") || error.message.includes("Failed to fetch")) {
-        throw new Error("No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.");
+        throw new Error(
+          "Error de conexión. Verifica tu conexión a internet y que el servidor esté funcionando.",
+        );
+      } else if (
+        error.message.includes("NetworkError") ||
+        error.message.includes("Failed to fetch")
+      ) {
+        throw new Error(
+          "No se puede conectar al servidor. Por favor, recarga la página e intenta nuevamente.",
+        );
       } else {
         throw new Error(error.message || "Error al iniciar sesión");
       }
