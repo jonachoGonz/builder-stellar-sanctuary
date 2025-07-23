@@ -18,6 +18,10 @@ interface CreateAppointmentModalProps {
   students: any[];
   onCreateAppointment: (data: any) => Promise<void>;
   loading: boolean;
+  preSelectedSlot?: {
+    date: string;
+    time: string;
+  } | null;
 }
 
 export function CreateAppointmentModal({
