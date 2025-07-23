@@ -15,6 +15,7 @@ import authRoutes from "./routes/auth";
 import classRoutes from "./routes/classes";
 import testRoutes from "./routes/test";
 import adminRoutes from "./routes/admin";
+import calendarioRoutes from "./routes/calendario";
 
 export function createServer() {
   const app = express();
@@ -104,6 +105,9 @@ export function createServer() {
 
   // Classes routes
   app.use("/api/classes", classRoutes);
+
+  // Calendar/Agenda routes
+  app.use("/api/calendario", calendarioRoutes);
 
   // Test routes (for development/debugging)
   app.use("/api/test", testRoutes);
