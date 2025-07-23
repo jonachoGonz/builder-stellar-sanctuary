@@ -591,7 +591,7 @@ export function EnhancedUnifiedCalendar({
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos</SelectItem>
+                        <SelectItem value="all">Todos</SelectItem>
                         {professionals.map(prof => (
                           <SelectItem key={prof._id} value={prof._id}>
                             {prof.firstName} {prof.lastName} ({prof.role})
@@ -613,7 +613,7 @@ export function EnhancedUnifiedCalendar({
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos</SelectItem>
+                        <SelectItem value="all">Todos</SelectItem>
                         {students.map(student => (
                           <SelectItem key={student._id} value={student._id}>
                             {student.firstName} {student.lastName}
