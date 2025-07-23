@@ -44,6 +44,16 @@ export interface IAppointment extends Document {
   deductFromPlan: boolean; // Whether this appointment counts against student's plan
   planType?: string;
 
+  // Evaluation (filled by student after completion)
+  evaluation?: {
+    rating: number;
+    comments?: string;
+    punctuality: number;
+    quality: number;
+    overall: number;
+    evaluatedAt: Date;
+  };
+
   // Metadata
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
