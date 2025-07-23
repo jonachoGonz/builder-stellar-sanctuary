@@ -353,22 +353,30 @@ export function CalendarioCompleto({
           return false;
         });
 
+        // Check if slot is in the past (with 1-hour buffer for current day)
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+        const [horaNum, minutoNum] = time.split(':').map(Number);
+        const slotDateTime = new Date(slotDate);
+        slotDateTime.setHours(horaNum, minutoNum, 0, 0);
+        const isPastTime = slotDateTime < oneHourFromNow;
+
         // Determinar permisos
         let canEdit = false;
         let canSchedule = false;
 
         if (isAdmin) {
           canEdit = true;
-          canSchedule = !isBlocked;
+          canSchedule = !isBlocked && !isPastTime;
         } else if (isProfessional) {
           canEdit = !clase || clase.profesionalId._id === user?.id;
-          canSchedule = !isBlocked && !clase;
+          canSchedule = !isBlocked && !clase && !isPastTime;
         } else if (isStudent) {
           canEdit = clase && clase.alumnoId._id === user?.id;
           canSchedule =
             !isBlocked &&
             !clase &&
-            slotDate > new Date() &&
+            !isPastTime &&
             planUsuario?.clasesRestantes! > 0;
         }
 
