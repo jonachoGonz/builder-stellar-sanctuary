@@ -23,6 +23,7 @@ import { AuthSuccess } from "./pages/AuthSuccess";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import { Calendar } from "./pages/Calendar";
+import Diagnostic from "./pages/Diagnostic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -124,6 +125,16 @@ const App = () => (
                   <Header />
                   <Calendar />
                 </div>
+              }
+            />
+
+            {/* Diagnostic route for debugging */}
+            <Route
+              path="/diagnostic"
+              element={
+                <PublicLayout>
+                  <Diagnostic />
+                </PublicLayout>
               }
             />
 
