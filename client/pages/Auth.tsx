@@ -293,10 +293,12 @@ export function Auth() {
               </div>
             )}
 
-            {/* Always show API status to help with deployment debugging */}
-            <div className="mb-4">
-              <ApiStatus />
-            </div>
+            {/* Show API status only in development mode */}
+            {import.meta.env.DEV && (
+              <div className="mb-4">
+                <ApiStatus />
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Google Sign In */}
