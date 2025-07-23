@@ -24,6 +24,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import { Calendar } from "./pages/Calendar";
 import CalendarioCompletoPage from "./pages/CalendarioCompleto";
+import { Reviews } from "./pages/Reviews";
 import Diagnostic from "./pages/Diagnostic";
 import NotFound from "./pages/NotFound";
 
