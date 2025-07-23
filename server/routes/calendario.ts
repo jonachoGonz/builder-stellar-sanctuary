@@ -769,36 +769,169 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const ahora = new Date();
-      const hace2Horas = new Date(ahora.getTime() - 2 * 60 * 60 * 1000);
+      const hace30Minutos = new Date(ahora.getTime() - 30 * 60 * 1000);
 
       // Find classes that should be automatically completed
+      // Complete classes that ended at least 30 minutes ago
       const clasesParaCompletar = await Agenda.find({
         estado: "agendada",
-        fecha: { $lte: hace2Horas },
-      });
+        $or: [
+          // Classes with specific end time
+          {
+            horaFin: { $exists: true, $ne: null },
+            $expr: {
+              $lte: [
+                {
+                  $dateFromString: {
+                    dateString: {
+                      $concat: [
+                        { $dateToString: { date: "$fecha", format: "%Y-%m-%d" } },
+                        "T",
+                        "$horaFin",
+                        ":00Z"
+                      ]
+                    }
+                  }
+                },
+                hace30Minutos
+              ]
+            }
+          },
+          // Classes without end time (default 1 hour duration)
+          {
+            $or: [
+              { horaFin: { $exists: false } },
+              { horaFin: null }
+            ],
+            $expr: {
+              $lte: [
+                {
+                  $dateFromString: {
+                    dateString: {
+                      $concat: [
+                        { $dateToString: { date: "$fecha", format: "%Y-%m-%d" } },
+                        "T",
+                        "$hora",
+                        ":00Z"
+                      ]
+                    }
+                  }
+                },
+                new Date(hace30Minutos.getTime() - 60 * 60 * 1000) // 1 hour + 30 minutes ago
+              ]
+            }
+          }
+        ]
+      }).populate('alumnoId', 'firstName lastName email')
+        .populate('profesionalId', 'firstName lastName email');
 
       let completadas = 0;
+      let errores = 0;
+      const detalles = [];
 
       for (const clase of clasesParaCompletar) {
-        clase.estado = "completada";
-        await clase.save();
+        try {
+          const estadoAnterior = clase.estado;
+          clase.estado = "completada";
+          await clase.save();
 
-        // Update student's plan
-        const plan = await PlanUsuario.findOne({ userId: clase.alumnoId });
-        if (plan) {
-          await plan.actualizarEstadoClase(clase._id.toString(), "completada");
+          // Update student's plan
+          const plan = await PlanUsuario.findOne({ userId: clase.alumnoId });
+          if (plan) {
+            await plan.actualizarEstadoClase(clase._id.toString(), "completada");
+          }
+
+          completadas++;
+          detalles.push({
+            claseId: clase._id,
+            alumno: `${clase.alumnoId.firstName} ${clase.alumnoId.lastName}`,
+            profesional: `${clase.profesionalId.firstName} ${clase.profesionalId.lastName}`,
+            fecha: clase.fecha,
+            hora: clase.hora,
+            estadoAnterior,
+            estadoNuevo: "completada"
+          });
+
+          console.log(`✅ Auto-completed class: ${clase._id} - ${clase.alumnoId.firstName} with ${clase.profesionalId.firstName}`);
+        } catch (error) {
+          console.error(`❌ Error auto-completing class ${clase._id}:`, error);
+          errores++;
         }
-
-        completadas++;
       }
 
       res.json({
         success: true,
-        message: `Se completaron automáticamente ${completadas} clases`,
-        data: { completadas },
+        message: `Se completaron automáticamente ${completadas} clases${errores > 0 ? ` (${errores} errores)` : ''}`,
+        data: {
+          completadas,
+          errores,
+          detalles: detalles.slice(0, 10), // Limit details to first 10
+          totalEvaluadas: clasesParaCompletar.length
+        },
       });
     } catch (error) {
       console.error("Error auto-completing classes:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Get auto-completion status and statistics
+router.get(
+  "/auto-complete-stats",
+  authenticateToken,
+  requireAdmin,
+  async (req: Request, res: Response) => {
+    try {
+      const ahora = new Date();
+      const hace24Horas = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+      const hace7Dias = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const [
+        clasesPendientesCompletar,
+        clasesCompletadasHoy,
+        clasesCompletadasSemana,
+        clasesAtrasadas
+      ] = await Promise.all([
+        // Classes that should be auto-completed
+        Agenda.countDocuments({
+          estado: "agendada",
+          fecha: { $lt: hace24Horas }
+        }),
+        // Classes completed today
+        Agenda.countDocuments({
+          estado: "completada",
+          updatedAt: { $gte: hace24Horas }
+        }),
+        // Classes completed this week
+        Agenda.countDocuments({
+          estado: "completada",
+          updatedAt: { $gte: hace7Dias }
+        }),
+        // Very old scheduled classes that might need attention
+        Agenda.countDocuments({
+          estado: "agendada",
+          fecha: { $lt: hace7Dias }
+        })
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          pendientesCompletar: clasesPendientesCompletar,
+          completadasHoy: clasesCompletadasHoy,
+          completadasSemana: clasesCompletadasSemana,
+          clasesAtrasadas,
+          recomendacion: clasesPendientesCompletar > 0
+            ? "Se recomienda ejecutar auto-completar clases"
+            : "No hay clases pendientes de completar"
+        }
+      });
+    } catch (error) {
+      console.error("Error getting auto-complete stats:", error);
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
