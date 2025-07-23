@@ -50,7 +50,7 @@ import {
 import { Textarea } from "../components/ui/textarea";
 import { CreateAppointmentModal } from "../components/CreateAppointmentModal";
 import { ProfessionalConfigModal } from "../components/ProfessionalConfigModal";
-import { UnifiedCalendar } from "../components/UnifiedCalendar";
+import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 
 export function TeacherDashboard() {
   const { user, isLoading } = useAuth();
