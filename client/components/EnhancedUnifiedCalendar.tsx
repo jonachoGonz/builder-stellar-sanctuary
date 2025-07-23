@@ -992,7 +992,7 @@ export function EnhancedUnifiedCalendar({
                   })}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  <Block className="h-4 w-4 mr-2" />
+                  <Ban className="h-4 w-4 mr-2" />
                   Bloquear Horario
                 </Button>
               </div>
