@@ -170,9 +170,9 @@ export function EnhancedUnifiedCalendar({
       }
 
       // Role-specific filters
-      if (isProfessional && !isAdmin && !filters.professional) {
+      if (isProfessional && !isAdmin && filters.professional === "all") {
         params.append("professionalId", user!.id);
-      } else if (isStudent && !filters.student) {
+      } else if (isStudent && filters.student === "all") {
         params.append("studentId", user!.id);
       }
 
