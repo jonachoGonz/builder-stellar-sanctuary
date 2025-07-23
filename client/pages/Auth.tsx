@@ -44,6 +44,7 @@ export function Auth() {
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [showConnectivityTest, setShowConnectivityTest] = useState(false);
   const [error, setError] = useState("");
+  const [googleOAuthAvailable, setGoogleOAuthAvailable] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
