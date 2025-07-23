@@ -31,8 +31,9 @@ import {
 
 export function Home() {
   const [professionals, setProfessionals] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
 
-  const plans = [
+  const defaultPlans = [
     {
       id: 1,
       name: "Plan Básico",
@@ -265,7 +266,7 @@ export function Home() {
                   </h3>
                   <p className="text-gray-600">
                     Nuestro equipo multidisciplinario de profesionales te
-                    acompaña en cada paso de tu transformación integral.
+                    acompa��a en cada paso de tu transformación integral.
                   </p>
                 </div>
               </div>
