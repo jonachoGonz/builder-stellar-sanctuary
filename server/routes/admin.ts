@@ -817,7 +817,7 @@ router.post(
         equipment: equipment || [],
         deductFromPlan: deductFromPlan !== undefined ? deductFromPlan : true,
         planType: student.plan,
-        createdBy: adminUserId,
+        createdBy: currentUser._id,
       });
 
       await appointment.save();
