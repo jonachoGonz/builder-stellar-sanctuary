@@ -104,7 +104,7 @@ const PlanUsuarioSchema = new Schema<IPlanUsuario>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes
@@ -120,66 +120,78 @@ PlanUsuarioSchema.pre("save", function (next) {
 });
 
 // Method to check if plan is active and not expired
-PlanUsuarioSchema.methods.estaVigente = function() {
+PlanUsuarioSchema.methods.estaVigente = function () {
   return this.activo && new Date() <= this.fechaVencimiento;
 };
 
 // Method to check weekly class limit
-PlanUsuarioSchema.methods.puedeAgendarEstaSeemana = function() {
+PlanUsuarioSchema.methods.puedeAgendarEstaSeemana = function () {
   if (!this.estaVigente()) return false;
-  
+
   // Get start of current week (Monday)
   const now = new Date();
   const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+  startOfWeek.setDate(
+    now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1),
+  );
   startOfWeek.setHours(0, 0, 0, 0);
-  
+
   // Count classes this week
   const clasesEstaSeana = this.historial.filter((clase: IHistorialClase) => {
-    return clase.fecha >= startOfWeek && 
-           clase.estado !== "cancelada" &&
-           clase.fecha <= now;
+    return (
+      clase.fecha >= startOfWeek &&
+      clase.estado !== "cancelada" &&
+      clase.fecha <= now
+    );
   }).length;
-  
+
   return clasesEstaSeana < this.clasesPorSemana && this.clasesRestantes > 0;
 };
 
 // Method to add class to history
-PlanUsuarioSchema.methods.agregarClaseAlHistorial = function(claseData: Partial<IHistorialClase>) {
+PlanUsuarioSchema.methods.agregarClaseAlHistorial = function (
+  claseData: Partial<IHistorialClase>,
+) {
   this.historial.push(claseData);
-  
+
   if (claseData.estado === "completada") {
     this.clasesUsadas += 1;
   }
-  
+
   return this.save();
 };
 
 // Method to update class status in history
-PlanUsuarioSchema.methods.actualizarEstadoClase = function(agendaId: string, nuevoEstado: string) {
-  const clase = this.historial.find((h: IHistorialClase) => 
-    h.agendaId.toString() === agendaId
+PlanUsuarioSchema.methods.actualizarEstadoClase = function (
+  agendaId: string,
+  nuevoEstado: string,
+) {
+  const clase = this.historial.find(
+    (h: IHistorialClase) => h.agendaId.toString() === agendaId,
   );
-  
+
   if (clase) {
     const estadoAnterior = clase.estado;
     clase.estado = nuevoEstado;
-    
+
     // Adjust used classes count
     if (estadoAnterior === "completada" && nuevoEstado !== "completada") {
       this.clasesUsadas = Math.max(0, this.clasesUsadas - 1);
-    } else if (estadoAnterior !== "completada" && nuevoEstado === "completada") {
+    } else if (
+      estadoAnterior !== "completada" &&
+      nuevoEstado === "completada"
+    ) {
       this.clasesUsadas += 1;
     }
   }
-  
+
   return this.save();
 };
 
 // Static method to initialize plan for new user
-PlanUsuarioSchema.statics.inicializarPlan = function(
-  userId: mongoose.Types.ObjectId, 
-  tipoPlan: string = "trial"
+PlanUsuarioSchema.statics.inicializarPlan = function (
+  userId: mongoose.Types.ObjectId,
+  tipoPlan: string = "trial",
 ) {
   const planConfig = {
     trial: { clases: 1, semanas: 1 },
@@ -188,11 +200,12 @@ PlanUsuarioSchema.statics.inicializarPlan = function(
     elite: { clases: 16, semanas: 4 },
     champion: { clases: 20, semanas: 4 },
   };
-  
-  const config = planConfig[tipoPlan as keyof typeof planConfig] || planConfig.trial;
+
+  const config =
+    planConfig[tipoPlan as keyof typeof planConfig] || planConfig.trial;
   const fechaVencimiento = new Date();
-  fechaVencimiento.setDate(fechaVencimiento.getDate() + (config.semanas * 7));
-  
+  fechaVencimiento.setDate(fechaVencimiento.getDate() + config.semanas * 7);
+
   return this.create({
     userId,
     tipoPlan,

@@ -9,10 +9,11 @@ export default function CalendarioCompletoPage() {
             Sistema de Calendario / Agenda
           </h1>
           <p className="text-gray-600">
-            Gestiona tu agenda de clases, evalúa sesiones y administra disponibilidad
+            Gestiona tu agenda de clases, evalúa sesiones y administra
+            disponibilidad
           </p>
         </div>
-        
+
         <CalendarioCompleto className="w-full" />
       </div>
     </div>

@@ -25,18 +25,22 @@ export const API_BASE_URL = getApiBaseUrl();
 export const checkBackendHealth = async (): Promise<boolean> => {
   try {
     const response = await fetch(`${API_BASE_URL}/health`, {
-      method: 'GET',
+      method: "GET",
       signal: AbortSignal.timeout(5000),
     });
     return response.ok;
   } catch (error) {
-    console.warn('Backend health check failed:', error);
+    console.warn("Backend health check failed:", error);
     return false;
   }
 };
 
 // Helper function to make authenticated API calls with retry logic
-export const apiCall = async (endpoint: string, options: RequestInit = {}, retryCount = 0): Promise<Response> => {
+export const apiCall = async (
+  endpoint: string,
+  options: RequestInit = {},
+  retryCount = 0,
+): Promise<Response> => {
   const token = localStorage.getItem("authToken");
   const maxRetries = 3;
   const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
@@ -53,15 +57,19 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
       ...options.headers,
     },
     // Add timeout for production environment
-    ...(typeof AbortSignal !== 'undefined' && AbortSignal.timeout ?
-        { signal: AbortSignal.timeout(15000) } : {}),
+    ...(typeof AbortSignal !== "undefined" && AbortSignal.timeout
+      ? { signal: AbortSignal.timeout(15000) }
+      : {}),
   };
 
   // Try multiple API base URLs for production environment
   const getUrlsToTry = (endpoint: string) => {
     const baseEndpoint = endpoint.startsWith("http") ? endpoint : endpoint;
 
-    if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+    if (
+      typeof window !== "undefined" &&
+      !window.location.hostname.includes("localhost")
+    ) {
       // For production deployments, try multiple potential backend URLs
       return [
         `${window.location.origin}/api${baseEndpoint}`,
@@ -69,7 +77,9 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
       ];
     }
 
-    const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
+    const url = endpoint.startsWith("http")
+      ? endpoint
+      : `${API_BASE_URL}${endpoint}`;
     return [url];
   };
 
@@ -82,7 +92,9 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
         url,
         method: mergedOptions.method || "GET",
         headers: mergedOptions.headers,
-        bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0,
+        bodyLength: mergedOptions.body
+          ? mergedOptions.body.toString().length
+          : 0,
       });
 
       const response = await fetch(url, mergedOptions);
@@ -105,8 +117,11 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
       lastError = error;
 
       // Don't try other URLs if this was an auth error or client error
-      if (error.name === 'AbortError' ||
-          (error.message && (error.message.includes('401') || error.message.includes('403')))) {
+      if (
+        error.name === "AbortError" ||
+        (error.message &&
+          (error.message.includes("401") || error.message.includes("403")))
+      ) {
         break;
       }
     }
@@ -114,12 +129,14 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
 
   // If all URLs failed and we haven't exceeded max retries, retry with delay
   if (retryCount < maxRetries && lastError) {
-    console.log(`⏳ Retrying API call in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
-    await new Promise(resolve => setTimeout(resolve, retryDelay));
+    console.log(
+      `⏳ Retrying API call in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, retryDelay));
     return apiCall(endpoint, options, retryCount + 1);
   }
 
   // All attempts failed
   console.error(`❌ All API call attempts failed for endpoint: ${endpoint}`);
-  throw lastError || new Error('API call failed after all retries');
+  throw lastError || new Error("API call failed after all retries");
 };

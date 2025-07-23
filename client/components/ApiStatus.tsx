@@ -3,7 +3,9 @@ import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { API_BASE_URL } from "../lib/api";
 
 export function ApiStatus() {
-  const [status, setStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [status, setStatus] = useState<
+    "checking" | "connected" | "disconnected"
+  >("checking");
   const [details, setDetails] = useState<any>(null);
 
   useEffect(() => {
@@ -13,37 +15,43 @@ export function ApiStatus() {
   const checkApiStatus = async () => {
     try {
       console.log("🔍 Checking API status at:", API_BASE_URL);
-      
+
       const response = await fetch(`${API_BASE_URL}/health`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setStatus('connected');
+        setStatus("connected");
         setDetails(data);
         console.log("✅ API is connected:", data);
       } else {
-        setStatus('disconnected');
-        setDetails({ error: `HTTP ${response.status}: ${response.statusText}` });
-        console.error("❌ API returned error:", response.status, response.statusText);
+        setStatus("disconnected");
+        setDetails({
+          error: `HTTP ${response.status}: ${response.statusText}`,
+        });
+        console.error(
+          "❌ API returned error:",
+          response.status,
+          response.statusText,
+        );
       }
     } catch (error: any) {
-      setStatus('disconnected');
-      setDetails({ error: error.message || 'Network error' });
+      setStatus("disconnected");
+      setDetails({ error: error.message || "Network error" });
       console.error("❌ API connection failed:", error);
     }
   };
 
   const getStatusIcon = () => {
     switch (status) {
-      case 'connected':
+      case "connected":
         return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'disconnected':
+      case "disconnected":
         return <XCircle className="h-4 w-4 text-red-600" />;
       default:
         return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
@@ -52,12 +60,12 @@ export function ApiStatus() {
 
   const getStatusColor = () => {
     switch (status) {
-      case 'connected':
-        return 'bg-green-50 border-green-200 text-green-800';
-      case 'disconnected':
-        return 'bg-red-50 border-red-200 text-red-800';
+      case "connected":
+        return "bg-green-50 border-green-200 text-green-800";
+      case "disconnected":
+        return "bg-red-50 border-red-200 text-red-800";
       default:
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+        return "bg-yellow-50 border-yellow-200 text-yellow-800";
     }
   };
 
@@ -66,21 +74,39 @@ export function ApiStatus() {
       <div className="flex items-center space-x-2">
         {getStatusIcon()}
         <span className="text-sm font-medium">
-          API Status: {status === 'checking' ? 'Verificando...' : 
-                     status === 'connected' ? 'Conectado' : 'Desconectado'}
+          API Status:{" "}
+          {status === "checking"
+            ? "Verificando..."
+            : status === "connected"
+              ? "Conectado"
+              : "Desconectado"}
         </span>
       </div>
-      
+
       {details && (
         <div className="mt-2 text-xs">
-          <div><strong>URL:</strong> {API_BASE_URL}</div>
-          {details.status && <div><strong>Server:</strong> {details.server}</div>}
-          {details.environment && <div><strong>Environment:</strong> {details.environment}</div>}
-          {details.error && <div><strong>Error:</strong> {details.error}</div>}
+          <div>
+            <strong>URL:</strong> {API_BASE_URL}
+          </div>
+          {details.status && (
+            <div>
+              <strong>Server:</strong> {details.server}
+            </div>
+          )}
+          {details.environment && (
+            <div>
+              <strong>Environment:</strong> {details.environment}
+            </div>
+          )}
+          {details.error && (
+            <div>
+              <strong>Error:</strong> {details.error}
+            </div>
+          )}
         </div>
       )}
-      
-      <button 
+
+      <button
         onClick={checkApiStatus}
         className="mt-2 text-xs underline hover:no-underline"
       >

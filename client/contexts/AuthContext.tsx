@@ -133,7 +133,7 @@ const testConnectivity = async () => {
     // Simple connectivity test - just try the main API path
     const response = await fetch(`${API_BASE_URL}/health`, {
       method: "GET",
-      signal: AbortSignal.timeout(8000) // Longer timeout for deployment
+      signal: AbortSignal.timeout(8000), // Longer timeout for deployment
     });
 
     console.log(`📡 Connectivity test result:`, {
@@ -152,7 +152,7 @@ const testConnectivity = async () => {
     try {
       const basicTest = await fetch(window.location.origin, {
         method: "HEAD",
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(5000),
       });
       console.log("ℹ️ Basic server test:", basicTest.status);
       return basicTest.status < 500;
@@ -215,7 +215,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("❌ Auth check failed:", error);
 
       // Don't remove token if it's just a network error
-      if (error && error.message && !error.message.includes('Failed to fetch')) {
+      if (
+        error &&
+        error.message &&
+        !error.message.includes("Failed to fetch")
+      ) {
         localStorage.removeItem("authToken");
       } else {
         console.log("⚠️ Keeping token due to network error");
@@ -309,10 +313,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Handle specific deployment issues
       if (error && error.message) {
-        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-          errorMessage = "No se puede conectar al servidor. Por favor verifica tu conexión o intenta más tarde.";
-        } else if (error.message.includes('timeout') || error.name === 'AbortError') {
-          errorMessage = "La conexión está tardando demasiado. Por favor intenta nuevamente.";
+        if (
+          error.message.includes("Failed to fetch") ||
+          error.name === "TypeError"
+        ) {
+          errorMessage =
+            "No se puede conectar al servidor. Por favor verifica tu conexión o intenta más tarde.";
+        } else if (
+          error.message.includes("timeout") ||
+          error.name === "AbortError"
+        ) {
+          errorMessage =
+            "La conexión está tardando demasiado. Por favor intenta nuevamente.";
         } else if (typeof error.message === "string") {
           errorMessage = error.message;
         }

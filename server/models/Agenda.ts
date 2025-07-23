@@ -99,7 +99,7 @@ const AgendaSchema = new Schema<IAgenda>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes for better performance

@@ -24,12 +24,7 @@ import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   Select,
   SelectContent,
@@ -122,7 +117,9 @@ interface Filtros {
   estado: string;
 }
 
-export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) {
+export function CalendarioCompleto({
+  className = "",
+}: CalendarioCompletoProps) {
   const { user } = useAuth();
   const { isAdmin, isProfessional, isStudent } = usePermissions();
 
@@ -215,11 +212,7 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
     setError("");
 
     try {
-      await Promise.all([
-        loadAgenda(),
-        loadBloqueos(),
-        loadUsuarios(),
-      ]);
+      await Promise.all([loadAgenda(), loadBloqueos(), loadUsuarios()]);
     } catch (err: any) {
       setError(err.message || "Error al cargar datos");
     } finally {
@@ -254,7 +247,7 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
       }
 
       const response = await apiCall(`/calendario/agenda?${params}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setAgenda(data.data.agenda || []);
@@ -280,7 +273,7 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
       });
 
       const response = await apiCall(`/calendario/bloqueos?${params}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setBloqueos(data.data || []);
@@ -296,7 +289,9 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
   const loadUsuarios = async () => {
     try {
       if (isAdmin || isProfessional) {
-        const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
+        const studentsResponse = await apiCall(
+          "/admin/users?role=student&limit=100",
+        );
         if (studentsResponse.ok) {
           const studentsData = await studentsResponse.json();
           setEstudiantes(studentsData.data.users || []);
@@ -307,9 +302,10 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
         const professionalsResponse = await apiCall("/admin/users?limit=100");
         if (professionalsResponse.ok) {
           const professionalsData = await professionalsResponse.json();
-          const professionalUsers = professionalsData.data.users?.filter(
-            (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
-          ) || [];
+          const professionalUsers =
+            professionalsData.data.users?.filter((u: any) =>
+              ["teacher", "nutritionist", "psychologist"].includes(u.role),
+            ) || [];
           setProfesionales(professionalUsers);
         }
       }
@@ -369,13 +365,18 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
           canSchedule = !isBlocked && !clase;
         } else if (isStudent) {
           canEdit = clase && clase.alumnoId._id === user?.id;
-          canSchedule = !isBlocked && !clase && slotDate > new Date() && 
-                       planUsuario?.clasesRestantes! > 0;
+          canSchedule =
+            !isBlocked &&
+            !clase &&
+            slotDate > new Date() &&
+            planUsuario?.clasesRestantes! > 0;
         }
 
         const isGlobalBlock = bloqueos.some(
-          (b) => b.tipo === "global" && b.fecha === dateStr && 
-                 (b.todoElDia || b.hora === time)
+          (b) =>
+            b.tipo === "global" &&
+            b.fecha === dateStr &&
+            (b.todoElDia || b.hora === time),
         );
 
         grid.push({
@@ -658,35 +659,57 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
             <div>
               <CardTitle className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2" />
-                Calendario - {isStudent ? "Mis Clases" : isProfessional ? "Mi Agenda" : "Gestión General"}
+                Calendario -{" "}
+                {isStudent
+                  ? "Mis Clases"
+                  : isProfessional
+                    ? "Mi Agenda"
+                    : "Gestión General"}
               </CardTitle>
-              
+
               {/* Información del plan para estudiantes */}
               {isStudent && planUsuario && (
                 <div className="mt-2 text-sm text-gray-600">
-                  Plan {planUsuario.tipoPlan} - Clases restantes: {planUsuario.clasesRestantes}
-                  {planUsuario.clasesPorSemana && ` (Máx ${planUsuario.clasesPorSemana}/semana)`}
+                  Plan {planUsuario.tipoPlan} - Clases restantes:{" "}
+                  {planUsuario.clasesRestantes}
+                  {planUsuario.clasesPorSemana &&
+                    ` (Máx ${planUsuario.clasesPorSemana}/semana)`}
                 </div>
               )}
-              
+
               <div className="flex items-center space-x-4 mt-2">
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" onClick={() => navigateWeek("prev")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateWeek("prev")}
+                  >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="font-medium">{formatWeekRange()}</span>
-                  <Button variant="outline" size="sm" onClick={() => navigateWeek("next")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateWeek("next")}
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentDate(new Date())}
+                >
                   Hoy
                 </Button>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
-              <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+              >
                 <Filter className="h-4 w-4 mr-2" />
                 Filtros
               </Button>
@@ -708,14 +731,19 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                     <Label>Profesional</Label>
                     <Select
                       value={filtros.profesionalId}
-                      onValueChange={(value) => setFiltros(prev => ({ ...prev, profesionalId: value }))}
+                      onValueChange={(value) =>
+                        setFiltros((prev) => ({
+                          ...prev,
+                          profesionalId: value,
+                        }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        {profesionales.map(prof => (
+                        {profesionales.map((prof) => (
                           <SelectItem key={prof._id} value={prof._id}>
                             {prof.firstName} {prof.lastName} ({prof.role})
                           </SelectItem>
@@ -730,14 +758,16 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                     <Label>Estudiante</Label>
                     <Select
                       value={filtros.alumnoId}
-                      onValueChange={(value) => setFiltros(prev => ({ ...prev, alumnoId: value }))}
+                      onValueChange={(value) =>
+                        setFiltros((prev) => ({ ...prev, alumnoId: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        {estudiantes.map(student => (
+                        {estudiantes.map((student) => (
                           <SelectItem key={student._id} value={student._id}>
                             {student.firstName} {student.lastName}
                           </SelectItem>
@@ -751,7 +781,9 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                   <Label>Especialidad</Label>
                   <Select
                     value={filtros.especialidad}
-                    onValueChange={(value) => setFiltros(prev => ({ ...prev, especialidad: value }))}
+                    onValueChange={(value) =>
+                      setFiltros((prev) => ({ ...prev, especialidad: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -769,7 +801,9 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                   <Label>Estado</Label>
                   <Select
                     value={filtros.estado}
-                    onValueChange={(value) => setFiltros(prev => ({ ...prev, estado: value }))}
+                    onValueChange={(value) =>
+                      setFiltros((prev) => ({ ...prev, estado: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -819,7 +853,7 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 </div>
                 {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
                   const slot = schedule.find(
-                    (s) => s.time === time && s.dayIndex === dayIndex
+                    (s) => s.time === time && s.dayIndex === dayIndex,
                   );
 
                   return (
@@ -834,9 +868,15 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                         onTouchEnd={() => slot && handleTouchEnd(slot)}
                         onTouchCancel={handleTouchCancel}
                         className={`w-full h-12 border rounded-md text-xs font-medium transition-colors p-1 ${
-                          slot ? getSlotStyles(slot) : "bg-gray-50 border-gray-200"
+                          slot
+                            ? getSlotStyles(slot)
+                            : "bg-gray-50 border-gray-200"
                         }`}
-                        title={slot?.hasClass ? `${slot.clase?.titulo}\nClick para ver detalles` : ""}
+                        title={
+                          slot?.hasClass
+                            ? `${slot.clase?.titulo}\nClick para ver detalles`
+                            : ""
+                        }
                       >
                         <div className="truncate">
                           {slot ? getSlotContent(slot) : ""}
@@ -887,9 +927,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
           {/* Información específica por rol */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              {isAdmin && "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente."}
-              {isProfessional && "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
-              {isStudent && "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
+              {isAdmin &&
+                "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente."}
+              {isProfessional &&
+                "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
+              {isStudent &&
+                "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
             </p>
             <p className="text-xs text-blue-600 mt-2">
               📱 En móvil: Mantén presionado un horario para bloquearlo
@@ -907,8 +950,13 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
           <div className="space-y-4">
             {selectedSlot && (
               <div className="p-3 bg-gray-50 rounded">
-                <p><strong>Fecha:</strong> {new Date(selectedSlot.date).toLocaleDateString("es-ES")}</p>
-                <p><strong>Hora:</strong> {selectedSlot.time}</p>
+                <p>
+                  <strong>Fecha:</strong>{" "}
+                  {new Date(selectedSlot.date).toLocaleDateString("es-ES")}
+                </p>
+                <p>
+                  <strong>Hora:</strong> {selectedSlot.time}
+                </p>
               </div>
             )}
 
@@ -917,13 +965,18 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 <Label>Profesional</Label>
                 <Select
                   value={formAgendar.profesionalId}
-                  onValueChange={(value) => setFormAgendar(prev => ({ ...prev, profesionalId: value }))}
+                  onValueChange={(value) =>
+                    setFormAgendar((prev) => ({
+                      ...prev,
+                      profesionalId: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar profesional" />
                   </SelectTrigger>
                   <SelectContent>
-                    {profesionales.map(prof => (
+                    {profesionales.map((prof) => (
                       <SelectItem key={prof._id} value={prof._id}>
                         {prof.firstName} {prof.lastName} ({prof.role})
                       </SelectItem>
@@ -938,13 +991,15 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 <Label>Estudiante</Label>
                 <Select
                   value={formAgendar.alumnoId}
-                  onValueChange={(value) => setFormAgendar(prev => ({ ...prev, alumnoId: value }))}
+                  onValueChange={(value) =>
+                    setFormAgendar((prev) => ({ ...prev, alumnoId: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar estudiante" />
                   </SelectTrigger>
                   <SelectContent>
-                    {estudiantes.map(student => (
+                    {estudiantes.map((student) => (
                       <SelectItem key={student._id} value={student._id}>
                         {student.firstName} {student.lastName}
                       </SelectItem>
@@ -958,7 +1013,9 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Label>Especialidad</Label>
               <Select
                 value={formAgendar.especialidad}
-                onValueChange={(value) => setFormAgendar(prev => ({ ...prev, especialidad: value }))}
+                onValueChange={(value) =>
+                  setFormAgendar((prev) => ({ ...prev, especialidad: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar especialidad" />
@@ -975,7 +1032,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Label>Título</Label>
               <Input
                 value={formAgendar.titulo}
-                onChange={(e) => setFormAgendar(prev => ({ ...prev, titulo: e.target.value }))}
+                onChange={(e) =>
+                  setFormAgendar((prev) => ({
+                    ...prev,
+                    titulo: e.target.value,
+                  }))
+                }
                 placeholder="Título de la sesión"
               />
             </div>
@@ -984,7 +1046,9 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Label>Notas</Label>
               <Textarea
                 value={formAgendar.notas}
-                onChange={(e) => setFormAgendar(prev => ({ ...prev, notas: e.target.value }))}
+                onChange={(e) =>
+                  setFormAgendar((prev) => ({ ...prev, notas: e.target.value }))
+                }
                 placeholder="Notas adicionales"
                 rows={3}
               />
@@ -1011,8 +1075,13 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
           <div className="space-y-4">
             {selectedSlot && (
               <div className="p-3 bg-gray-50 rounded">
-                <p><strong>Fecha:</strong> {new Date(selectedSlot.date).toLocaleDateString("es-ES")}</p>
-                <p><strong>Hora:</strong> {selectedSlot.time}</p>
+                <p>
+                  <strong>Fecha:</strong>{" "}
+                  {new Date(selectedSlot.date).toLocaleDateString("es-ES")}
+                </p>
+                <p>
+                  <strong>Hora:</strong> {selectedSlot.time}
+                </p>
               </div>
             )}
 
@@ -1021,7 +1090,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 <Label>Tipo de Bloqueo</Label>
                 <Select
                   value={formBloquear.tipo}
-                  onValueChange={(value) => setFormBloquear(prev => ({ ...prev, tipo: value as "global" | "profesional" }))}
+                  onValueChange={(value) =>
+                    setFormBloquear((prev) => ({
+                      ...prev,
+                      tipo: value as "global" | "profesional",
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1039,7 +1113,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 type="checkbox"
                 id="todoElDia"
                 checked={formBloquear.todoElDia}
-                onChange={(e) => setFormBloquear(prev => ({ ...prev, todoElDia: e.target.checked }))}
+                onChange={(e) =>
+                  setFormBloquear((prev) => ({
+                    ...prev,
+                    todoElDia: e.target.checked,
+                  }))
+                }
               />
               <Label htmlFor="todoElDia">Bloquear todo el día</Label>
             </div>
@@ -1048,7 +1127,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Label>Motivo</Label>
               <Input
                 value={formBloquear.motivo}
-                onChange={(e) => setFormBloquear(prev => ({ ...prev, motivo: e.target.value }))}
+                onChange={(e) =>
+                  setFormBloquear((prev) => ({
+                    ...prev,
+                    motivo: e.target.value,
+                  }))
+                }
                 placeholder="Motivo del bloqueo"
               />
             </div>
@@ -1057,7 +1141,11 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Button variant="outline" onClick={() => setModalBloquear(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleCrearBloqueo} disabled={loading} className="bg-red-600 hover:bg-red-700">
+              <Button
+                onClick={handleCrearBloqueo}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700"
+              >
                 <Ban className="h-4 w-4 mr-2" />
                 Bloquear
               </Button>
@@ -1077,14 +1165,23 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold">{selectedClase.titulo}</h3>
-                  <p className="text-sm text-gray-600">{selectedClase.especialidad}</p>
-                  <Badge className={
-                    selectedClase.estado === "completada" ? "bg-green-100 text-green-800" :
-                    selectedClase.estado === "cancelada" ? "bg-red-100 text-red-800" :
-                    "bg-blue-100 text-blue-800"
-                  }>
-                    {selectedClase.estado === "completada" ? "Completada" :
-                     selectedClase.estado === "cancelada" ? "Cancelada" : "Agendada"}
+                  <p className="text-sm text-gray-600">
+                    {selectedClase.especialidad}
+                  </p>
+                  <Badge
+                    className={
+                      selectedClase.estado === "completada"
+                        ? "bg-green-100 text-green-800"
+                        : selectedClase.estado === "cancelada"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-blue-100 text-blue-800"
+                    }
+                  >
+                    {selectedClase.estado === "completada"
+                      ? "Completada"
+                      : selectedClase.estado === "cancelada"
+                        ? "Cancelada"
+                        : "Agendada"}
                   </Badge>
                 </div>
                 <div className="text-right">
@@ -1092,7 +1189,8 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                     {new Date(selectedClase.fecha).toLocaleDateString("es-ES")}
                   </div>
                   <div className="text-sm text-gray-600">
-                    {selectedClase.hora} {selectedClase.horaFin && `- ${selectedClase.horaFin}`}
+                    {selectedClase.hora}{" "}
+                    {selectedClase.horaFin && `- ${selectedClase.horaFin}`}
                   </div>
                 </div>
               </div>
@@ -1100,11 +1198,17 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="font-medium">Estudiante:</Label>
-                  <div>{selectedClase.alumnoId.firstName} {selectedClase.alumnoId.lastName}</div>
+                  <div>
+                    {selectedClase.alumnoId.firstName}{" "}
+                    {selectedClase.alumnoId.lastName}
+                  </div>
                 </div>
                 <div>
                   <Label className="font-medium">Profesional:</Label>
-                  <div>{selectedClase.profesionalId.firstName} {selectedClase.profesionalId.lastName}</div>
+                  <div>
+                    {selectedClase.profesionalId.firstName}{" "}
+                    {selectedClase.profesionalId.lastName}
+                  </div>
                 </div>
               </div>
 
@@ -1130,52 +1234,65 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               )}
 
               <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setModalDetalle(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setModalDetalle(false)}
+                >
                   Cerrar
                 </Button>
 
                 {/* Estudiante puede evaluar clases completadas */}
-                {isStudent && selectedClase.estado === "completada" && !selectedClase.evaluacion && (
-                  <Button 
-                    onClick={() => {
-                      setModalDetalle(false);
-                      setModalEvaluar(true);
-                    }}
-                    className="bg-yellow-600 hover:bg-yellow-700"
-                  >
-                    <Star className="h-4 w-4 mr-2" />
-                    Evaluar Clase
-                  </Button>
-                )}
+                {isStudent &&
+                  selectedClase.estado === "completada" &&
+                  !selectedClase.evaluacion && (
+                    <Button
+                      onClick={() => {
+                        setModalDetalle(false);
+                        setModalEvaluar(true);
+                      }}
+                      className="bg-yellow-600 hover:bg-yellow-700"
+                    >
+                      <Star className="h-4 w-4 mr-2" />
+                      Evaluar Clase
+                    </Button>
+                  )}
 
                 {/* Profesional puede marcar como completada */}
-                {isProfessional && selectedClase.estado === "agendada" && 
-                 selectedClase.profesionalId._id === user?.id && (
-                  <Button 
-                    onClick={() => handleActualizarClase(selectedClase._id, { estado: "completada" })}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Marcar Completada
-                  </Button>
-                )}
+                {isProfessional &&
+                  selectedClase.estado === "agendada" &&
+                  selectedClase.profesionalId._id === user?.id && (
+                    <Button
+                      onClick={() =>
+                        handleActualizarClase(selectedClase._id, {
+                          estado: "completada",
+                        })
+                      }
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Marcar Completada
+                    </Button>
+                  )}
 
                 {/* Cancelar clase */}
-                {selectedClase.estado === "agendada" && (
-                  (isAdmin || 
-                   (isProfessional && selectedClase.profesionalId._id === user?.id) ||
-                   (isStudent && selectedClase.alumnoId._id === user?.id)
-                  )
-                ) && (
-                  <Button 
-                    variant="outline" 
-                    className="text-red-600 hover:text-red-800"
-                    onClick={() => handleActualizarClase(selectedClase._id, { estado: "cancelada" })}
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    Cancelar Clase
-                  </Button>
-                )}
+                {selectedClase.estado === "agendada" &&
+                  (isAdmin ||
+                    (isProfessional &&
+                      selectedClase.profesionalId._id === user?.id) ||
+                    (isStudent && selectedClase.alumnoId._id === user?.id)) && (
+                    <Button
+                      variant="outline"
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() =>
+                        handleActualizarClase(selectedClase._id, {
+                          estado: "cancelada",
+                        })
+                      }
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancelar Clase
+                    </Button>
+                  )}
               </div>
             </div>
           )}
@@ -1195,10 +1312,14 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setFormEvaluar(prev => ({ ...prev, puntaje: rating }))}
+                    onClick={() =>
+                      setFormEvaluar((prev) => ({ ...prev, puntaje: rating }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-6 w-6 ${rating <= formEvaluar.puntaje ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-6 w-6 ${rating <= formEvaluar.puntaje ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1210,10 +1331,17 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setFormEvaluar(prev => ({ ...prev, puntualidad: rating }))}
+                    onClick={() =>
+                      setFormEvaluar((prev) => ({
+                        ...prev,
+                        puntualidad: rating,
+                      }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-5 w-5 ${rating <= formEvaluar.puntualidad ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-5 w-5 ${rating <= formEvaluar.puntualidad ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1225,10 +1353,14 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setFormEvaluar(prev => ({ ...prev, calidad: rating }))}
+                    onClick={() =>
+                      setFormEvaluar((prev) => ({ ...prev, calidad: rating }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-5 w-5 ${rating <= formEvaluar.calidad ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-5 w-5 ${rating <= formEvaluar.calidad ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1238,7 +1370,12 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Label>Comentarios</Label>
               <Textarea
                 value={formEvaluar.comentario}
-                onChange={(e) => setFormEvaluar(prev => ({ ...prev, comentario: e.target.value }))}
+                onChange={(e) =>
+                  setFormEvaluar((prev) => ({
+                    ...prev,
+                    comentario: e.target.value,
+                  }))
+                }
                 placeholder="Comparte tu experiencia sobre la clase..."
                 rows={3}
               />
@@ -1248,8 +1385,13 @@ export function CalendarioCompleto({ className = "" }: CalendarioCompletoProps) 
               <Button variant="outline" onClick={() => setModalEvaluar(false)}>
                 Cancelar
               </Button>
-              <Button 
-                onClick={() => selectedClase && handleActualizarClase(selectedClase._id, { evaluacion: formEvaluar })}
+              <Button
+                onClick={() =>
+                  selectedClase &&
+                  handleActualizarClase(selectedClase._id, {
+                    evaluacion: formEvaluar,
+                  })
+                }
                 disabled={loading}
               >
                 {loading ? "Enviando..." : "Enviar Evaluación"}

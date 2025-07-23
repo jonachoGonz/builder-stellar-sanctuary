@@ -9,11 +9,13 @@ export async function initializeUserPlans() {
 
     // Buscar todos los estudiantes que no tienen plan
     const estudiantes = await User.find({ role: "student" });
-    
+
     for (const estudiante of estudiantes) {
       // Verificar si ya tiene un plan
-      const planExistente = await PlanUsuario.findOne({ userId: estudiante._id });
-      
+      const planExistente = await PlanUsuario.findOne({
+        userId: estudiante._id,
+      });
+
       if (!planExistente) {
         // Determinar el tipo de plan basado en el plan del usuario
         let tipoPlan = "trial";
@@ -23,10 +25,14 @@ export async function initializeUserPlans() {
 
         // Crear el plan usando el método estático
         await PlanUsuario.inicializarPlan(estudiante._id, tipoPlan);
-        
-        console.log(`✅ Plan ${tipoPlan} creado para ${estudiante.firstName} ${estudiante.lastName}`);
+
+        console.log(
+          `✅ Plan ${tipoPlan} creado para ${estudiante.firstName} ${estudiante.lastName}`,
+        );
       } else {
-        console.log(`⚡ Plan ya existe para ${estudiante.firstName} ${estudiante.lastName}`);
+        console.log(
+          `⚡ Plan ya existe para ${estudiante.firstName} ${estudiante.lastName}`,
+        );
       }
     }
 
@@ -46,7 +52,7 @@ export async function migrateExistingAppointments() {
 
     // Buscar todas las citas existentes
     const appointments = await Appointment.find({});
-    
+
     for (const appointment of appointments) {
       // Verificar si ya existe en la nueva estructura
       const agendaExistente = await Agenda.findOne({
@@ -64,8 +70,12 @@ export async function migrateExistingAppointments() {
           fecha: appointment.date,
           hora: appointment.startTime,
           horaFin: appointment.endTime,
-          estado: appointment.status === "scheduled" ? "agendada" : 
-                  appointment.status === "completed" ? "completada" : "cancelada",
+          estado:
+            appointment.status === "scheduled"
+              ? "agendada"
+              : appointment.status === "completed"
+                ? "completada"
+                : "cancelada",
           especialidad: appointment.type === "class" ? "teacher" : "teacher", // Default
           titulo: appointment.title || "Sesión",
           notas: appointment.notes,
@@ -96,7 +106,9 @@ export async function migrateExistingAppointments() {
           });
         }
 
-        console.log(`✅ Cita migrada: ${appointment.title} - ${appointment.date}`);
+        console.log(
+          `✅ Cita migrada: ${appointment.title} - ${appointment.date}`,
+        );
       }
     }
 

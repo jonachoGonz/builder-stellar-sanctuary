@@ -46,7 +46,7 @@ export function CreateAppointmentModal({
   // Update form when preSelectedSlot changes
   useEffect(() => {
     if (preSelectedSlot) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         date: preSelectedSlot.date,
         startTime: preSelectedSlot.time,
@@ -59,13 +59,18 @@ export function CreateAppointmentModal({
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.studentId || !formData.date || !formData.startTime) {
+    if (
+      !formData.title ||
+      !formData.studentId ||
+      !formData.date ||
+      !formData.startTime
+    ) {
       alert("Por favor complete todos los campos obligatorios");
       return;
     }
 
     // Calculate end time
-    const [hours, minutes] = formData.startTime.split(':');
+    const [hours, minutes] = formData.startTime.split(":");
     const startDate = new Date();
     startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     const endDate = new Date(startDate.getTime() + formData.duration * 60000);
@@ -122,10 +127,14 @@ export function CreateAppointmentModal({
                   <SelectValue placeholder="Seleccionar tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="functional">Entrenamiento Funcional</SelectItem>
+                  <SelectItem value="functional">
+                    Entrenamiento Funcional
+                  </SelectItem>
                   <SelectItem value="strength">Musculación</SelectItem>
                   <SelectItem value="cardio">Cardio</SelectItem>
-                  <SelectItem value="nutrition">Consulta Nutricional</SelectItem>
+                  <SelectItem value="nutrition">
+                    Consulta Nutricional
+                  </SelectItem>
                   <SelectItem value="psychology">Sesión Psicológica</SelectItem>
                   <SelectItem value="yoga">Yoga</SelectItem>
                   <SelectItem value="pilates">Pilates</SelectItem>
@@ -161,7 +170,7 @@ export function CreateAppointmentModal({
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
             <div>
@@ -177,7 +186,9 @@ export function CreateAppointmentModal({
               <Label htmlFor="duration">Duración (min)</Label>
               <Select
                 value={formData.duration.toString()}
-                onValueChange={(value) => handleInputChange("duration", parseInt(value))}
+                onValueChange={(value) =>
+                  handleInputChange("duration", parseInt(value))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -229,8 +240,8 @@ export function CreateAppointmentModal({
             <Button variant="outline" onClick={handleClose} disabled={loading}>
               Cancelar
             </Button>
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               disabled={loading}
               className="btn-primary"
             >

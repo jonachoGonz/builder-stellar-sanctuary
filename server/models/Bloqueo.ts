@@ -24,7 +24,7 @@ const BloqueoSchema = new Schema<IBloqueo>(
     profesionalId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: function() {
+      required: function () {
         return this.tipo === "profesional";
       },
     },
@@ -35,7 +35,7 @@ const BloqueoSchema = new Schema<IBloqueo>(
     hora: {
       type: String,
       match: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-      required: function() {
+      required: function () {
         return !this.todoElDia;
       },
     },
@@ -70,7 +70,7 @@ const BloqueoSchema = new Schema<IBloqueo>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes for better performance
@@ -84,14 +84,14 @@ BloqueoSchema.virtual("fechaFormateada").get(function () {
 });
 
 // Method to check if block is currently active
-BloqueoSchema.methods.estaActivo = function() {
+BloqueoSchema.methods.estaActivo = function () {
   if (!this.activo) return false;
   if (this.fechaExpiracion && new Date() > this.fechaExpiracion) return false;
   return true;
 };
 
 // Static method to find active blocks for a date
-BloqueoSchema.statics.bloquesActivosPorFecha = function(fecha: Date) {
+BloqueoSchema.statics.bloquesActivosPorFecha = function (fecha: Date) {
   return this.find({
     fecha: {
       $gte: new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()),

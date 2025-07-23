@@ -12,7 +12,7 @@ export default function Diagnostic() {
             Herramientas para diagnosticar problemas de conectividad
           </p>
         </div>
-        
+
         <ConnectivityDiagnostic />
       </div>
     </div>
