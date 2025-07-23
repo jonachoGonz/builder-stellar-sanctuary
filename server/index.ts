@@ -16,6 +16,7 @@ import classRoutes from "./routes/classes";
 import testRoutes from "./routes/test";
 import adminRoutes from "./routes/admin";
 import calendarioRoutes from "./routes/calendario";
+import plansRoutes from "./routes/plans";
 
 export function createServer() {
   const app = express();
