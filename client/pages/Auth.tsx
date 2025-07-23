@@ -63,8 +63,26 @@ export function Auth() {
     termsAccepted: false,
   });
 
+  // Check Google OAuth availability
+  useEffect(() => {
+    const checkGoogleOAuth = async () => {
+      try {
+        const response = await apiCall("/auth/google/status");
+        if (response.ok) {
+          const data = await response.json();
+          setGoogleOAuthAvailable(data.configured);
+        }
+      } catch (error) {
+        console.log("Google OAuth status check failed:", error);
+        setGoogleOAuthAvailable(false);
+      }
+    };
+
+    checkGoogleOAuth();
+  }, []);
+
   // Handle OAuth errors from URL params
-  useState(() => {
+  useEffect(() => {
     const oauthError = searchParams.get("error");
     if (oauthError) {
       switch (oauthError) {
@@ -91,7 +109,7 @@ export function Auth() {
           setError("Error durante la autenticación.");
       }
     }
-  });
+  }, [searchParams]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
