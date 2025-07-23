@@ -97,7 +97,7 @@ export function Home() {
     },
   ];
 
-  // Fetch professionals from API
+  // Fetch professionals and plans from API
   useEffect(() => {
     const fetchProfessionals = async () => {
       try {
@@ -266,7 +266,7 @@ export function Home() {
                   </h3>
                   <p className="text-gray-600">
                     Nuestro equipo multidisciplinario de profesionales te
-                    acompa��a en cada paso de tu transformación integral.
+                    acompaña en cada paso de tu transformación integral.
                   </p>
                 </div>
               </div>
