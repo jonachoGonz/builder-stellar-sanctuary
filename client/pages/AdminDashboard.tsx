@@ -70,7 +70,7 @@ export function AdminDashboard() {
     limit: 20,
   });
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"users" | "calendar">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "calendar" | "plans">("users");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
