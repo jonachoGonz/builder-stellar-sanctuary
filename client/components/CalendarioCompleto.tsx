@@ -203,6 +203,18 @@ export function CalendarioCompleto({
     }
   }, [user, currentDate, filtros]);
 
+  // Auto-refresh calendar every 5 minutes to update past times and availability
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      if (user) {
+        console.log("🔄 Auto-refreshing calendar for real-time updates");
+        generateScheduleGrid(); // Regenerate grid to update past times
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(refreshInterval);
+  }, [agenda, bloqueos, currentDate, user]);
+
   useEffect(() => {
     generateScheduleGrid();
   }, [agenda, bloqueos, currentDate]);
@@ -989,7 +1001,7 @@ export function CalendarioCompleto({
                 "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
             </p>
             <p className="text-xs text-blue-600 mt-2">
-              �� En móvil: Mantén presionado un horario para bloquearlo
+              📱 En móvil: Mantén presionado un horario para bloquearlo
             </p>
           </div>
         </CardContent>
