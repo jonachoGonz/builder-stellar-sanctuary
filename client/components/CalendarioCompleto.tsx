@@ -108,6 +108,7 @@ interface TimeSlot {
   canEdit: boolean;
   canSchedule: boolean;
   isGlobalBlock?: boolean;
+  isPastTime?: boolean;
 }
 
 interface Filtros {
