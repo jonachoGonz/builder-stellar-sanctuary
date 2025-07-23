@@ -1140,4 +1140,184 @@ router.get(
   },
 );
 
+// In-memory storage for blocked times (in production, use MongoDB collection)
+let blockedTimes: any[] = [];
+
+// Get blocked times
+router.get(
+  "/blocked-times",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const currentUser = (req as any).currentUser;
+
+      let filteredBlocks = blockedTimes;
+
+      // Filter blocked times based on user role
+      if (currentUser.role !== "admin") {
+        filteredBlocks = blockedTimes.filter(
+          block => block.type === "global" || block.professionalId === currentUser._id
+        );
+      }
+
+      res.json({
+        success: true,
+        data: filteredBlocks,
+      });
+    } catch (error) {
+      console.error("Error fetching blocked times:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Create blocked time
+router.post(
+  "/blocked-times",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const currentUser = (req as any).currentUser;
+      const { date, time, day, type, professionalId } = req.body;
+
+      // Validate permissions
+      if (type === "global" && currentUser.role !== "admin") {
+        return res.status(403).json({
+          success: false,
+          message: "Solo administradores pueden crear bloqueos globales",
+        });
+      }
+
+      const newBlock = {
+        _id: new Date().getTime().toString(),
+        date,
+        time,
+        day,
+        type: type || "professional",
+        professionalId: professionalId || currentUser._id,
+        createdAt: new Date(),
+      };
+
+      blockedTimes.push(newBlock);
+
+      res.json({
+        success: true,
+        message: "Horario bloqueado exitosamente",
+        data: newBlock,
+      });
+    } catch (error) {
+      console.error("Error creating blocked time:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Delete blocked time
+router.delete(
+  "/blocked-times/:id",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const currentUser = (req as any).currentUser;
+      const { id } = req.params;
+
+      const blockIndex = blockedTimes.findIndex(block => block._id === id);
+
+      if (blockIndex === -1) {
+        return res.status(404).json({
+          success: false,
+          message: "Bloqueo no encontrado",
+        });
+      }
+
+      const block = blockedTimes[blockIndex];
+
+      // Check permissions
+      if (currentUser.role !== "admin" && block.professionalId !== currentUser._id) {
+        return res.status(403).json({
+          success: false,
+          message: "No tienes permisos para eliminar este bloqueo",
+        });
+      }
+
+      blockedTimes.splice(blockIndex, 1);
+
+      res.json({
+        success: true,
+        message: "Bloqueo eliminado exitosamente",
+      });
+    } catch (error) {
+      console.error("Error deleting blocked time:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Add evaluation to appointment
+router.post(
+  "/appointments/:id/evaluate",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+      const { rating, comments, punctuality, quality, overall } = req.body;
+
+      // Find the appointment
+      const appointment = await Appointment.findById(id).populate("student professional");
+
+      if (!appointment) {
+        return res.status(404).json({
+          success: false,
+          message: "Cita no encontrada",
+        });
+      }
+
+      // Verify that the user is the student of this appointment
+      if (appointment.student._id.toString() !== user.userId) {
+        return res.status(403).json({
+          success: false,
+          message: "Solo el estudiante puede evaluar la clase",
+        });
+      }
+
+      // Update appointment with evaluation
+      appointment.evaluation = {
+        rating: overall,
+        comments,
+        punctuality,
+        quality,
+        overall,
+        evaluatedAt: new Date(),
+      };
+
+      await appointment.save();
+
+      res.json({
+        success: true,
+        message: "Evaluación guardada exitosamente",
+        data: appointment,
+      });
+    } catch (error) {
+      console.error("Error saving evaluation:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
 export default router;
