@@ -92,9 +92,9 @@ export function EnhancedUnifiedCalendar({
   
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
-    professional: "",
-    student: "",
-    specialty: "",
+    professional: "all",
+    student: "all",
+    specialty: "all",
     status: "all",
     dateFrom: "",
     dateTo: "",
