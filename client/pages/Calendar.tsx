@@ -1,5 +1,5 @@
 import { useAuth } from "../contexts/AuthContext";
-import { UnifiedCalendar } from "../components/UnifiedCalendar";
+import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 
 export function Calendar() {
   const { user } = useAuth();
