@@ -89,6 +89,7 @@ export function EnhancedUnifiedCalendar({
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [blockedTimes, setBlockedTimes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
   
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
