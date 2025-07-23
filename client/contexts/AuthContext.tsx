@@ -128,38 +128,38 @@ console.log(
 const testConnectivity = async () => {
   try {
     console.log("🌐 Testing API connectivity...");
+    console.log("🔗 API Base URL:", API_BASE_URL);
 
-    // For deployment environments, use a simpler health check
-    const testUrls = [
-      `${API_BASE_URL}/health`,
-      `${API_BASE_URL}/ping`,
-      `${API_BASE_URL}/auth/google/status`
-    ];
+    // Simple connectivity test - just try the main API path
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: "GET",
+      signal: AbortSignal.timeout(8000) // Longer timeout for deployment
+    });
 
-    for (const url of testUrls) {
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          signal: AbortSignal.timeout(5000)
-        });
+    console.log(`📡 Connectivity test result:`, {
+      url: `${API_BASE_URL}/health`,
+      status: response.status,
+      ok: response.ok,
+    });
 
-        console.log(`📡 Connectivity test result for ${url}:`, {
-          status: response.status,
-          ok: response.ok,
-        });
-
-        if (response.ok || response.status < 500) {
-          return true;
-        }
-      } catch (urlError) {
-        console.warn(`⚠️ Test failed for ${url}:`, urlError.message);
-      }
-    }
-
-    return false;
+    // Accept any response that isn't a network error
+    return response.status !== undefined;
   } catch (error) {
-    console.error("❌ All connectivity tests failed:", error);
-    return false;
+    console.error("❌ Connectivity test failed:", error);
+
+    // In deployment, sometimes the health endpoint might not exist
+    // Try a basic ping to see if server is responding at all
+    try {
+      const basicTest = await fetch(window.location.origin, {
+        method: "HEAD",
+        signal: AbortSignal.timeout(5000)
+      });
+      console.log("ℹ️ Basic server test:", basicTest.status);
+      return basicTest.status < 500;
+    } catch (basicError) {
+      console.error("❌ Basic server test failed:", basicError);
+      return false;
+    }
   }
 };
 
@@ -177,15 +177,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("✅ API connectivity confirmed");
         checkAuth();
       } else {
-        console.error("❌ API not reachable, running in offline mode");
-        // In deployment, still try to check auth in case token is valid
-        // but connectivity test failed due to different endpoints
-        try {
-          await checkAuth();
-        } catch (error) {
-          console.warn("⚠️ Auth check failed in offline mode:", error);
-          setIsLoading(false);
-        }
+        console.error("❌ API not reachable, attempting auth check anyway");
+        // Still try auth check - connectivity test might give false negatives
+        checkAuth();
       }
     };
 
