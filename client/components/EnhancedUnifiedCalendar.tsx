@@ -145,6 +145,20 @@ export function EnhancedUnifiedCalendar({
     }
   }, [user, currentDate, filters]);
 
+  // Regenerate schedule grid when appointments or blocked times change
+  useEffect(() => {
+    generateScheduleGrid();
+  }, [appointments, blockedTimes, currentDate]);
+
+  // Cleanup touch timer on unmount
+  useEffect(() => {
+    return () => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+      }
+    };
+  }, [touchTimer]);
+
   // Test basic connectivity
   const testConnectivity = async () => {
     try {
