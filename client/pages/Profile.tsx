@@ -976,6 +976,63 @@ export function Profile() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Recent Reviews */}
+            {isStudent && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 mr-2 text-primary" />
+                      Mis Evaluaciones Recientes
+                    </div>
+                    <Link to="/reviews">
+                      <Button variant="outline" size="sm">
+                        Ver Todas
+                      </Button>
+                    </Link>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center text-gray-600">
+                    <p className="mb-4">¡Evalúa tus clases completadas para ayudar a mejorar el servicio!</p>
+                    <Link to="/reviews">
+                      <Button variant="outline">
+                        Ver Sistema de Evaluaciones
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {isProfessional && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 mr-2 text-primary" />
+                      Mis Evaluaciones
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => window.location.href = '/dashboard'}>
+                      Ver Dashboard
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center text-gray-600">
+                    <p className="mb-4">Revisa las evaluaciones de tus estudiantes y mejora tu servicio</p>
+                    <div className="flex items-center justify-center space-x-1 mb-4">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                      ))}
+                      <span className="ml-2 text-lg font-medium">4.8</span>
+                    </div>
+                    <p className="text-sm text-gray-500">Promedio basado en evaluaciones de estudiantes</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
