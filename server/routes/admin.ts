@@ -1174,7 +1174,8 @@ router.get(
       // Filter blocked times based on user role
       if (currentUser.role !== "admin") {
         filteredBlocks = blockedTimes.filter(
-          block => block.type === "global" || block.professionalId === currentUser._id
+          (block) =>
+            block.type === "global" || block.professionalId === currentUser._id,
         );
       }
 
@@ -1247,7 +1248,7 @@ router.delete(
       const currentUser = (req as any).currentUser;
       const { id } = req.params;
 
-      const blockIndex = blockedTimes.findIndex(block => block._id === id);
+      const blockIndex = blockedTimes.findIndex((block) => block._id === id);
 
       if (blockIndex === -1) {
         return res.status(404).json({
@@ -1259,7 +1260,10 @@ router.delete(
       const block = blockedTimes[blockIndex];
 
       // Check permissions
-      if (currentUser.role !== "admin" && block.professionalId !== currentUser._id) {
+      if (
+        currentUser.role !== "admin" &&
+        block.professionalId !== currentUser._id
+      ) {
         return res.status(403).json({
           success: false,
           message: "No tienes permisos para eliminar este bloqueo",
@@ -1293,7 +1297,9 @@ router.post(
       const { rating, comments, punctuality, quality, overall } = req.body;
 
       // Find the appointment
-      const appointment = await Appointment.findById(id).populate("student professional");
+      const appointment = await Appointment.findById(id).populate(
+        "student professional",
+      );
 
       if (!appointment) {
         return res.status(404).json({

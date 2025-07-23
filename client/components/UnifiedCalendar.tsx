@@ -20,12 +20,7 @@ import {
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { CreateAppointmentModal } from "./CreateAppointmentModal";
 import { ProfessionalConfigModal } from "./ProfessionalConfigModal";
 
@@ -55,14 +50,14 @@ export function UnifiedCalendar({
 }: CalendarProps) {
   const { user } = useAuth();
   const { isAdmin, isProfessional, isStudent } = usePermissions();
-  
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [appointments, setAppointments] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<TimeSlot[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
@@ -70,7 +65,19 @@ export function UnifiedCalendar({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-  const timeSlots = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+  const timeSlots = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+  ];
 
   useEffect(() => {
     if (user) {
@@ -81,10 +88,7 @@ export function UnifiedCalendar({
   const loadData = async () => {
     setLoading(true);
     try {
-      await Promise.all([
-        loadAppointments(),
-        loadUsers(),
-      ]);
+      await Promise.all([loadAppointments(), loadUsers()]);
       generateScheduleGrid();
     } catch (error) {
       console.error("Error loading calendar data:", error);
@@ -115,7 +119,7 @@ export function UnifiedCalendar({
       }
 
       const response = await apiCall(`/admin/appointments?${params}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setAppointments(data.data.appointments || []);
@@ -129,7 +133,9 @@ export function UnifiedCalendar({
     try {
       if (isProfessional || isAdmin) {
         // Load students
-        const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
+        const studentsResponse = await apiCall(
+          "/admin/users?role=student&limit=100",
+        );
         if (studentsResponse.ok) {
           const studentsData = await studentsResponse.json();
           setStudents(studentsData.data.users || []);
@@ -142,7 +148,8 @@ export function UnifiedCalendar({
         if (professionalsResponse.ok) {
           const professionalsData = await professionalsResponse.json();
           const professionalUsers = professionalsData.data.users.filter(
-            (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
+            (u: any) =>
+              ["teacher", "nutritionist", "psychologist"].includes(u.role),
           );
           setProfessionals(professionalUsers);
         }
@@ -154,7 +161,7 @@ export function UnifiedCalendar({
 
   const generateScheduleGrid = () => {
     const grid: TimeSlot[] = [];
-    
+
     days.forEach((day, dayIndex) => {
       timeSlots.forEach((time) => {
         // Find appointment for this slot
@@ -207,15 +214,15 @@ export function UnifiedCalendar({
 
   const handleBlockTime = async (slot: TimeSlot) => {
     if (!isProfessional && !isAdmin) return;
-    
+
     // Toggle blocked status
     const updatedSchedule = schedule.map((s) =>
       s.day === slot.day && s.time === slot.time
         ? { ...s, isBlocked: !s.isBlocked }
-        : s
+        : s,
     );
     setSchedule(updatedSchedule);
-    
+
     // TODO: Save blocked times to server
   };
 
@@ -314,13 +321,13 @@ export function UnifiedCalendar({
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
-    
-    return `${startOfWeek.toLocaleDateString("es-ES", { 
-      day: "numeric", 
-      month: "short" 
-    })} - ${endOfWeek.toLocaleDateString("es-ES", { 
-      day: "numeric", 
-      month: "short" 
+
+    return `${startOfWeek.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
+    })} - ${endOfWeek.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
     })}`;
   };
 
@@ -382,7 +389,7 @@ export function UnifiedCalendar({
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {showCreateButton && (isProfessional || isAdmin) && (
                 <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -391,7 +398,10 @@ export function UnifiedCalendar({
                 </Button>
               )}
               {showConfigButton && isProfessional && (
-                <Button variant="outline" onClick={() => setIsConfigModalOpen(true)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsConfigModalOpen(true)}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Configuración
                 </Button>
@@ -399,7 +409,7 @@ export function UnifiedCalendar({
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           {loading && (
             <div className="text-center py-4">
@@ -426,9 +436,9 @@ export function UnifiedCalendar({
                 </div>
                 {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
                   const slot = schedule.find(
-                    (s) => s.time === time && s.dayIndex === dayIndex
+                    (s) => s.time === time && s.dayIndex === dayIndex,
                   );
-                  
+
                   return (
                     <div key={`${time}-${dayIndex}`} className="relative">
                       <button
@@ -440,25 +450,30 @@ export function UnifiedCalendar({
                           }
                         }}
                         className={`w-full h-12 border rounded-md text-xs font-medium transition-colors ${
-                          slot ? getSlotStyles(slot) : "bg-gray-50 border-gray-200"
+                          slot
+                            ? getSlotStyles(slot)
+                            : "bg-gray-50 border-gray-200"
                         }`}
                         disabled={!slot?.canEdit && !slot?.hasClass}
-                        title={slot?.hasClass ? `${slot.classTitle}\nClick para ver detalles` : ""}
+                        title={
+                          slot?.hasClass
+                            ? `${slot.classTitle}\nClick para ver detalles`
+                            : ""
+                        }
                       >
                         {slot ? getSlotContent(slot) : ""}
                       </button>
-                      
+
                       {/* Appointment details tooltip */}
                       {slot?.hasClass && slot.appointment && (
                         <div className="absolute bottom-0 left-0 right-0 text-xs">
                           <div className="bg-white border border-gray-200 rounded p-1 shadow-sm">
                             <div className="font-medium truncate">
-                              {slot.appointment.student ? 
-                                `${slot.appointment.student.firstName} ${slot.appointment.student.lastName}` :
-                                slot.appointment.professional ? 
-                                  `${slot.appointment.professional.firstName} ${slot.appointment.professional.lastName}` :
-                                  "Sin asignar"
-                              }
+                              {slot.appointment.student
+                                ? `${slot.appointment.student.firstName} ${slot.appointment.student.lastName}`
+                                : slot.appointment.professional
+                                  ? `${slot.appointment.professional.firstName} ${slot.appointment.professional.lastName}`
+                                  : "Sin asignar"}
                             </div>
                             {slot.appointment.location && (
                               <div className="text-gray-500 truncate">
@@ -500,9 +515,12 @@ export function UnifiedCalendar({
           {/* Role-specific information */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              {isAdmin && "Como administrador, puedes gestionar todas las citas y horarios."}
-              {isProfessional && "Haz click en un horario libre para crear una cita. Click derecho para bloquear horarios."}
-              {isStudent && "Aquí puedes ver tus clases programadas. Contacta a tu profesional para programar nuevas citas."}
+              {isAdmin &&
+                "Como administrador, puedes gestionar todas las citas y horarios."}
+              {isProfessional &&
+                "Haz click en un horario libre para crear una cita. Click derecho para bloquear horarios."}
+              {isStudent &&
+                "Aquí puedes ver tus clases programadas. Contacta a tu profesional para programar nuevas citas."}
             </p>
           </div>
         </CardContent>
@@ -537,33 +555,40 @@ export function UnifiedCalendar({
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold">{selectedAppointment.title}</h3>
-                <p className="text-sm text-gray-600">{selectedAppointment.type}</p>
+                <p className="text-sm text-gray-600">
+                  {selectedAppointment.type}
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium">Fecha:</span>
-                  <div>{new Date(selectedAppointment.date).toLocaleDateString("es-ES")}</div>
+                  <div>
+                    {new Date(selectedAppointment.date).toLocaleDateString(
+                      "es-ES",
+                    )}
+                  </div>
                 </div>
                 <div>
                   <span className="font-medium">Horario:</span>
-                  <div>{selectedAppointment.startTime} - {selectedAppointment.endTime}</div>
+                  <div>
+                    {selectedAppointment.startTime} -{" "}
+                    {selectedAppointment.endTime}
+                  </div>
                 </div>
                 <div>
                   <span className="font-medium">Estudiante:</span>
                   <div>
-                    {selectedAppointment.student ? 
-                      `${selectedAppointment.student.firstName} ${selectedAppointment.student.lastName}` :
-                      "Sin asignar"
-                    }
+                    {selectedAppointment.student
+                      ? `${selectedAppointment.student.firstName} ${selectedAppointment.student.lastName}`
+                      : "Sin asignar"}
                   </div>
                 </div>
                 <div>
                   <span className="font-medium">Profesional:</span>
                   <div>
-                    {selectedAppointment.professional ? 
-                      `${selectedAppointment.professional.firstName} ${selectedAppointment.professional.lastName}` :
-                      "Sin asignar"
-                    }
+                    {selectedAppointment.professional
+                      ? `${selectedAppointment.professional.firstName} ${selectedAppointment.professional.lastName}`
+                      : "Sin asignar"}
                   </div>
                 </div>
               </div>
@@ -580,24 +605,37 @@ export function UnifiedCalendar({
                 </div>
               )}
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
                   Cerrar
                 </Button>
                 {(isAdmin ||
-                  (isProfessional && selectedAppointment.professional?._id === user?.id) ||
-                  (isStudent && selectedAppointment.student?._id === user?.id)
-                ) && (
+                  (isProfessional &&
+                    selectedAppointment.professional?._id === user?.id) ||
+                  (isStudent &&
+                    selectedAppointment.student?._id === user?.id)) && (
                   <>
                     <Button
                       variant="outline"
                       className="text-red-600 hover:text-red-800"
-                      onClick={() => handleCancelAppointment(selectedAppointment._id)}
+                      onClick={() =>
+                        handleCancelAppointment(selectedAppointment._id)
+                      }
                     >
                       <XCircle className="h-4 w-4 mr-2" />
                       Cancelar Cita
                     </Button>
-                    {(isAdmin || (isProfessional && selectedAppointment.professional?._id === user?.id)) && (
-                      <Button onClick={() => handleEditAppointment(selectedAppointment)}>
+                    {(isAdmin ||
+                      (isProfessional &&
+                        selectedAppointment.professional?._id ===
+                          user?.id)) && (
+                      <Button
+                        onClick={() =>
+                          handleEditAppointment(selectedAppointment)
+                        }
+                      >
                         <Edit className="h-4 w-4 mr-2" />
                         Editar
                       </Button>

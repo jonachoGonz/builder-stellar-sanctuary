@@ -27,12 +27,7 @@ import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
   Select,
   SelectContent,
@@ -81,7 +76,7 @@ export function EnhancedUnifiedCalendar({
 }: CalendarProps) {
   const { user } = useAuth();
   const { isAdmin, isProfessional, isStudent } = usePermissions();
-  
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [appointments, setAppointments] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<TimeSlot[]>([]);
@@ -92,9 +87,11 @@ export function EnhancedUnifiedCalendar({
   const [networkError, setNetworkError] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState<Date | null>(null);
+  const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState<Date | null>(
+    null,
+  );
   const [authError, setAuthError] = useState(false);
-  
+
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
     professional: "all",
@@ -105,7 +102,7 @@ export function EnhancedUnifiedCalendar({
     dateTo: "",
   });
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
@@ -114,7 +111,7 @@ export function EnhancedUnifiedCalendar({
   const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  
+
   // Evaluation form
   const [evaluation, setEvaluation] = useState({
     rating: 5,
@@ -128,9 +125,10 @@ export function EnhancedUnifiedCalendar({
   // Generate 30-minute time slots from 8:00 to 20:30
   const timeSlots = [];
   for (let hour = 8; hour <= 20; hour++) {
-    timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
-    if (hour < 20) { // Don't add :30 for the last hour
-      timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
+    timeSlots.push(`${hour.toString().padStart(2, "0")}:00`);
+    if (hour < 20) {
+      // Don't add :30 for the last hour
+      timeSlots.push(`${hour.toString().padStart(2, "0")}:30`);
     }
   }
   const specialties = ["teacher", "nutritionist", "psychologist"];
@@ -165,12 +163,12 @@ export function EnhancedUnifiedCalendar({
   const testConnectivity = async () => {
     try {
       console.log("🔍 Testing connectivity...");
-      const response = await fetch(window.location.origin + '/api/test', {
-        method: 'GET',
+      const response = await fetch(window.location.origin + "/api/test", {
+        method: "GET",
         headers: {
-          'Cache-Control': 'no-cache'
+          "Cache-Control": "no-cache",
         },
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(5000), // 5 second timeout
       });
 
       console.log("👍 Connectivity test response:", response.status);
@@ -200,23 +198,38 @@ export function EnhancedUnifiedCalendar({
 
       let hasAuthError = false;
 
-      if (appointmentsResult.status === 'rejected') {
-        console.error("❌ Failed to load appointments:", appointmentsResult.reason);
-        if (appointmentsResult.reason?.message?.includes('401') || appointmentsResult.reason?.message?.includes('403')) {
+      if (appointmentsResult.status === "rejected") {
+        console.error(
+          "❌ Failed to load appointments:",
+          appointmentsResult.reason,
+        );
+        if (
+          appointmentsResult.reason?.message?.includes("401") ||
+          appointmentsResult.reason?.message?.includes("403")
+        ) {
           hasAuthError = true;
         }
       }
 
-      if (usersResult.status === 'rejected') {
+      if (usersResult.status === "rejected") {
         console.error("❌ Failed to load users:", usersResult.reason);
-        if (usersResult.reason?.message?.includes('401') || usersResult.reason?.message?.includes('403')) {
+        if (
+          usersResult.reason?.message?.includes("401") ||
+          usersResult.reason?.message?.includes("403")
+        ) {
           hasAuthError = true;
         }
       }
 
-      if (blockedTimesResult.status === 'rejected') {
-        console.error("❌ Failed to load blocked times:", blockedTimesResult.reason);
-        if (blockedTimesResult.reason?.message?.includes('401') || blockedTimesResult.reason?.message?.includes('403')) {
+      if (blockedTimesResult.status === "rejected") {
+        console.error(
+          "❌ Failed to load blocked times:",
+          blockedTimesResult.reason,
+        );
+        if (
+          blockedTimesResult.reason?.message?.includes("401") ||
+          blockedTimesResult.reason?.message?.includes("403")
+        ) {
           hasAuthError = true;
         }
       }
@@ -224,9 +237,11 @@ export function EnhancedUnifiedCalendar({
       setAuthError(hasAuthError);
 
       // Check if all requests failed (network issue)
-      const allFailed = results.every(result => result.status === 'rejected');
+      const allFailed = results.every((result) => result.status === "rejected");
       if (allFailed) {
-        console.error("🌐 All API calls failed - likely network connectivity issue");
+        console.error(
+          "🌐 All API calls failed - likely network connectivity issue",
+        );
         setNetworkError(true);
         setOfflineMode(true);
       } else {
@@ -286,19 +301,22 @@ export function EnhancedUnifiedCalendar({
       console.log("📡 Appointments response:", {
         status: response.status,
         ok: response.ok,
-        statusText: response.statusText
+        statusText: response.statusText,
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Appointments loaded:", data.data?.appointments?.length || 0);
+        console.log(
+          "✅ Appointments loaded:",
+          data.data?.appointments?.length || 0,
+        );
         setAppointments(data.data.appointments || []);
       } else {
         const errorText = await response.text();
         console.error("❌ Appointments API error:", {
           status: response.status,
           statusText: response.statusText,
-          error: errorText
+          error: errorText,
         });
         setAppointments([]); // Set empty array to prevent UI issues
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -319,41 +337,48 @@ export function EnhancedUnifiedCalendar({
       if (isProfessional || isAdmin) {
         console.log("🔍 Loading students...");
         promises.push(
-          apiCall("/admin/users?role=student&limit=100")
-            .then(response => {
-              if (response.ok) {
-                return response.json().then(data => {
-                  console.log("✅ Students loaded:", data.data?.users?.length || 0);
-                  setStudents(data.data.users || []);
-                });
-              } else {
-                console.error("❌ Students API error:", response.status);
-                setStudents([]);
-                throw new Error(`Students API error: ${response.status}`);
-              }
-            })
+          apiCall("/admin/users?role=student&limit=100").then((response) => {
+            if (response.ok) {
+              return response.json().then((data) => {
+                console.log(
+                  "✅ Students loaded:",
+                  data.data?.users?.length || 0,
+                );
+                setStudents(data.data.users || []);
+              });
+            } else {
+              console.error("❌ Students API error:", response.status);
+              setStudents([]);
+              throw new Error(`Students API error: ${response.status}`);
+            }
+          }),
         );
       }
 
       if (isAdmin || isStudent) {
         console.log("🔍 Loading professionals...");
         promises.push(
-          apiCall("/admin/users?limit=100")
-            .then(response => {
-              if (response.ok) {
-                return response.json().then(data => {
-                  const professionalUsers = data.data.users?.filter(
-                    (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
+          apiCall("/admin/users?limit=100").then((response) => {
+            if (response.ok) {
+              return response.json().then((data) => {
+                const professionalUsers =
+                  data.data.users?.filter((u: any) =>
+                    ["teacher", "nutritionist", "psychologist"].includes(
+                      u.role,
+                    ),
                   ) || [];
-                  console.log("✅ Professionals loaded:", professionalUsers.length);
-                  setProfessionals(professionalUsers);
-                });
-              } else {
-                console.error("❌ Professionals API error:", response.status);
-                setProfessionals([]);
-                throw new Error(`Professionals API error: ${response.status}`);
-              }
-            })
+                console.log(
+                  "✅ Professionals loaded:",
+                  professionalUsers.length,
+                );
+                setProfessionals(professionalUsers);
+              });
+            } else {
+              console.error("❌ Professionals API error:", response.status);
+              setProfessionals([]);
+              throw new Error(`Professionals API error: ${response.status}`);
+            }
+          }),
         );
       }
 
@@ -396,7 +421,7 @@ export function EnhancedUnifiedCalendar({
     const grid: TimeSlot[] = [];
     const startOfWeek = new Date(currentDate);
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
-    
+
     days.forEach((day, dayIndex) => {
       timeSlots.forEach((time) => {
         const slotDate = new Date(startOfWeek);
@@ -417,11 +442,20 @@ export function EnhancedUnifiedCalendar({
             if (aptStart === time) return true;
 
             // Check if current time slot falls within appointment duration
-            const currentTimeMinutes = parseInt(time.split(':')[0]) * 60 + parseInt(time.split(':')[1]);
-            const startMinutes = parseInt(aptStart.split(':')[0]) * 60 + parseInt(aptStart.split(':')[1]);
-            const endMinutes = aptEnd ? parseInt(aptEnd.split(':')[0]) * 60 + parseInt(aptEnd.split(':')[1]) : startMinutes + 60;
+            const currentTimeMinutes =
+              parseInt(time.split(":")[0]) * 60 + parseInt(time.split(":")[1]);
+            const startMinutes =
+              parseInt(aptStart.split(":")[0]) * 60 +
+              parseInt(aptStart.split(":")[1]);
+            const endMinutes = aptEnd
+              ? parseInt(aptEnd.split(":")[0]) * 60 +
+                parseInt(aptEnd.split(":")[1])
+              : startMinutes + 60;
 
-            return currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes;
+            return (
+              currentTimeMinutes >= startMinutes &&
+              currentTimeMinutes < endMinutes
+            );
           }
           return false;
         });
@@ -429,8 +463,12 @@ export function EnhancedUnifiedCalendar({
         // Check if this time is blocked
         const isBlocked = blockedTimes.some((block) => {
           return (
-            (block.type === "global" && (block.date === dateStr || block.day === dayIndex) && block.time === time) ||
-            (block.professionalId === user?.id && block.day === dayIndex && block.time === time) ||
+            (block.type === "global" &&
+              (block.date === dateStr || block.day === dayIndex) &&
+              block.time === time) ||
+            (block.professionalId === user?.id &&
+              block.day === dayIndex &&
+              block.time === time) ||
             (block.date === dateStr && block.time === time)
           );
         });
@@ -461,7 +499,9 @@ export function EnhancedUnifiedCalendar({
           appointment,
           canEdit,
           canSchedule,
-          isGlobalBlock: blockedTimes.some(b => b.type === "global" && b.date === dateStr && b.time === time),
+          isGlobalBlock: blockedTimes.some(
+            (b) => b.type === "global" && b.date === dateStr && b.time === time,
+          ),
         });
       });
     });
@@ -535,12 +575,12 @@ export function EnhancedUnifiedCalendar({
         appointmentData.startTime = selectedSlot.time;
 
         // Calculate end time based on duration
-        const [hours, minutes] = selectedSlot.time.split(':');
+        const [hours, minutes] = selectedSlot.time.split(":");
         const startMinutes = parseInt(hours) * 60 + parseInt(minutes);
         const endMinutes = startMinutes + (appointmentData.duration || 60);
         const endHours = Math.floor(endMinutes / 60);
         const endMins = endMinutes % 60;
-        appointmentData.endTime = `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
+        appointmentData.endTime = `${endHours.toString().padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`;
       }
 
       const response = await apiCall("/admin/appointments", {
@@ -552,7 +592,7 @@ export function EnhancedUnifiedCalendar({
         const newAppointment = await response.json();
 
         // Immediately update local state for instant visual feedback
-        setAppointments(prev => [...prev, newAppointment.data]);
+        setAppointments((prev) => [...prev, newAppointment.data]);
 
         // Regenerate schedule grid to show new appointment immediately
         generateScheduleGrid();
@@ -624,14 +664,23 @@ export function EnhancedUnifiedCalendar({
 
     try {
       setLoading(true);
-      const response = await apiCall(`/admin/appointments/${selectedAppointment._id}/evaluate`, {
-        method: "POST",
-        body: JSON.stringify(evaluation),
-      });
+      const response = await apiCall(
+        `/admin/appointments/${selectedAppointment._id}/evaluate`,
+        {
+          method: "POST",
+          body: JSON.stringify(evaluation),
+        },
+      );
 
       if (response.ok) {
         setIsEvaluationModalOpen(false);
-        setEvaluation({ rating: 5, comments: "", punctuality: 5, quality: 5, overall: 5 });
+        setEvaluation({
+          rating: 5,
+          comments: "",
+          punctuality: 5,
+          quality: 5,
+          overall: 5,
+        });
         alert("Evaluación enviada exitosamente");
       }
     } catch (error) {
@@ -657,7 +706,7 @@ export function EnhancedUnifiedCalendar({
           ...blockData,
           createdAt: new Date(),
         };
-        setBlockedTimes(prev => [...prev, newBlock]);
+        setBlockedTimes((prev) => [...prev, newBlock]);
 
         // Regenerate schedule grid to show blocked time immediately
         generateScheduleGrid();
@@ -711,9 +760,13 @@ export function EnhancedUnifiedCalendar({
       if (isAdmin) {
         content = `${apt.student?.firstName} - ${apt.professional?.firstName}`;
       } else if (isProfessional) {
-        content = apt.student ? `${apt.student.firstName} ${apt.student.lastName}` : "Sin asignar";
+        content = apt.student
+          ? `${apt.student.firstName} ${apt.student.lastName}`
+          : "Sin asignar";
       } else if (isStudent) {
-        content = apt.professional ? `${apt.professional.firstName} ${apt.professional.lastName}` : "Sin asignar";
+        content = apt.professional
+          ? `${apt.professional.firstName} ${apt.professional.lastName}`
+          : "Sin asignar";
       }
 
       // Add status indicator for better visibility
@@ -734,13 +787,13 @@ export function EnhancedUnifiedCalendar({
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
-    
-    return `${startOfWeek.toLocaleDateString("es-ES", { 
-      day: "numeric", 
-      month: "short" 
-    })} - ${endOfWeek.toLocaleDateString("es-ES", { 
-      day: "numeric", 
-      month: "short" 
+
+    return `${startOfWeek.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
+    })} - ${endOfWeek.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
     })}`;
   };
 
@@ -781,7 +834,12 @@ export function EnhancedUnifiedCalendar({
             <div>
               <CardTitle className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2" />
-                Calendario - {isStudent ? "Mis Clases" : isProfessional ? "Mi Agenda" : "Gestión General"}
+                Calendario -{" "}
+                {isStudent
+                  ? "Mis Clases"
+                  : isProfessional
+                    ? "Mi Agenda"
+                    : "Gestión General"}
               </CardTitle>
               <div className="flex items-center space-x-4 mt-2">
                 <div className="flex items-center space-x-2">
@@ -810,7 +868,7 @@ export function EnhancedUnifiedCalendar({
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
@@ -826,7 +884,10 @@ export function EnhancedUnifiedCalendar({
                 </Button>
               )}
               {showConfigButton && isProfessional && (
-                <Button variant="outline" onClick={() => setIsConfigModalOpen(true)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsConfigModalOpen(true)}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Configuración
                 </Button>
@@ -843,14 +904,16 @@ export function EnhancedUnifiedCalendar({
                     <Label>Profesional</Label>
                     <Select
                       value={filters.professional}
-                      onValueChange={(value) => setFilters(prev => ({ ...prev, professional: value }))}
+                      onValueChange={(value) =>
+                        setFilters((prev) => ({ ...prev, professional: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        {professionals.map(prof => (
+                        {professionals.map((prof) => (
                           <SelectItem key={prof._id} value={prof._id}>
                             {prof.firstName} {prof.lastName} ({prof.role})
                           </SelectItem>
@@ -865,14 +928,16 @@ export function EnhancedUnifiedCalendar({
                     <Label>Estudiante</Label>
                     <Select
                       value={filters.student}
-                      onValueChange={(value) => setFilters(prev => ({ ...prev, student: value }))}
+                      onValueChange={(value) =>
+                        setFilters((prev) => ({ ...prev, student: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        {students.map(student => (
+                        {students.map((student) => (
                           <SelectItem key={student._id} value={student._id}>
                             {student.firstName} {student.lastName}
                           </SelectItem>
@@ -886,7 +951,9 @@ export function EnhancedUnifiedCalendar({
                   <Label>Estado</Label>
                   <Select
                     value={filters.status}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+                    onValueChange={(value) =>
+                      setFilters((prev) => ({ ...prev, status: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -909,7 +976,7 @@ export function EnhancedUnifiedCalendar({
             </div>
           )}
         </CardHeader>
-        
+
         <CardContent>
           {loading && (
             <div className="text-center py-4">
@@ -927,7 +994,8 @@ export function EnhancedUnifiedCalendar({
                     Error de Autenticación
                   </h3>
                   <p className="text-xs text-yellow-600 mt-1">
-                    Tu sesión podría haber expirado. Por favor, inicia sesión nuevamente.
+                    Tu sesión podría haber expirado. Por favor, inicia sesión
+                    nuevamente.
                   </p>
                 </div>
               </div>
@@ -941,13 +1009,14 @@ export function EnhancedUnifiedCalendar({
                   <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
                   <div>
                     <h3 className="text-sm font-medium text-red-800">
-                      {offlineMode ? "Modo Sin Conexión" : "Error de Conectividad"}
+                      {offlineMode
+                        ? "Modo Sin Conexión"
+                        : "Error de Conectividad"}
                     </h3>
                     <p className="text-xs text-red-600 mt-1">
                       {offlineMode
                         ? "No se pudo cargar los datos del servidor. Mostrando datos locales disponibles."
-                        : "Algunos datos podrían no estar actualizados. Verifica tu conexión."
-                      }
+                        : "Algunos datos podrían no estar actualizados. Verifica tu conexión."}
                     </p>
                     {retryCount > 0 && (
                       <p className="text-xs text-red-500 mt-1">
@@ -960,12 +1029,14 @@ export function EnhancedUnifiedCalendar({
                   size="sm"
                   variant="outline"
                   onClick={async () => {
-                    setRetryCount(prev => prev + 1);
+                    setRetryCount((prev) => prev + 1);
 
                     // Test connectivity first
                     const isConnected = await testConnectivity();
                     if (!isConnected) {
-                      alert('No se puede conectar al servidor. Verifica tu conexión a internet.');
+                      alert(
+                        "No se puede conectar al servidor. Verifica tu conexión a internet.",
+                      );
                       return;
                     }
 
@@ -997,23 +1068,33 @@ export function EnhancedUnifiedCalendar({
                 </div>
                 {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
                   const slot = schedule.find(
-                    (s) => s.time === time && s.dayIndex === dayIndex
+                    (s) => s.time === time && s.dayIndex === dayIndex,
                   );
-                  
+
                   return (
                     <div key={`${time}-${dayIndex}`} className="relative">
                       <button
                         onClick={() => slot && handleSlotClick(slot)}
-                        onContextMenu={(e) => slot && handleSlotRightClick(e, slot)}
+                        onContextMenu={(e) =>
+                          slot && handleSlotRightClick(e, slot)
+                        }
                         onTouchStart={(e) => slot && handleTouchStart(e, slot)}
                         onTouchEnd={(e) => slot && handleTouchEnd(e, slot)}
                         onTouchCancel={handleTouchCancel}
                         className={`w-full h-14 border rounded-md text-xs font-medium transition-colors p-1 ${
-                          slot ? getSlotStyles(slot) : "bg-gray-50 border-gray-200"
+                          slot
+                            ? getSlotStyles(slot)
+                            : "bg-gray-50 border-gray-200"
                         }`}
-                        title={slot?.hasClass ? `${slot.classTitle}\nClick para ver detalles` : ""}
+                        title={
+                          slot?.hasClass
+                            ? `${slot.classTitle}\nClick para ver detalles`
+                            : ""
+                        }
                       >
-                        <div className="truncate">{slot ? getSlotContent(slot) : ""}</div>
+                        <div className="truncate">
+                          {slot ? getSlotContent(slot) : ""}
+                        </div>
                         {slot?.hasClass && slot.appointment && (
                           <div className="text-xs text-gray-500 truncate">
                             {slot.appointment.type}
@@ -1060,16 +1141,20 @@ export function EnhancedUnifiedCalendar({
           {/* Role-specific information */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              {isAdmin && "Como administrador, puedes gestionar todas las citas, bloquear horarios globalmente y ver estadísticas completas."}
-              {isProfessional && "Haz click en un horario libre para crear una cita. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
-              {isStudent && "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas y filtrar por profesional."}
+              {isAdmin &&
+                "Como administrador, puedes gestionar todas las citas, bloquear horarios globalmente y ver estadísticas completas."}
+              {isProfessional &&
+                "Haz click en un horario libre para crear una cita. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
+              {isStudent &&
+                "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas y filtrar por profesional."}
             </p>
             <p className="text-xs text-blue-600 mt-2">
               📱 En móvil: Mantén presionado un horario para bloquearlo
             </p>
             {lastSuccessfulLoad && (
               <p className="text-xs text-blue-600 mt-1">
-                Última actualización: {lastSuccessfulLoad.toLocaleTimeString('es-ES')}
+                Última actualización:{" "}
+                {lastSuccessfulLoad.toLocaleTimeString("es-ES")}
               </p>
             )}
           </div>
@@ -1086,10 +1171,14 @@ export function EnhancedUnifiedCalendar({
         students={students}
         onCreateAppointment={handleCreateAppointment}
         loading={loading}
-        preSelectedSlot={selectedSlot ? {
-          date: selectedSlot.date,
-          time: selectedSlot.time,
-        } : null}
+        preSelectedSlot={
+          selectedSlot
+            ? {
+                date: selectedSlot.date,
+                time: selectedSlot.time,
+              }
+            : null
+        }
       />
 
       {/* Professional Configuration Modal */}
@@ -1114,22 +1203,34 @@ export function EnhancedUnifiedCalendar({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold">{selectedAppointment.title}</h3>
-                  <p className="text-sm text-gray-600">{selectedAppointment.type}</p>
-                  <Badge className={
-                    selectedAppointment.status === "completed" ? "bg-green-100 text-green-800" :
-                    selectedAppointment.status === "cancelled" ? "bg-red-100 text-red-800" :
-                    "bg-blue-100 text-blue-800"
-                  }>
-                    {selectedAppointment.status === "completed" ? "Completada" :
-                     selectedAppointment.status === "cancelled" ? "Cancelada" : "Programada"}
+                  <p className="text-sm text-gray-600">
+                    {selectedAppointment.type}
+                  </p>
+                  <Badge
+                    className={
+                      selectedAppointment.status === "completed"
+                        ? "bg-green-100 text-green-800"
+                        : selectedAppointment.status === "cancelled"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-blue-100 text-blue-800"
+                    }
+                  >
+                    {selectedAppointment.status === "completed"
+                      ? "Completada"
+                      : selectedAppointment.status === "cancelled"
+                        ? "Cancelada"
+                        : "Programada"}
                   </Badge>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-semibold">
-                    {new Date(selectedAppointment.date).toLocaleDateString("es-ES")}
+                    {new Date(selectedAppointment.date).toLocaleDateString(
+                      "es-ES",
+                    )}
                   </div>
                   <div className="text-sm text-gray-600">
-                    {selectedAppointment.startTime} - {selectedAppointment.endTime}
+                    {selectedAppointment.startTime} -{" "}
+                    {selectedAppointment.endTime}
                   </div>
                 </div>
               </div>
@@ -1138,19 +1239,17 @@ export function EnhancedUnifiedCalendar({
                 <div>
                   <Label className="font-medium">Estudiante:</Label>
                   <div>
-                    {selectedAppointment.student ? 
-                      `${selectedAppointment.student.firstName} ${selectedAppointment.student.lastName}` :
-                      "Sin asignar"
-                    }
+                    {selectedAppointment.student
+                      ? `${selectedAppointment.student.firstName} ${selectedAppointment.student.lastName}`
+                      : "Sin asignar"}
                   </div>
                 </div>
                 <div>
                   <Label className="font-medium">Profesional:</Label>
                   <div>
-                    {selectedAppointment.professional ? 
-                      `${selectedAppointment.professional.firstName} ${selectedAppointment.professional.lastName}` :
-                      "Sin asignar"
-                    }
+                    {selectedAppointment.professional
+                      ? `${selectedAppointment.professional.firstName} ${selectedAppointment.professional.lastName}`
+                      : "Sin asignar"}
                   </div>
                 </div>
               </div>
@@ -1170,13 +1269,16 @@ export function EnhancedUnifiedCalendar({
               )}
 
               <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
                   Cerrar
                 </Button>
-                
+
                 {/* Student can evaluate completed classes */}
                 {isStudent && selectedAppointment.status === "completed" && (
-                  <Button 
+                  <Button
                     onClick={() => {
                       setIsEditModalOpen(false);
                       setIsEvaluationModalOpen(true);
@@ -1189,33 +1291,38 @@ export function EnhancedUnifiedCalendar({
                 )}
 
                 {/* Professional can mark as completed */}
-                {isProfessional && selectedAppointment.status === "scheduled" && 
-                 selectedAppointment.professional?._id === user?.id && (
-                  <Button 
-                    onClick={() => handleCompleteAppointment(selectedAppointment._id)}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Marcar Completada
-                  </Button>
-                )}
+                {isProfessional &&
+                  selectedAppointment.status === "scheduled" &&
+                  selectedAppointment.professional?._id === user?.id && (
+                    <Button
+                      onClick={() =>
+                        handleCompleteAppointment(selectedAppointment._id)
+                      }
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Marcar Completada
+                    </Button>
+                  )}
 
                 {/* Cancel appointment */}
-                {selectedAppointment.status === "scheduled" && (
-                  (isAdmin || 
-                   (isProfessional && selectedAppointment.professional?._id === user?.id) ||
-                   (isStudent && selectedAppointment.student?._id === user?.id)
-                  )
-                ) && (
-                  <Button 
-                    variant="outline" 
-                    className="text-red-600 hover:text-red-800"
-                    onClick={() => handleCancelAppointment(selectedAppointment._id)}
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    Cancelar Cita
-                  </Button>
-                )}
+                {selectedAppointment.status === "scheduled" &&
+                  (isAdmin ||
+                    (isProfessional &&
+                      selectedAppointment.professional?._id === user?.id) ||
+                    (isStudent &&
+                      selectedAppointment.student?._id === user?.id)) && (
+                    <Button
+                      variant="outline"
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() =>
+                        handleCancelAppointment(selectedAppointment._id)
+                      }
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Cancelar Cita
+                    </Button>
+                  )}
               </div>
             </div>
           )}
@@ -1223,7 +1330,10 @@ export function EnhancedUnifiedCalendar({
       </Dialog>
 
       {/* Evaluation Modal */}
-      <Dialog open={isEvaluationModalOpen} onOpenChange={setIsEvaluationModalOpen}>
+      <Dialog
+        open={isEvaluationModalOpen}
+        onOpenChange={setIsEvaluationModalOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Evaluar Clase</DialogTitle>
@@ -1235,10 +1345,14 @@ export function EnhancedUnifiedCalendar({
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setEvaluation(prev => ({ ...prev, overall: rating }))}
+                    onClick={() =>
+                      setEvaluation((prev) => ({ ...prev, overall: rating }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-6 w-6 ${rating <= evaluation.overall ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-6 w-6 ${rating <= evaluation.overall ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1250,10 +1364,17 @@ export function EnhancedUnifiedCalendar({
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setEvaluation(prev => ({ ...prev, punctuality: rating }))}
+                    onClick={() =>
+                      setEvaluation((prev) => ({
+                        ...prev,
+                        punctuality: rating,
+                      }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-5 w-5 ${rating <= evaluation.punctuality ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-5 w-5 ${rating <= evaluation.punctuality ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1265,10 +1386,14 @@ export function EnhancedUnifiedCalendar({
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <button
                     key={rating}
-                    onClick={() => setEvaluation(prev => ({ ...prev, quality: rating }))}
+                    onClick={() =>
+                      setEvaluation((prev) => ({ ...prev, quality: rating }))
+                    }
                     className="text-2xl"
                   >
-                    <Star className={`h-5 w-5 ${rating <= evaluation.quality ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star
+                      className={`h-5 w-5 ${rating <= evaluation.quality ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -1278,14 +1403,22 @@ export function EnhancedUnifiedCalendar({
               <Label>Comentarios</Label>
               <Textarea
                 value={evaluation.comments}
-                onChange={(e) => setEvaluation(prev => ({ ...prev, comments: e.target.value }))}
+                onChange={(e) =>
+                  setEvaluation((prev) => ({
+                    ...prev,
+                    comments: e.target.value,
+                  }))
+                }
                 placeholder="Comparte tu experiencia sobre la clase..."
                 rows={3}
               />
             </div>
 
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsEvaluationModalOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsEvaluationModalOpen(false)}
+              >
                 Cancelar
               </Button>
               <Button onClick={handleEvaluateClass} disabled={loading}>
@@ -1307,23 +1440,35 @@ export function EnhancedUnifiedCalendar({
           {selectedSlot && (
             <div className="space-y-4">
               <div>
-                <p><strong>Día:</strong> {selectedSlot.day}</p>
-                <p><strong>Hora:</strong> {selectedSlot.time}</p>
-                <p><strong>Fecha:</strong> {new Date(selectedSlot.date).toLocaleDateString("es-ES")}</p>
+                <p>
+                  <strong>Día:</strong> {selectedSlot.day}
+                </p>
+                <p>
+                  <strong>Hora:</strong> {selectedSlot.time}
+                </p>
+                <p>
+                  <strong>Fecha:</strong>{" "}
+                  {new Date(selectedSlot.date).toLocaleDateString("es-ES")}
+                </p>
               </div>
 
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsBlockModalOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsBlockModalOpen(false)}
+                >
                   Cancelar
                 </Button>
-                <Button 
-                  onClick={() => handleBlockTime({
-                    date: selectedSlot.date,
-                    time: selectedSlot.time,
-                    day: selectedSlot.dayIndex,
-                    type: isAdmin ? "global" : "professional",
-                    professionalId: isProfessional ? user?.id : undefined,
-                  })}
+                <Button
+                  onClick={() =>
+                    handleBlockTime({
+                      date: selectedSlot.date,
+                      time: selectedSlot.time,
+                      day: selectedSlot.dayIndex,
+                      type: isAdmin ? "global" : "professional",
+                      professionalId: isProfessional ? user?.id : undefined,
+                    })
+                  }
                   className="bg-red-600 hover:bg-red-700"
                 >
                   <Ban className="h-4 w-4 mr-2" />
