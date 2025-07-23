@@ -45,7 +45,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
-import { UnifiedCalendar } from "../components/UnifiedCalendar";
+import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 
 export function StudentDashboard() {
   const { user, isLoading } = useAuth();
@@ -208,7 +208,7 @@ export function StudentDashboard() {
         id: "2",
         title: "Yoga Flow",
         instructor: {
-          name: "María González",
+          name: "Mar��a González",
           rating: 4.8,
           specialties: ["Yoga", "Pilates"],
         },
