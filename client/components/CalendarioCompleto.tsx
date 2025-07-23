@@ -484,9 +484,27 @@ export function CalendarioCompleto({
         resetFormAgendar();
         await loadData();
         if (isStudent) await loadPlanUsuario();
+
+        // Show success message
+        setError("");
+        console.log("✅ Clase agendada exitosamente");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Error al crear la clase");
+        const errorMessage = errorData.message || "Error al crear la clase";
+        setError(errorMessage);
+
+        // Provide more helpful error context
+        if (errorMessage.includes("horarios pasados")) {
+          setError("⏰ " + errorMessage + " Selecciona un horario futuro.");
+        } else if (errorMessage.includes("ya tiene una clase")) {
+          setError("📅 " + errorMessage + " Elige otro horario disponible.");
+        } else if (errorMessage.includes("clases esta semana")) {
+          setError("📊 " + errorMessage + " Tu próxima semana inicia el lunes.");
+        } else if (errorMessage.includes("plan ha expirado")) {
+          setError("💳 " + errorMessage + " Contacta al administrador.");
+        } else {
+          setError("❌ " + errorMessage);
+        }
       }
     } catch (err: any) {
       setError(err.message || "Error al crear la clase");
