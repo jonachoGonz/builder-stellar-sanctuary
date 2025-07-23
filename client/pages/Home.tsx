@@ -135,7 +135,35 @@ export function Home() {
       }
     };
 
+    const fetchPlans = async () => {
+      try {
+        const response = await apiCall("/plans/public");
+        if (response.ok) {
+          const data = await response.json();
+
+          // Transform API data to match expected format
+          const transformedPlans = data.data.map((plan: any) => ({
+            id: plan._id,
+            name: plan.name,
+            classes: `${plan.classesPorSemana} clases semanales`,
+            description: plan.description,
+            price: `$${plan.price.toLocaleString()}`,
+            duration: `por ${plan.durationWeeks} semanas`,
+            popular: plan.popular,
+            features: plan.benefits,
+          }));
+
+          setPlans(transformedPlans);
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        // Fallback to default plans
+        setPlans(defaultPlans);
+      }
+    };
+
     fetchProfessionals();
+    fetchPlans();
   }, []);
 
   const getRoleDisplayName = (role: string) => {
