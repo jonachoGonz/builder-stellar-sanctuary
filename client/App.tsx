@@ -141,6 +141,17 @@ const App = () => (
               }
             />
 
+            {/* Reviews page */}
+            <Route
+              path="/reviews"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <Reviews />
+                </div>
+              }
+            />
+
             {/* Diagnostic route for debugging */}
             <Route
               path="/diagnostic"
