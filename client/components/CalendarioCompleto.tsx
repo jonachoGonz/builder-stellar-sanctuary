@@ -994,15 +994,20 @@ export function CalendarioCompleto({
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
               {isAdmin &&
-                "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente."}
+                "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente. Los horarios pasados se muestran en gris."}
               {isProfessional &&
-                "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
+                "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios. No se permite agendar en horarios pasados."}
               {isStudent &&
-                "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
+                "Haz click en un horario disponible para agendar una clase. Solo puedes agendar con al menos 1 hora de anticipación. Puedes evaluar clases completadas."}
             </p>
-            <p className="text-xs text-blue-600 mt-2">
-              📱 En móvil: Mantén presionado un horario para bloquearlo
-            </p>
+            <div className="text-xs text-blue-600 mt-2 space-y-1">
+              <p>📱 En móvil: Mantén presionado un horario para bloquearlo</p>
+              <p>⏰ Horarios disponibles: 8:00 AM - 8:30 PM (intervalos de 30 min)</p>
+              <p>🔄 El calendario se actualiza automáticamente cada 5 minutos</p>
+              {isStudent && planUsuario && (
+                <p>📊 Límite semanal: {planUsuario.clasesPorSemana} clases por semana</p>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
