@@ -12,7 +12,6 @@ import {
   ChevronRight,
   User,
   MapPin,
-  Block,
   CheckCircle,
   XCircle,
   AlertTriangle,
