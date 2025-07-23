@@ -563,8 +563,8 @@ export function StudentDashboard() {
 
         {/* Unified Calendar */}
         <div className="mb-8">
-          <UnifiedCalendar
-            showCreateButton={false}
+          <EnhancedUnifiedCalendar
+            showCreateButton={true}
             showConfigButton={false}
           />
         </div>
