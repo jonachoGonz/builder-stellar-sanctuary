@@ -927,7 +927,24 @@ router.put(
         }
       }
 
-      // Handle plan deduction changes
+      // Handle automatic plan deduction when appointment is marked as completed
+      if (
+        updateData.status === "completed" &&
+        existingAppointment.status !== "completed" &&
+        existingAppointment.deductFromPlan
+      ) {
+        const student = await User.findById(existingAppointment.student);
+        if (student) {
+          await User.findByIdAndUpdate(student._id, {
+            $inc: {
+              usedClasses: 1,
+              remainingClasses: -1,
+            },
+          });
+        }
+      }
+
+      // Handle manual plan deduction changes
       if (
         updateData.deductFromPlan !== undefined &&
         updateData.deductFromPlan !== existingAppointment.deductFromPlan
