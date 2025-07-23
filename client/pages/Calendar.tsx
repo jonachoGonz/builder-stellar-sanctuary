@@ -27,7 +27,7 @@ export function Calendar() {
           </p>
         </div>
 
-        <UnifiedCalendar 
+        <EnhancedUnifiedCalendar
           viewMode="week"
           showCreateButton={true}
           showConfigButton={true}
