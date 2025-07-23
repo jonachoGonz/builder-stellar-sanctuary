@@ -191,11 +191,39 @@ router.post(
         } else if (currentUser.role === "student") {
           // Students can create classes, but need to check their plan
           const plan = await PlanUsuario.findOne({ userId: currentUser._id });
-          if (!plan || !plan.puedeAgendarEstaSeemana()) {
+          if (!plan) {
             return res.status(400).json({
               success: false,
-              message:
-                "No puedes agendar más clases esta semana o tu plan ha expirado",
+              message: "No tienes un plan activo. Contacta al administrador.",
+            });
+          }
+
+          if (!plan.estaVigente()) {
+            return res.status(400).json({
+              success: false,
+              message: "Tu plan ha expirado. Renueva tu plan para agendar clases.",
+            });
+          }
+
+          if (plan.clasesRestantes <= 0) {
+            return res.status(400).json({
+              success: false,
+              message: "No tienes clases restantes en tu plan.",
+            });
+          }
+
+          if (!plan.puedeAgendarEstaSeemana()) {
+            const usedThisWeek = plan.historial.filter((clase: any) => {
+              const now = new Date();
+              const startOfWeek = new Date(now);
+              startOfWeek.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+              startOfWeek.setHours(0, 0, 0, 0);
+              return clase.fecha >= startOfWeek && clase.estado !== "cancelada";
+            }).length;
+
+            return res.status(400).json({
+              success: false,
+              message: `Ya has agendado ${usedThisWeek} de ${plan.clasesPorSemana} clases permitidas esta semana.`,
             });
           }
         }
