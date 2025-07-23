@@ -464,8 +464,27 @@ export function CalendarioCompleto({
   const handleCrearClase = async () => {
     if (!selectedSlot) return;
 
+    // Frontend validation
+    if (!formAgendar.alumnoId || !formAgendar.profesionalId || !formAgendar.especialidad) {
+      setError("❌ Por favor completa todos los campos obligatorios");
+      return;
+    }
+
+    // Check if slot is still available (real-time check)
+    if (!selectedSlot.canSchedule) {
+      setError("❌ Este horario ya no está disponible. Selecciona otro horario.");
+      return;
+    }
+
+    // Double-check for past time
+    if (selectedSlot.isPastTime) {
+      setError("⏰ No se puede agendar en horarios pasados");
+      return;
+    }
+
     try {
       setLoading(true);
+      setError(""); // Clear previous errors
 
       const claseData = {
         ...formAgendar,
@@ -970,7 +989,7 @@ export function CalendarioCompleto({
                 "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
             </p>
             <p className="text-xs text-blue-600 mt-2">
-              📱 En móvil: Mantén presionado un horario para bloquearlo
+              �� En móvil: Mantén presionado un horario para bloquearlo
             </p>
           </div>
         </CardContent>
