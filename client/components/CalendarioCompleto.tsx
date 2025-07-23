@@ -929,6 +929,10 @@ export function CalendarioCompleto({
               <div className="w-3 h-3 bg-red-100 border border-red-300 rounded mr-2"></div>
               <span>Bloqueada</span>
             </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded mr-2 opacity-40"></div>
+              <span>Horario pasado</span>
+            </div>
             {isAdmin && (
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-red-200 border border-red-400 rounded mr-2"></div>
