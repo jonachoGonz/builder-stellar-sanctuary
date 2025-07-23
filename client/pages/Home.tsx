@@ -96,32 +96,72 @@ export function Home() {
     },
   ];
 
-  const professionals = [
-    {
-      name: "Dr. Carlos Mendoza",
-      specialty: "Kinesiólogo y Entrenador",
-      experience: "8 años",
-      certifications: [
-        "Licenciado en Kinesiología",
-        "Cert. Entrenamiento Funcional",
-      ],
-      image: "/placeholder.svg",
-    },
-    {
-      name: "María González",
-      specialty: "Nutricionista y Yoga",
-      experience: "6 años",
-      certifications: ["Licenciada en Nutrición", "Instructora Yoga RYT-500"],
-      image: "/placeholder.svg",
-    },
-    {
-      name: "Ps. Ana Silva",
-      specialty: "Psicóloga Deportiva",
-      experience: "7 años",
-      certifications: ["Psicóloga Clínica", "Especialista en Deporte"],
-      image: "/placeholder.svg",
-    },
-  ];
+  // Fetch professionals from API
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      try {
+        const response = await apiCall("/admin/users?limit=20");
+        if (response.ok) {
+          const data = await response.json();
+          const professionalUsers = data.data.users?.filter((u: any) =>
+            ["teacher", "nutritionist", "psychologist"].includes(u.role),
+          ) || [];
+
+          // Transform API data to match expected format
+          const transformedProfessionals = professionalUsers.map((user: any) => ({
+            name: `${user.firstName} ${user.lastName}`,
+            specialty: getRoleDisplayName(user.role),
+            experience: "Experiencia certificada",
+            certifications: getRoleCertifications(user.role),
+            image: user.avatar || "/placeholder.svg",
+            id: user._id,
+          }));
+
+          setProfessionals(transformedProfessionals);
+        }
+      } catch (error) {
+        console.error("Error fetching professionals:", error);
+        // Fallback to show example professionals
+        setProfessionals([
+          {
+            name: "Equipo HTK",
+            specialty: "Profesionales Especializados",
+            experience: "Amplia experiencia",
+            certifications: ["Certificaciones Profesionales"],
+            image: "/placeholder.svg",
+          },
+        ]);
+      }
+    };
+
+    fetchProfessionals();
+  }, []);
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "teacher":
+        return "Kinesiólogo";
+      case "nutritionist":
+        return "Nutricionista";
+      case "psychologist":
+        return "Psicólogo";
+      default:
+        return "Profesional";
+    }
+  };
+
+  const getRoleCertifications = (role: string) => {
+    switch (role) {
+      case "teacher":
+        return ["Kinesiología", "Entrenamiento"];
+      case "nutritionist":
+        return ["Nutrición", "Alimentación"];
+      case "psychologist":
+        return ["Psicología", "Terapia"];
+      default:
+        return ["Certificación Profesional"];
+    }
+  };
 
   return (
     <div className="min-h-screen">
