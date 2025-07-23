@@ -3,6 +3,7 @@
 ## 🚀 Configuración para Netlify
 
 ### Requisitos previos:
+
 1. Cuenta en Netlify
 2. Repositorio conectado a Netlify
 3. Variables de entorno configuradas
@@ -26,6 +27,7 @@ CLIENT_URL=https://your-app-name.netlify.app
 ### Configuración de Build:
 
 El archivo `netlify.toml` ya está configurado con:
+
 - Build command: `npm run build:client`
 - Publish directory: `dist/spa`
 - Functions directory: `netlify/functions`
@@ -41,23 +43,27 @@ El archivo `netlify.toml` ya está configurado con:
 ### Funcionalidades Implementadas:
 
 #### ✅ Sistema de Autenticación
+
 - Login/Register con validación
 - Google OAuth (configurado)
 - JWT tokens para sesiones
 - Roles: Admin, Profesional (Teacher/Nutritionist/Psychologist), Student
 
 #### ✅ Gestión de Usuarios
+
 - CRUD completo para usuarios
 - Roles y permisos
 - Perfil de usuario editable
 
 #### ✅ Sistema de Planes
+
 - Admin puede crear/editar/eliminar planes
 - Códigos de descuento
 - Planes públicos para la página principal
 - Gestión de beneficios y precios
 
 #### ✅ Calendario y Citas
+
 - Calendario de 30 minutos de 8:00 AM a 8:30 PM
 - Prevención de doble reserva
 - Bloqueo automático de horarios pasados
@@ -65,11 +71,13 @@ El archivo `netlify.toml` ya está configurado con:
 - Touch support para móviles
 
 #### ✅ Auto-Completado de Clases
+
 - Sistema automático para marcar clases como completadas
 - Interface de administración
 - Estadísticas y reportes
 
 #### ✅ Sistema de Evaluaciones
+
 - Estudiantes pueden calificar clases (1-5 estrellas)
 - Evaluación de puntualidad y calidad
 - Comentarios opcionales
@@ -77,6 +85,7 @@ El archivo `netlify.toml` ya está configurado con:
 - Ranking de profesionales
 
 #### ✅ Dashboard Administrativo
+
 - Gestión de usuarios
 - Gestión de planes
 - Calendario global
@@ -115,6 +124,7 @@ El archivo `netlify.toml` ya está configurado con:
 ### Actualización de Google OAuth:
 
 Después del deploy, actualiza la configuración de Google OAuth:
+
 1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
 2. APIs & Services > Credentials
 3. Edita el OAuth 2.0 Client ID
