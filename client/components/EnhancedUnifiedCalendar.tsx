@@ -125,8 +125,19 @@ export function EnhancedUnifiedCalendar({
   });
 
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-  const timeSlots = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+  // Generate 30-minute time slots from 8:00 to 20:30
+  const timeSlots = [];
+  for (let hour = 8; hour <= 20; hour++) {
+    timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+    if (hour < 20) { // Don't add :30 for the last hour
+      timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
+    }
+  }
   const specialties = ["teacher", "nutritionist", "psychologist"];
+
+  // Mobile touch handling
+  const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
 
   useEffect(() => {
     if (user) {
@@ -376,17 +387,33 @@ export function EnhancedUnifiedCalendar({
         slotDate.setDate(startOfWeek.getDate() + dayIndex);
         const dateStr = slotDate.toISOString().split("T")[0];
 
-        // Find appointment for this slot
+        // Find appointment for this slot (handle both exact time matches and time ranges)
         const appointment = appointments.find((apt) => {
           const aptDate = new Date(apt.date);
           const dayDiff = (aptDate.getDay() + 6) % 7;
-          return dayDiff === dayIndex && apt.startTime === time;
+
+          // Check for exact time match or if appointment spans this time slot
+          const aptStart = apt.startTime;
+          const aptEnd = apt.endTime;
+
+          if (dayDiff === dayIndex) {
+            // Exact match
+            if (aptStart === time) return true;
+
+            // Check if current time slot falls within appointment duration
+            const currentTimeMinutes = parseInt(time.split(':')[0]) * 60 + parseInt(time.split(':')[1]);
+            const startMinutes = parseInt(aptStart.split(':')[0]) * 60 + parseInt(aptStart.split(':')[1]);
+            const endMinutes = aptEnd ? parseInt(aptEnd.split(':')[0]) * 60 + parseInt(aptEnd.split(':')[1]) : startMinutes + 60;
+
+            return currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes;
+          }
+          return false;
         });
 
         // Check if this time is blocked
         const isBlocked = blockedTimes.some((block) => {
           return (
-            (block.type === "global" && isAdmin) ||
+            (block.type === "global" && (block.date === dateStr || block.day === dayIndex) && block.time === time) ||
             (block.professionalId === user?.id && block.day === dayIndex && block.time === time) ||
             (block.date === dateStr && block.time === time)
           );
@@ -441,26 +468,63 @@ export function EnhancedUnifiedCalendar({
   const handleSlotRightClick = (e: React.MouseEvent, slot: TimeSlot) => {
     e.preventDefault();
     if (!isProfessional && !isAdmin) return;
-    
+
     setSelectedSlot(slot);
     setIsBlockModalOpen(true);
+  };
+
+  // Mobile touch handlers for long press (simulates right-click)
+  const handleTouchStart = (e: React.TouchEvent, slot: TimeSlot) => {
+    setTouchStartTime(Date.now());
+    const timer = setTimeout(() => {
+      if (isProfessional || isAdmin) {
+        // Vibrate if available (mobile feedback)
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+        setSelectedSlot(slot);
+        setIsBlockModalOpen(true);
+      }
+    }, 500); // 500ms long press
+    setTouchTimer(timer);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent, slot: TimeSlot) => {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      setTouchTimer(null);
+    }
+
+    const touchDuration = Date.now() - touchStartTime;
+    if (touchDuration < 500) {
+      // Short tap, treat as normal click
+      handleSlotClick(slot);
+    }
+  };
+
+  const handleTouchCancel = () => {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      setTouchTimer(null);
+    }
   };
 
   const handleCreateAppointment = async (appointmentData: any) => {
     try {
       setLoading(true);
-      
+
       // Add selected slot information
       if (selectedSlot) {
         appointmentData.date = selectedSlot.date;
         appointmentData.startTime = selectedSlot.time;
-        
-        // Calculate end time
+
+        // Calculate end time based on duration
         const [hours, minutes] = selectedSlot.time.split(':');
-        const startDate = new Date();
-        startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        const endDate = new Date(startDate.getTime() + (appointmentData.duration || 60) * 60000);
-        appointmentData.endTime = endDate.toTimeString().slice(0, 5);
+        const startMinutes = parseInt(hours) * 60 + parseInt(minutes);
+        const endMinutes = startMinutes + (appointmentData.duration || 60);
+        const endHours = Math.floor(endMinutes / 60);
+        const endMins = endMinutes % 60;
+        appointmentData.endTime = `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
       }
 
       const response = await apiCall("/admin/appointments", {
@@ -469,6 +533,15 @@ export function EnhancedUnifiedCalendar({
       });
 
       if (response.ok) {
+        const newAppointment = await response.json();
+
+        // Immediately update local state for instant visual feedback
+        setAppointments(prev => [...prev, newAppointment.data]);
+
+        // Regenerate schedule grid to show new appointment immediately
+        generateScheduleGrid();
+
+        // Reload from server to ensure consistency
         await loadAppointments();
         setIsCreateModalOpen(false);
         setSelectedSlot(null);
@@ -477,6 +550,8 @@ export function EnhancedUnifiedCalendar({
     } catch (error) {
       console.error("Error creating appointment:", error);
       alert("Error al agendar la cita");
+      // Reload to ensure consistency
+      loadAppointments();
     } finally {
       setLoading(false);
     }
@@ -560,6 +635,18 @@ export function EnhancedUnifiedCalendar({
       });
 
       if (response.ok) {
+        // Immediately update local state for instant visual feedback
+        const newBlock = {
+          _id: `temp-${Date.now()}`,
+          ...blockData,
+          createdAt: new Date(),
+        };
+        setBlockedTimes(prev => [...prev, newBlock]);
+
+        // Regenerate schedule grid to show blocked time immediately
+        generateScheduleGrid();
+
+        // Then reload from server to get the actual data
         await loadBlockedTimes();
         setIsBlockModalOpen(false);
         alert("Horario bloqueado exitosamente");
@@ -567,6 +654,8 @@ export function EnhancedUnifiedCalendar({
     } catch (error) {
       console.error("Error blocking time:", error);
       alert("Error al bloquear horario");
+      // Reload to ensure consistency
+      loadBlockedTimes();
     } finally {
       setLoading(false);
     }
@@ -582,7 +671,9 @@ export function EnhancedUnifiedCalendar({
       if (status === "completed") {
         return "bg-green-100 border-green-300 text-green-700 hover:bg-green-200 cursor-pointer";
       } else if (status === "cancelled") {
-        return "bg-gray-100 border-gray-300 text-gray-600 cursor-pointer";
+        return "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200 cursor-pointer";
+      } else if (status === "scheduled") {
+        return "bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200 cursor-pointer";
       } else {
         return "bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200 cursor-pointer";
       }
@@ -598,14 +689,25 @@ export function EnhancedUnifiedCalendar({
     if (slot.isBlocked) return "Bloqueado";
     if (slot.hasClass) {
       const apt = slot.appointment;
+      const status = apt?.status;
+      let content = "";
+
       if (isAdmin) {
-        return `${apt.student?.firstName} - ${apt.professional?.firstName}`;
+        content = `${apt.student?.firstName} - ${apt.professional?.firstName}`;
       } else if (isProfessional) {
-        return apt.student ? `${apt.student.firstName} ${apt.student.lastName}` : "Sin asignar";
+        content = apt.student ? `${apt.student.firstName} ${apt.student.lastName}` : "Sin asignar";
       } else if (isStudent) {
-        return apt.professional ? `${apt.professional.firstName} ${apt.professional.lastName}` : "Sin asignar";
+        content = apt.professional ? `${apt.professional.firstName} ${apt.professional.lastName}` : "Sin asignar";
       }
-      return slot.classTitle;
+
+      // Add status indicator for better visibility
+      if (status === "completed") {
+        content += " ✓";
+      } else if (status === "cancelled") {
+        content += " ✗";
+      }
+
+      return content || slot.classTitle;
     }
     if (slot.canSchedule) return "Disponible";
     return "";
@@ -887,6 +989,9 @@ export function EnhancedUnifiedCalendar({
                       <button
                         onClick={() => slot && handleSlotClick(slot)}
                         onContextMenu={(e) => slot && handleSlotRightClick(e, slot)}
+                        onTouchStart={(e) => slot && handleTouchStart(e, slot)}
+                        onTouchEnd={(e) => slot && handleTouchEnd(e, slot)}
+                        onTouchCancel={handleTouchCancel}
                         className={`w-full h-14 border rounded-md text-xs font-medium transition-colors p-1 ${
                           slot ? getSlotStyles(slot) : "bg-gray-50 border-gray-200"
                         }`}
