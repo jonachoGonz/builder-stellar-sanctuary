@@ -802,6 +802,8 @@ export function AdminDashboard() {
         {activeTab === "calendar" && <EnhancedUnifiedCalendar />}
 
         {activeTab === "plans" && <PlanManagement />}
+
+        {activeTab === "automation" && <AutoCompleteManager />}
       </div>
 
       {/* User Management Modal */}
