@@ -753,6 +753,10 @@ export function EnhancedUnifiedCalendar({
         students={students}
         onCreateAppointment={handleCreateAppointment}
         loading={loading}
+        preSelectedSlot={selectedSlot ? {
+          date: selectedSlot.date,
+          time: selectedSlot.time,
+        } : null}
       />
 
       {/* Professional Configuration Modal */}
