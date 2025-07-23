@@ -93,6 +93,7 @@ export function EnhancedUnifiedCalendar({
   const [offlineMode, setOfflineMode] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState<Date | null>(null);
+  const [authError, setAuthError] = useState(false);
   
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
@@ -170,17 +171,30 @@ export function EnhancedUnifiedCalendar({
       // Check results and log any failures
       const [appointmentsResult, usersResult, blockedTimesResult] = results;
 
+      let hasAuthError = false;
+
       if (appointmentsResult.status === 'rejected') {
         console.error("❌ Failed to load appointments:", appointmentsResult.reason);
+        if (appointmentsResult.reason?.message?.includes('401') || appointmentsResult.reason?.message?.includes('403')) {
+          hasAuthError = true;
+        }
       }
 
       if (usersResult.status === 'rejected') {
         console.error("❌ Failed to load users:", usersResult.reason);
+        if (usersResult.reason?.message?.includes('401') || usersResult.reason?.message?.includes('403')) {
+          hasAuthError = true;
+        }
       }
 
       if (blockedTimesResult.status === 'rejected') {
         console.error("❌ Failed to load blocked times:", blockedTimesResult.reason);
+        if (blockedTimesResult.reason?.message?.includes('401') || blockedTimesResult.reason?.message?.includes('403')) {
+          hasAuthError = true;
+        }
       }
+
+      setAuthError(hasAuthError);
 
       // Check if all requests failed (network issue)
       const allFailed = results.every(result => result.status === 'rejected');
@@ -786,7 +800,23 @@ export function EnhancedUnifiedCalendar({
             </div>
           )}
 
-          {networkError && (
+          {authError && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 mr-2" />
+                <div>
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Error de Autenticación
+                  </h3>
+                  <p className="text-xs text-yellow-600 mt-1">
+                    Tu sesión podría haber expirado. Por favor, inicia sesión nuevamente.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {networkError && !authError && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -801,6 +831,11 @@ export function EnhancedUnifiedCalendar({
                         : "Algunos datos podrían no estar actualizados. Verifica tu conexión."
                       }
                     </p>
+                    {retryCount > 0 && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Intentos de reconexión: {retryCount}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <Button
