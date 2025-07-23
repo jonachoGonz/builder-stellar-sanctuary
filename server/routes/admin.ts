@@ -861,7 +861,7 @@ router.post(
 router.put(
   "/appointments/:id",
   authenticateToken,
-  requireAdmin,
+  requireAdminOrProfessional,
   async (req: Request, res: Response) => {
     try {
       const appointmentId = req.params.id;
