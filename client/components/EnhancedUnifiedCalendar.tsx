@@ -213,25 +213,39 @@ export function EnhancedUnifiedCalendar({
   const loadUsers = async () => {
     try {
       if (isProfessional || isAdmin) {
+        console.log("🔍 Loading students...");
         const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
+
         if (studentsResponse.ok) {
           const studentsData = await studentsResponse.json();
+          console.log("✅ Students loaded:", studentsData.data?.users?.length || 0);
           setStudents(studentsData.data.users || []);
+        } else {
+          console.error("❌ Students API error:", studentsResponse.status);
+          setStudents([]);
         }
       }
 
       if (isAdmin || isStudent) {
+        console.log("🔍 Loading professionals...");
         const professionalsResponse = await apiCall("/admin/users?limit=100");
+
         if (professionalsResponse.ok) {
           const professionalsData = await professionalsResponse.json();
-          const professionalUsers = professionalsData.data.users.filter(
+          const professionalUsers = professionalsData.data.users?.filter(
             (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
-          );
+          ) || [];
+          console.log("✅ Professionals loaded:", professionalUsers.length);
           setProfessionals(professionalUsers);
+        } else {
+          console.error("❌ Professionals API error:", professionalsResponse.status);
+          setProfessionals([]);
         }
       }
     } catch (error) {
-      console.error("Error loading users:", error);
+      console.error("❌ Fatal error loading users:", error);
+      setStudents([]);
+      setProfessionals([]);
     }
   };
 
