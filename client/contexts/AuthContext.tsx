@@ -215,14 +215,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: { email, password: "***" },
       });
 
-      // Test connectivity first
-      console.log("🧪 Testing basic connectivity...");
-      const testResponse = await apiCall("/auth/google/status");
-      console.log("🧪 Connectivity test result:", {
-        status: testResponse.status,
-        ok: testResponse.ok,
-      });
-
       const response = await apiCall("/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
