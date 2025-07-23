@@ -4,6 +4,7 @@ import { UserManagementModal } from "../components/UserManagementModal";
 import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 import { PlanManagement } from "../components/PlanManagement";
 import { AutoCompleteManager } from "../components/AutoCompleteManager";
+import { ReviewsManager } from "../components/ReviewsManager";
 import {
   Users,
   Calendar,
