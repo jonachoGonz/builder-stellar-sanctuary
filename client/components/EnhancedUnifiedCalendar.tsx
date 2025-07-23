@@ -494,9 +494,9 @@ export function EnhancedUnifiedCalendar({
 
   const clearFilters = () => {
     setFilters({
-      professional: "",
-      student: "",
-      specialty: "",
+      professional: "all",
+      student: "all",
+      specialty: "all",
       status: "all",
       dateFrom: "",
       dateTo: "",
