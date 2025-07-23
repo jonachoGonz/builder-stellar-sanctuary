@@ -7,6 +7,15 @@ export const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
 
+  // For Fly.dev deployment, check specific hostname pattern
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname.includes(".fly.dev")
+  ) {
+    // In Fly.dev, backend runs on port 3001 internally
+    return `${window.location.protocol}//${window.location.hostname}:3001/api`;
+  }
+
   // If we're in production (not localhost), use absolute URL
   if (
     typeof window !== "undefined" &&
@@ -21,9 +30,25 @@ export const getApiBaseUrl = () => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
-// Helper function to make authenticated API calls
-export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+// Helper function to check if backend is available
+export const checkBackendHealth = async (): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn('Backend health check failed:', error);
+    return false;
+  }
+};
+
+// Helper function to make authenticated API calls with retry logic
+export const apiCall = async (endpoint: string, options: RequestInit = {}, retryCount = 0): Promise<Response> => {
   const token = localStorage.getItem("authToken");
+  const maxRetries = 3;
+  const retryDelay = 1000 * (retryCount + 1); // Exponential backoff
 
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
@@ -36,32 +61,74 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
       ...defaultHeaders,
       ...options.headers,
     },
+    // Add timeout for production environment
+    signal: AbortSignal.timeout(15000), // 15 second timeout
   };
 
-  const url = endpoint.startsWith("http")
-    ? endpoint
-    : `${API_BASE_URL}${endpoint}`;
+  // Try multiple API base URLs for production environment
+  const getUrlsToTry = (endpoint: string) => {
+    const baseEndpoint = endpoint.startsWith("http") ? endpoint : endpoint;
 
-  try {
-    console.log("🌐 Making API call:", {
-      url,
-      method: mergedOptions.method || "GET",
-      headers: mergedOptions.headers,
-      bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0,
-    });
+    if (typeof window !== "undefined" && window.location.hostname.includes(".fly.dev")) {
+      // For Fly.dev, try multiple potential backend URLs
+      return [
+        `${window.location.origin}/api${baseEndpoint}`,
+        `${window.location.protocol}//${window.location.hostname}/api${baseEndpoint}`,
+        `/.netlify/functions/api${baseEndpoint}`,
+      ];
+    }
 
-    const response = await fetch(url, mergedOptions);
+    const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
+    return [url];
+  };
 
-    console.log("📡 API call response:", {
-      url,
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-    });
+  const urlsToTry = getUrlsToTry(endpoint);
+  let lastError: Error | null = null;
 
-    return response;
-  } catch (error: any) {
-    console.error(`API call failed for ${url}:`, error);
-    throw error;
+  for (const url of urlsToTry) {
+    try {
+      console.log(`🌐 Making API call (attempt ${retryCount + 1}):`, {
+        url,
+        method: mergedOptions.method || "GET",
+        headers: mergedOptions.headers,
+        bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0,
+      });
+
+      const response = await fetch(url, mergedOptions);
+
+      console.log("📡 API call response:", {
+        url,
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+
+      // If successful, return the response
+      if (response.ok || response.status < 500) {
+        return response;
+      }
+
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    } catch (error: any) {
+      console.warn(`API call failed for ${url}:`, error.message);
+      lastError = error;
+
+      // Don't try other URLs if this was an auth error or client error
+      if (error.name === 'AbortError' ||
+          (error.message && (error.message.includes('401') || error.message.includes('403')))) {
+        break;
+      }
+    }
   }
+
+  // If all URLs failed and we haven't exceeded max retries, retry with delay
+  if (retryCount < maxRetries && lastError) {
+    console.log(`⏳ Retrying API call in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+    await new Promise(resolve => setTimeout(resolve, retryDelay));
+    return apiCall(endpoint, options, retryCount + 1);
+  }
+
+  // All attempts failed
+  console.error(`❌ All API call attempts failed for endpoint: ${endpoint}`);
+  throw lastError || new Error('API call failed after all retries');
 };
