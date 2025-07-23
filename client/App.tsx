@@ -23,6 +23,7 @@ import { AuthSuccess } from "./pages/AuthSuccess";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import { Calendar } from "./pages/Calendar";
+import CalendarioCompletoPage from "./pages/CalendarioCompleto";
 import Diagnostic from "./pages/Diagnostic";
 import NotFound from "./pages/NotFound";
 
@@ -124,6 +125,17 @@ const App = () => (
                 <div className="min-h-screen">
                   <Header />
                   <Calendar />
+                </div>
+              }
+            />
+
+            {/* New comprehensive calendar */}
+            <Route
+              path="/agenda"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <CalendarioCompletoPage />
                 </div>
               }
             />
