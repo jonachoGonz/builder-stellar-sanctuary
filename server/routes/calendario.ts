@@ -4,6 +4,7 @@ import Bloqueo from "../models/Bloqueo";
 import PlanUsuario from "../models/PlanUsuario";
 import User from "../models/User";
 import { authenticateToken } from "./auth";
+import { runInitializationScripts } from "../scripts/initializePlans";
 import mongoose from "mongoose";
 
 const router = Router();
@@ -618,6 +619,104 @@ router.post("/completar-automatico", authenticateToken, requireAdmin, async (req
     });
   } catch (error) {
     console.error("Error auto-completing classes:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor",
+    });
+  }
+});
+
+// Initialize system (run once to set up existing data)
+router.post("/inicializar-sistema", authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    await runInitializationScripts();
+
+    res.json({
+      success: true,
+      message: "Sistema inicializado correctamente",
+    });
+  } catch (error) {
+    console.error("Error initializing system:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al inicializar el sistema",
+    });
+  }
+});
+
+// Get calendar statistics for dashboard
+router.get("/estadisticas", authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const currentUser = await User.findById(user.userId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado",
+      });
+    }
+
+    const hoy = new Date();
+    const inicioSemana = new Date(hoy);
+    inicioSemana.setDate(hoy.getDate() - hoy.getDay() + 1);
+    const finSemana = new Date(inicioSemana);
+    finSemana.setDate(inicioSemana.getDate() + 6);
+
+    let filter: any = {};
+
+    // Filter based on user role
+    if (currentUser.role === "admin") {
+      // Admins see all statistics
+    } else if (["teacher", "nutritionist", "psychologist"].includes(currentUser.role)) {
+      filter.profesionalId = currentUser._id;
+    } else if (currentUser.role === "student") {
+      filter.alumnoId = currentUser._id;
+    }
+
+    const [clasesHoy, clasesSemana, clasesTotal, clasesCompletadas] = await Promise.all([
+      Agenda.countDocuments({
+        ...filter,
+        fecha: {
+          $gte: new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()),
+          $lt: new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1),
+        },
+        estado: { $ne: "cancelada" },
+      }),
+      Agenda.countDocuments({
+        ...filter,
+        fecha: { $gte: inicioSemana, $lte: finSemana },
+        estado: { $ne: "cancelada" },
+      }),
+      Agenda.countDocuments({
+        ...filter,
+        estado: { $ne: "cancelada" },
+      }),
+      Agenda.countDocuments({
+        ...filter,
+        estado: "completada",
+      }),
+    ]);
+
+    // Get user plan if student
+    let planData = null;
+    if (currentUser.role === "student") {
+      planData = await PlanUsuario.findOne({ userId: currentUser._id });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        clasesHoy,
+        clasesSemana,
+        clasesTotal,
+        clasesCompletadas,
+        planUsuario: planData,
+        tasaCompletacion: clasesTotal > 0 ? Math.round((clasesCompletadas / clasesTotal) * 100) : 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching statistics:", error);
     res.status(500).json({
       success: false,
       message: "Error interno del servidor",
