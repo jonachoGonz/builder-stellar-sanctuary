@@ -201,20 +201,92 @@ router.post(
         }
       }
 
-      // Check for schedule conflicts
+      // Check for schedule conflicts and time validation
       const fechaClase = new Date(fecha);
-      const conflictos = await Agenda.find({
+      const ahora = new Date();
+
+      // Prevent scheduling in the past (allow up to 1 hour buffer for current day)
+      const fechaMinima = new Date(ahora);
+      fechaMinima.setHours(ahora.getHours() + 1, 0, 0, 0);
+
+      const [horaNum, minutoNum] = hora.split(':').map(Number);
+      const fechaHoraClase = new Date(fechaClase);
+      fechaHoraClase.setHours(horaNum, minutoNum, 0, 0);
+
+      if (fechaHoraClase < fechaMinima) {
+        return res.status(400).json({
+          success: false,
+          message: "No se puede agendar en horarios pasados. Debe ser al menos 1 hora en el futuro.",
+        });
+      }
+
+      // Check for professional schedule conflicts
+      const conflictosProfesional = await Agenda.find({
         profesionalId: actualProfessionalId,
         fecha: fechaClase,
         hora: hora,
         estado: { $ne: "cancelada" },
       });
 
-      if (conflictos.length > 0) {
+      if (conflictosProfesional.length > 0) {
         return res.status(400).json({
           success: false,
-          message: "Ya existe una clase agendada en ese horario",
+          message: "El profesional ya tiene una clase agendada en ese horario",
         });
+      }
+
+      // Check for student conflicts (prevent double booking for the same student)
+      const conflictosEstudiante = await Agenda.find({
+        alumnoId: alumnoId,
+        fecha: fechaClase,
+        hora: hora,
+        estado: { $ne: "cancelada" },
+      });
+
+      if (conflictosEstudiante.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El estudiante ya tiene una clase agendada en ese horario",
+        });
+      }
+
+      // For overlapping time slots (check if there are classes within the session duration)
+      if (horaFin) {
+        const [horaFinNum, minutoFinNum] = horaFin.split(':').map(Number);
+
+        // Check for professional overlapping conflicts
+        const conflictosOverlap = await Agenda.find({
+          profesionalId: actualProfessionalId,
+          fecha: fechaClase,
+          estado: { $ne: "cancelada" },
+          $or: [
+            // New class starts during existing class
+            {
+              hora: { $lte: hora },
+              $expr: {
+                $gte: [
+                  { $dateFromString: {
+                    dateString: { $concat: ["1970-01-01T", "$horaFin", ":00Z"] }
+                  }},
+                  { $dateFromString: {
+                    dateString: { $concat: ["1970-01-01T", hora, ":00Z"] }
+                  }}
+                ]
+              }
+            },
+            // New class ends during existing class
+            {
+              hora: { $gte: hora, $lt: horaFin }
+            }
+          ]
+        });
+
+        if (conflictosOverlap.length > 0) {
+          return res.status(400).json({
+            success: false,
+            message: "El horario seleccionado se superpone con otra clase del profesional",
+          });
+        }
       }
 
       // Check for blocks
