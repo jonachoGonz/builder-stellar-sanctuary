@@ -626,6 +626,7 @@ export function CalendarioCompleto({
   };
 
   const getSlotContent = (slot: TimeSlot) => {
+    if (slot.isPastTime && !slot.hasClass) return "Pasado";
     if (slot.isGlobalBlock) return "Bloqueado (Global)";
     if (slot.isBlocked) return "Bloqueado";
     if (slot.hasClass && slot.clase) {
