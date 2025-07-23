@@ -147,8 +147,10 @@ export function EnhancedUnifiedCalendar({
 
   // Regenerate schedule grid when appointments or blocked times change
   useEffect(() => {
-    generateScheduleGrid();
-  }, [appointments, blockedTimes, currentDate]);
+    if (appointments.length > 0 || blockedTimes.length > 0) {
+      generateScheduleGrid();
+    }
+  }, [appointments, blockedTimes, currentDate, user]);
 
   // Cleanup touch timer on unmount
   useEffect(() => {
