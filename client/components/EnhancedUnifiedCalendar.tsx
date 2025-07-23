@@ -92,6 +92,7 @@ export function EnhancedUnifiedCalendar({
   const [networkError, setNetworkError] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState<Date | null>(null);
   
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
@@ -131,6 +132,26 @@ export function EnhancedUnifiedCalendar({
       loadData();
     }
   }, [user, currentDate, filters]);
+
+  // Test basic connectivity
+  const testConnectivity = async () => {
+    try {
+      console.log("🔍 Testing connectivity...");
+      const response = await fetch(window.location.origin + '/api/test', {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache'
+        },
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+
+      console.log("👍 Connectivity test response:", response.status);
+      return response.status < 500;
+    } catch (error) {
+      console.error("👎 Connectivity test failed:", error);
+      return false;
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -172,6 +193,7 @@ export function EnhancedUnifiedCalendar({
         setNetworkError(false);
         setOfflineMode(false);
         setRetryCount(0);
+        setLastSuccessfulLoad(new Date());
       }
 
       generateScheduleGrid();
@@ -784,8 +806,16 @@ export function EnhancedUnifiedCalendar({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => {
+                  onClick={async () => {
                     setRetryCount(prev => prev + 1);
+
+                    // Test connectivity first
+                    const isConnected = await testConnectivity();
+                    if (!isConnected) {
+                      alert('No se puede conectar al servidor. Verifica tu conexión a internet.');
+                      return;
+                    }
+
                     loadData();
                   }}
                   disabled={loading}
@@ -874,6 +904,11 @@ export function EnhancedUnifiedCalendar({
               {isProfessional && "Haz click en un horario libre para crear una cita. Click derecho para bloquear horarios. Puedes filtrar por estudiante."}
               {isStudent && "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas y filtrar por profesional."}
             </p>
+            {lastSuccessfulLoad && (
+              <p className="text-xs text-blue-600 mt-2">
+                Última actualización: {lastSuccessfulLoad.toLocaleTimeString('es-ES')}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
