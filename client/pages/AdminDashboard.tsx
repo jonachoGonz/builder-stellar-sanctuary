@@ -816,6 +816,8 @@ export function AdminDashboard() {
         {activeTab === "plans" && <PlanManagement />}
 
         {activeTab === "automation" && <AutoCompleteManager />}
+
+        {activeTab === "reviews" && <ReviewsManager />}
       </div>
 
       {/* User Management Modal */}
