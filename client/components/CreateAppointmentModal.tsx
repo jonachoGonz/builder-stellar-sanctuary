@@ -30,6 +30,7 @@ export function CreateAppointmentModal({
   students,
   onCreateAppointment,
   loading,
+  preSelectedSlot,
 }: CreateAppointmentModalProps) {
   const [formData, setFormData] = useState({
     title: "",
