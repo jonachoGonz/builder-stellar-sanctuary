@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { ConnectivityTest } from "../components/ConnectivityTest";
+import { ApiStatus } from "../components/ApiStatus";
 import {
   Mail,
   Lock,
@@ -291,6 +292,11 @@ export function Auth() {
                 <ConnectivityTest />
               </div>
             )}
+
+            {/* Always show API status to help with deployment debugging */}
+            <div className="mb-4">
+              <ApiStatus />
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Google Sign In */}
