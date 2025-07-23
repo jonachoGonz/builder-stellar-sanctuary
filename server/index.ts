@@ -110,6 +110,9 @@ export function createServer() {
   // Calendar/Agenda routes
   app.use("/api/calendario", calendarioRoutes);
 
+  // Plans routes
+  app.use("/api/plans", plansRoutes);
+
   // Test routes (for development/debugging)
   app.use("/api/test", testRoutes);
 
