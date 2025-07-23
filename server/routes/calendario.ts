@@ -248,6 +248,24 @@ router.post(
         });
       }
 
+      // Business hours validation (8:00 AM to 8:30 PM)
+      if (horaNum < 8 || horaNum > 20 || (horaNum === 20 && minutoNum > 30)) {
+        return res.status(400).json({
+          success: false,
+          message: "Las clases solo se pueden agendar entre 8:00 AM y 8:30 PM.",
+        });
+      }
+
+      // Working days validation (Monday to Sunday, but can be extended)
+      const dayOfWeek = fechaClase.getDay();
+      // Currently allowing all days (0-6), but can be restricted if needed
+      // if (dayOfWeek === 0) { // Sunday
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: "No se pueden agendar clases los domingos.",
+      //   });
+      // }
+
       // Check for professional schedule conflicts
       const conflictosProfesional = await Agenda.find({
         profesionalId: actualProfessionalId,
