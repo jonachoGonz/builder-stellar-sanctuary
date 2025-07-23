@@ -440,6 +440,17 @@ export function AdminDashboard() {
               <Calendar className="h-4 w-4 mr-2 inline" />
               Calendario de Citas
             </button>
+            <button
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "plans"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+              onClick={() => setActiveTab("plans")}
+            >
+              <TrendingUp className="h-4 w-4 mr-2 inline" />
+              Gestión de Planes
+            </button>
           </div>
         </div>
       </div>
