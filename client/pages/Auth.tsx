@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { apiCall } from "../lib/api";
 import { ConnectivityTest } from "../components/ConnectivityTest";
 import { ApiStatus } from "../components/ApiStatus";
 import {
