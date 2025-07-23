@@ -1037,7 +1037,11 @@ export function EnhancedUnifiedCalendar({
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 bg-green-100 border border-green-300 rounded mr-2"></div>
-              <span>Completada</span>
+              <span>Completada ✓</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded mr-2"></div>
+              <span>Cancelada ✗</span>
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 bg-red-100 border border-red-300 rounded mr-2"></div>
@@ -1055,11 +1059,14 @@ export function EnhancedUnifiedCalendar({
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
               {isAdmin && "Como administrador, puedes gestionar todas las citas, bloquear horarios globalmente y ver estadísticas completas."}
-              {isProfessional && "Haz click en un horario libre para crear una cita. Click derecho para bloquear horarios. Puedes filtrar por estudiante."}
+              {isProfessional && "Haz click en un horario libre para crear una cita. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
               {isStudent && "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas y filtrar por profesional."}
             </p>
+            <p className="text-xs text-blue-600 mt-2">
+              📱 En móvil: Mantén presionado un horario para bloquearlo
+            </p>
             {lastSuccessfulLoad && (
-              <p className="text-xs text-blue-600 mt-2">
+              <p className="text-xs text-blue-600 mt-1">
                 Última actualización: {lastSuccessfulLoad.toLocaleTimeString('es-ES')}
               </p>
             )}
