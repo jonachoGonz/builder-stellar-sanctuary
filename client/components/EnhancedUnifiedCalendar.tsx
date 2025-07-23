@@ -176,14 +176,37 @@ export function EnhancedUnifiedCalendar({
         params.append("studentId", user!.id);
       }
 
+      console.log("🔍 Loading appointments with params:", params.toString());
+
       const response = await apiCall(`/admin/appointments?${params}`);
-      
+
+      console.log("📡 Appointments response:", {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      });
+
       if (response.ok) {
         const data = await response.json();
+        console.log("✅ Appointments loaded:", data.data?.appointments?.length || 0);
         setAppointments(data.data.appointments || []);
+      } else {
+        const errorText = await response.text();
+        console.error("❌ Appointments API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
+        setAppointments([]); // Set empty array to prevent UI issues
       }
     } catch (error) {
-      console.error("Error loading appointments:", error);
+      console.error("❌ Fatal error loading appointments:", error);
+      setAppointments([]); // Set empty array to prevent UI issues
+
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.error("🌐 Network connectivity issue detected");
+      }
     }
   };
 
