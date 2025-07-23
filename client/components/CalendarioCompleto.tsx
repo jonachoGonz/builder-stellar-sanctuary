@@ -603,7 +603,9 @@ export function CalendarioCompleto({
   };
 
   const getSlotStyles = (slot: TimeSlot) => {
-    if (slot.isGlobalBlock) {
+    if (slot.isPastTime && !slot.hasClass) {
+      return "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed opacity-40";
+    } else if (slot.isGlobalBlock) {
       return "bg-red-200 border-red-400 text-red-800 cursor-not-allowed";
     } else if (slot.isBlocked) {
       return "bg-red-100 border-red-300 text-red-700 cursor-not-allowed";
