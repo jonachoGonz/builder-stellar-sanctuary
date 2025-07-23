@@ -159,10 +159,10 @@ export function EnhancedUnifiedCalendar({
       });
 
       // Apply filters
-      if (filters.professional && filters.professional !== "all") {
+      if (filters.professional !== "all") {
         params.append("professionalId", filters.professional);
       }
-      if (filters.student && filters.student !== "all") {
+      if (filters.student !== "all") {
         params.append("studentId", filters.student);
       }
       if (filters.status !== "all") {
