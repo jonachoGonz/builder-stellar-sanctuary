@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { UserManagementModal } from "../components/UserManagementModal";
 import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
+import { PlanManagement } from "../components/PlanManagement";
 import {
   Users,
   Calendar,
