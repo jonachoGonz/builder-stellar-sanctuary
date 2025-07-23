@@ -128,16 +128,37 @@ console.log(
 const testConnectivity = async () => {
   try {
     console.log("🌐 Testing API connectivity...");
-    const response = await apiCall("/auth/google/status", {
-      method: "GET",
-    });
-    console.log("📡 Connectivity test result:", {
-      status: response.status,
-      ok: response.ok,
-    });
-    return response.ok;
+
+    // For deployment environments, use a simpler health check
+    const testUrls = [
+      `${API_BASE_URL}/health`,
+      `${API_BASE_URL}/ping`,
+      `${API_BASE_URL}/auth/google/status`
+    ];
+
+    for (const url of testUrls) {
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          signal: AbortSignal.timeout(5000)
+        });
+
+        console.log(`📡 Connectivity test result for ${url}:`, {
+          status: response.status,
+          ok: response.ok,
+        });
+
+        if (response.ok || response.status < 500) {
+          return true;
+        }
+      } catch (urlError) {
+        console.warn(`⚠️ Test failed for ${url}:`, urlError.message);
+      }
+    }
+
+    return false;
   } catch (error) {
-    console.error("❌ Connectivity test failed:", error);
+    console.error("❌ All connectivity tests failed:", error);
     return false;
   }
 };
@@ -156,8 +177,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("✅ API connectivity confirmed");
         checkAuth();
       } else {
-        console.error("❌ API not reachable, skipping auth check");
-        setIsLoading(false);
+        console.error("❌ API not reachable, running in offline mode");
+        // In deployment, still try to check auth in case token is valid
+        // but connectivity test failed due to different endpoints
+        try {
+          await checkAuth();
+        } catch (error) {
+          console.warn("⚠️ Auth check failed in offline mode:", error);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -279,10 +307,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Extract meaningful error message
       let errorMessage = "Error al iniciar sesión";
 
-      if (error && typeof error === "object") {
-        if (error.message && typeof error.message === "string") {
+      // Handle specific deployment issues
+      if (error && error.message) {
+        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+          errorMessage = "No se puede conectar al servidor. Por favor verifica tu conexión o intenta más tarde.";
+        } else if (error.message.includes('timeout') || error.name === 'AbortError') {
+          errorMessage = "La conexión está tardando demasiado. Por favor intenta nuevamente.";
+        } else if (typeof error.message === "string") {
           errorMessage = error.message;
-        } else if (error.toString && typeof error.toString === "function") {
+        }
+      } else if (error && typeof error === "object") {
+        if (error.toString && typeof error.toString === "function") {
           const stringified = error.toString();
           if (stringified !== "[object Object]") {
             errorMessage = stringified;
