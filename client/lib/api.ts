@@ -7,16 +7,7 @@ export const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
 
-  // For Fly.dev deployment, check specific hostname pattern
-  if (
-    typeof window !== "undefined" &&
-    window.location.hostname.includes(".fly.dev")
-  ) {
-    // In Fly.dev, backend runs on port 3001 internally
-    return `${window.location.protocol}//${window.location.hostname}:3001/api`;
-  }
-
-  // If we're in production (not localhost), use absolute URL
+  // For any production deployment (Fly.dev, Netlify, etc.), use same origin
   if (
     typeof window !== "undefined" &&
     !window.location.hostname.includes("localhost")
@@ -69,11 +60,10 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
   const getUrlsToTry = (endpoint: string) => {
     const baseEndpoint = endpoint.startsWith("http") ? endpoint : endpoint;
 
-    if (typeof window !== "undefined" && window.location.hostname.includes(".fly.dev")) {
-      // For Fly.dev, try multiple potential backend URLs
+    if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+      // For production deployments, try multiple potential backend URLs
       return [
         `${window.location.origin}/api${baseEndpoint}`,
-        `${window.location.protocol}//${window.location.hostname}/api${baseEndpoint}`,
         `/.netlify/functions/api${baseEndpoint}`,
       ];
     }
