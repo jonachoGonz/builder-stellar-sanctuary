@@ -251,14 +251,20 @@ export function EnhancedUnifiedCalendar({
 
   const loadBlockedTimes = async () => {
     try {
-      // Load blocked times for the current week
+      console.log("🔍 Loading blocked times...");
       const response = await apiCall("/admin/blocked-times");
+
       if (response.ok) {
         const data = await response.json();
+        console.log("✅ Blocked times loaded:", data.data?.length || 0);
         setBlockedTimes(data.data || []);
+      } else {
+        console.error("❌ Blocked times API error:", response.status);
+        setBlockedTimes([]);
       }
     } catch (error) {
-      console.error("Error loading blocked times:", error);
+      console.error("❌ Fatal error loading blocked times:", error);
+      setBlockedTimes([]);
     }
   };
 
