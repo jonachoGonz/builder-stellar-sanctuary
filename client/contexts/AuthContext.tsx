@@ -213,7 +213,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("❌ Auth check failed:", error);
-      localStorage.removeItem("authToken");
+
+      // Don't remove token if it's just a network error
+      if (error && error.message && !error.message.includes('Failed to fetch')) {
+        localStorage.removeItem("authToken");
+      } else {
+        console.log("⚠️ Keeping token due to network error");
+      }
     } finally {
       setIsLoading(false);
     }
