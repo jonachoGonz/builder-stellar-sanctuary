@@ -398,6 +398,7 @@ export function CalendarioCompleto({
           canEdit,
           canSchedule,
           isGlobalBlock,
+          isPastTime,
         });
       });
     });
