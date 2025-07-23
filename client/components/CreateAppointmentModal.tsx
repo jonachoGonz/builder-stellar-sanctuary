@@ -36,12 +36,23 @@ export function CreateAppointmentModal({
     title: "",
     type: "",
     studentId: "",
-    date: "",
-    startTime: "",
+    date: preSelectedSlot?.date || "",
+    startTime: preSelectedSlot?.time || "",
     duration: 60,
     location: "",
     notes: "",
   });
+
+  // Update form when preSelectedSlot changes
+  useEffect(() => {
+    if (preSelectedSlot) {
+      setFormData(prev => ({
+        ...prev,
+        date: preSelectedSlot.date,
+        startTime: preSelectedSlot.time,
+      }));
+    }
+  }, [preSelectedSlot]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
