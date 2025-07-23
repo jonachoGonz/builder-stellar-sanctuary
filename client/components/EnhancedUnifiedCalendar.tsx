@@ -90,6 +90,8 @@ export function EnhancedUnifiedCalendar({
   const [blockedTimes, setBlockedTimes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [networkError, setNetworkError] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   
   // Filter states
   const [filters, setFilters] = useState<CalendarFilters>({
@@ -135,20 +137,49 @@ export function EnhancedUnifiedCalendar({
     setNetworkError(false);
 
     try {
-      await Promise.all([
+      console.log("🔄 Starting calendar data load...");
+
+      // Load data with individual error handling
+      const results = await Promise.allSettled([
         loadAppointments(),
         loadUsers(),
         loadBlockedTimes(),
       ]);
-      generateScheduleGrid();
-      console.log("✅ All calendar data loaded successfully");
-    } catch (error) {
-      console.error("❌ Error loading calendar data:", error);
 
-      // Check if it's a network error
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        setNetworkError(true);
+      // Check results and log any failures
+      const [appointmentsResult, usersResult, blockedTimesResult] = results;
+
+      if (appointmentsResult.status === 'rejected') {
+        console.error("❌ Failed to load appointments:", appointmentsResult.reason);
       }
+
+      if (usersResult.status === 'rejected') {
+        console.error("❌ Failed to load users:", usersResult.reason);
+      }
+
+      if (blockedTimesResult.status === 'rejected') {
+        console.error("❌ Failed to load blocked times:", blockedTimesResult.reason);
+      }
+
+      // Check if all requests failed (network issue)
+      const allFailed = results.every(result => result.status === 'rejected');
+      if (allFailed) {
+        console.error("🌐 All API calls failed - likely network connectivity issue");
+        setNetworkError(true);
+        setOfflineMode(true);
+      } else {
+        // At least some data loaded successfully
+        setNetworkError(false);
+        setOfflineMode(false);
+        setRetryCount(0);
+      }
+
+      generateScheduleGrid();
+      console.log("✅ Calendar data load completed");
+    } catch (error) {
+      console.error("❌ Critical error loading calendar data:", error);
+      setNetworkError(true);
+      setOfflineMode(true);
     } finally {
       setLoading(false);
     }
@@ -207,54 +238,71 @@ export function EnhancedUnifiedCalendar({
           error: errorText
         });
         setAppointments([]); // Set empty array to prevent UI issues
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
       console.error("❌ Fatal error loading appointments:", error);
       setAppointments([]); // Set empty array to prevent UI issues
 
-      // Check if it's a network error
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        console.error("🌐 Network connectivity issue detected");
-      }
+      // Re-throw to let Promise.allSettled handle it
+      throw error;
     }
   };
 
   const loadUsers = async () => {
     try {
+      const promises = [];
+
       if (isProfessional || isAdmin) {
         console.log("🔍 Loading students...");
-        const studentsResponse = await apiCall("/admin/users?role=student&limit=100");
-
-        if (studentsResponse.ok) {
-          const studentsData = await studentsResponse.json();
-          console.log("✅ Students loaded:", studentsData.data?.users?.length || 0);
-          setStudents(studentsData.data.users || []);
-        } else {
-          console.error("❌ Students API error:", studentsResponse.status);
-          setStudents([]);
-        }
+        promises.push(
+          apiCall("/admin/users?role=student&limit=100")
+            .then(response => {
+              if (response.ok) {
+                return response.json().then(data => {
+                  console.log("✅ Students loaded:", data.data?.users?.length || 0);
+                  setStudents(data.data.users || []);
+                });
+              } else {
+                console.error("❌ Students API error:", response.status);
+                setStudents([]);
+                throw new Error(`Students API error: ${response.status}`);
+              }
+            })
+        );
       }
 
       if (isAdmin || isStudent) {
         console.log("🔍 Loading professionals...");
-        const professionalsResponse = await apiCall("/admin/users?limit=100");
+        promises.push(
+          apiCall("/admin/users?limit=100")
+            .then(response => {
+              if (response.ok) {
+                return response.json().then(data => {
+                  const professionalUsers = data.data.users?.filter(
+                    (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
+                  ) || [];
+                  console.log("✅ Professionals loaded:", professionalUsers.length);
+                  setProfessionals(professionalUsers);
+                });
+              } else {
+                console.error("❌ Professionals API error:", response.status);
+                setProfessionals([]);
+                throw new Error(`Professionals API error: ${response.status}`);
+              }
+            })
+        );
+      }
 
-        if (professionalsResponse.ok) {
-          const professionalsData = await professionalsResponse.json();
-          const professionalUsers = professionalsData.data.users?.filter(
-            (u: any) => ["teacher", "nutritionist", "psychologist"].includes(u.role)
-          ) || [];
-          console.log("✅ Professionals loaded:", professionalUsers.length);
-          setProfessionals(professionalUsers);
-        } else {
-          console.error("❌ Professionals API error:", professionalsResponse.status);
-          setProfessionals([]);
-        }
+      // Wait for all user loading to complete
+      if (promises.length > 0) {
+        await Promise.all(promises);
       }
     } catch (error) {
       console.error("❌ Fatal error loading users:", error);
       setStudents([]);
       setProfessionals([]);
+      throw error;
     }
   };
 
@@ -270,10 +318,14 @@ export function EnhancedUnifiedCalendar({
       } else {
         console.error("❌ Blocked times API error:", response.status);
         setBlockedTimes([]);
+        if (response.status !== 404) {
+          throw new Error(`Blocked times API error: ${response.status}`);
+        }
       }
     } catch (error) {
       console.error("❌ Fatal error loading blocked times:", error);
       setBlockedTimes([]);
+      throw error;
     }
   };
 
@@ -709,6 +761,38 @@ export function EnhancedUnifiedCalendar({
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="text-sm text-gray-600 mt-2">Cargando...</p>
+            </div>
+          )}
+
+          {networkError && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-red-800">
+                      {offlineMode ? "Modo Sin Conexión" : "Error de Conectividad"}
+                    </h3>
+                    <p className="text-xs text-red-600 mt-1">
+                      {offlineMode
+                        ? "No se pudo cargar los datos del servidor. Mostrando datos locales disponibles."
+                        : "Algunos datos podrían no estar actualizados. Verifica tu conexión."
+                      }
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setRetryCount(prev => prev + 1);
+                    loadData();
+                  }}
+                  disabled={loading}
+                >
+                  Reintentar
+                </Button>
+              </div>
             </div>
           )}
 
