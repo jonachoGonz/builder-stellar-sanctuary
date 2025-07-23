@@ -223,9 +223,11 @@ PlanSchema.methods.applyDiscountCode = function (code: string) {
   );
 
   if (discountCode) {
-    const discountAmount = Math.round((this.price * discountCode.percentage) / 100);
+    const discountAmount = Math.round(
+      (this.price * discountCode.percentage) / 100,
+    );
     const finalPrice = this.price - discountAmount;
-    
+
     return {
       originalPrice: this.price,
       discountPercentage: discountCode.percentage,
@@ -246,7 +248,9 @@ PlanSchema.statics.getPublicPlans = function () {
 };
 
 // Static method to seed default plans
-PlanSchema.statics.seedDefaultPlans = async function (adminUserId: mongoose.Types.ObjectId) {
+PlanSchema.statics.seedDefaultPlans = async function (
+  adminUserId: mongoose.Types.ObjectId,
+) {
   const existingPlans = await this.countDocuments();
   if (existingPlans > 0) {
     return; // Plans already exist
@@ -260,7 +264,11 @@ PlanSchema.statics.seedDefaultPlans = async function (adminUserId: mongoose.Type
       classesPorSemana: 1,
       clasesTotales: 1,
       durationWeeks: 1,
-      benefits: ["1 clase gratuita", "Evaluación inicial", "Plan personalizado"],
+      benefits: [
+        "1 clase gratuita",
+        "Evaluación inicial",
+        "Plan personalizado",
+      ],
       category: "trial",
       metadata: { color: "#10B981", order: 1 },
       createdBy: adminUserId,

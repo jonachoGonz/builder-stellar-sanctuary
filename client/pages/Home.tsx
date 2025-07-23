@@ -104,19 +104,22 @@ export function Home() {
         const response = await apiCall("/admin/users?limit=20");
         if (response.ok) {
           const data = await response.json();
-          const professionalUsers = data.data.users?.filter((u: any) =>
-            ["teacher", "nutritionist", "psychologist"].includes(u.role),
-          ) || [];
+          const professionalUsers =
+            data.data.users?.filter((u: any) =>
+              ["teacher", "nutritionist", "psychologist"].includes(u.role),
+            ) || [];
 
           // Transform API data to match expected format
-          const transformedProfessionals = professionalUsers.map((user: any) => ({
-            name: `${user.firstName} ${user.lastName}`,
-            specialty: getRoleDisplayName(user.role),
-            experience: "Experiencia certificada",
-            certifications: getRoleCertifications(user.role),
-            image: user.avatar || "/placeholder.svg",
-            id: user._id,
-          }));
+          const transformedProfessionals = professionalUsers.map(
+            (user: any) => ({
+              name: `${user.firstName} ${user.lastName}`,
+              specialty: getRoleDisplayName(user.role),
+              experience: "Experiencia certificada",
+              certifications: getRoleCertifications(user.role),
+              image: user.avatar || "/placeholder.svg",
+              id: user._id,
+            }),
+          );
 
           setProfessionals(transformedProfessionals);
         }
@@ -580,7 +583,10 @@ export function Home() {
               <div className="space-y-6">
                 {professionals.length > 0 ? (
                   professionals.map((professional, index) => (
-                    <Card key={professional.id || index} className="shadow-lg border-0">
+                    <Card
+                      key={professional.id || index}
+                      className="shadow-lg border-0"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-center space-x-4">
                           <img

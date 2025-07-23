@@ -72,7 +72,9 @@ export function AdminDashboard() {
     limit: 20,
   });
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"users" | "calendar" | "plans" | "automation" | "reviews">("users");
+  const [activeTab, setActiveTab] = useState<
+    "users" | "calendar" | "plans" | "automation" | "reviews"
+  >("users");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
@@ -83,7 +85,7 @@ export function AdminDashboard() {
       const activeUsers = users.filter((u) => u.isActive).length;
       const totalStudents = users.filter((u) => u.role === "student").length;
       const totalTeachers = users.filter((u) =>
-        ["teacher", "nutritionist", "psychologist"].includes(u.role)
+        ["teacher", "nutritionist", "psychologist"].includes(u.role),
       ).length;
       const totalClasses = 0; // Will be loaded from appointments API
       const upcomingClasses = 0; // Will be loaded from appointments API

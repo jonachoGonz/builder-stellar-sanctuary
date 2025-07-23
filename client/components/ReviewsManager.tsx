@@ -69,9 +69,11 @@ interface ProfessionalStats {
 export function ReviewsManager() {
   const { user } = useAuth();
   const { isAdmin, isProfessional, isStudent } = usePermissions();
-  
+
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [professionalStats, setProfessionalStats] = useState<ProfessionalStats[]>([]);
+  const [professionalStats, setProfessionalStats] = useState<
+    ProfessionalStats[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRating, setFilterRating] = useState("all");
@@ -89,11 +91,15 @@ export function ReviewsManager() {
   const loadReviews = async () => {
     try {
       setLoading(true);
-      const response = await apiCall("/calendario/agenda?estado=completada&limit=100");
+      const response = await apiCall(
+        "/calendario/agenda?estado=completada&limit=100",
+      );
       if (response.ok) {
         const data = await response.json();
         // Filter only classes with evaluations
-        const reviewedClasses = data.data.agenda.filter((clase: any) => clase.evaluacion);
+        const reviewedClasses = data.data.agenda.filter(
+          (clase: any) => clase.evaluacion,
+        );
         setReviews(reviewedClasses);
       }
     } catch (error) {
@@ -105,19 +111,26 @@ export function ReviewsManager() {
 
   const loadProfessionalStats = async () => {
     try {
-      const response = await apiCall("/calendario/agenda?estado=completada&limit=1000");
+      const response = await apiCall(
+        "/calendario/agenda?estado=completada&limit=1000",
+      );
       if (response.ok) {
         const data = await response.json();
-        const allCompletedClasses = data.data.agenda.filter((clase: any) => clase.evaluacion);
-        
+        const allCompletedClasses = data.data.agenda.filter(
+          (clase: any) => clase.evaluacion,
+        );
+
         // Group by professional and calculate stats
-        const statsMap = new Map<string, {
-          profesional: any;
-          reviews: any[];
-          totalRating: number;
-          totalPunctuality: number;
-          totalQuality: number;
-        }>();
+        const statsMap = new Map<
+          string,
+          {
+            profesional: any;
+            reviews: any[];
+            totalRating: number;
+            totalPunctuality: number;
+            totalQuality: number;
+          }
+        >();
 
         allCompletedClasses.forEach((clase: any) => {
           const profId = clase.profesionalId._id;
@@ -138,20 +151,34 @@ export function ReviewsManager() {
           stats.totalQuality += clase.evaluacion.calidad;
         });
 
-        const professionalStatsArray: ProfessionalStats[] = Array.from(statsMap.entries()).map(([profId, stats]) => ({
+        const professionalStatsArray: ProfessionalStats[] = Array.from(
+          statsMap.entries(),
+        ).map(([profId, stats]) => ({
           profesionalId: profId,
           nombre: `${stats.profesional.firstName} ${stats.profesional.lastName}`,
           especialidad: stats.profesional.role,
           totalReviews: stats.reviews.length,
-          averageRating: Number((stats.totalRating / stats.reviews.length).toFixed(1)),
-          averagePunctuality: Number((stats.totalPunctuality / stats.reviews.length).toFixed(1)),
-          averageQuality: Number((stats.totalQuality / stats.reviews.length).toFixed(1)),
-          lastReviewDate: stats.reviews.sort((a, b) => 
-            new Date(b.evaluacion.fechaEvaluacion).getTime() - new Date(a.evaluacion.fechaEvaluacion).getTime()
+          averageRating: Number(
+            (stats.totalRating / stats.reviews.length).toFixed(1),
+          ),
+          averagePunctuality: Number(
+            (stats.totalPunctuality / stats.reviews.length).toFixed(1),
+          ),
+          averageQuality: Number(
+            (stats.totalQuality / stats.reviews.length).toFixed(1),
+          ),
+          lastReviewDate: stats.reviews.sort(
+            (a, b) =>
+              new Date(b.evaluacion.fechaEvaluacion).getTime() -
+              new Date(a.evaluacion.fechaEvaluacion).getTime(),
           )[0].evaluacion.fechaEvaluacion,
         }));
 
-        setProfessionalStats(professionalStatsArray.sort((a, b) => b.averageRating - a.averageRating));
+        setProfessionalStats(
+          professionalStatsArray.sort(
+            (a, b) => b.averageRating - a.averageRating,
+          ),
+        );
       }
     } catch (error) {
       console.error("Error loading professional stats:", error);
@@ -159,49 +186,68 @@ export function ReviewsManager() {
   };
 
   const filteredReviews = reviews.filter((review) => {
-    const matchesSearch = 
-      review.alumnoId.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.alumnoId.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.profesionalId.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.profesionalId.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.evaluacion.comentario.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      review.alumnoId.firstName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      review.alumnoId.lastName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      review.profesionalId.firstName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      review.profesionalId.lastName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      review.evaluacion.comentario
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-    const matchesRating = filterRating === "all" || 
+    const matchesRating =
+      filterRating === "all" ||
       (filterRating === "5" && review.evaluacion.puntaje === 5) ||
       (filterRating === "4" && review.evaluacion.puntaje === 4) ||
       (filterRating === "3" && review.evaluacion.puntaje === 3) ||
       (filterRating === "low" && review.evaluacion.puntaje <= 2);
 
-    const matchesProfessional = filterProfessional === "all" || 
+    const matchesProfessional =
+      filterProfessional === "all" ||
       review.profesionalId._id === filterProfessional;
 
-    const matchesSpecialty = filterSpecialty === "all" || 
-      review.especialidad === filterSpecialty;
+    const matchesSpecialty =
+      filterSpecialty === "all" || review.especialidad === filterSpecialty;
 
-    return matchesSearch && matchesRating && matchesProfessional && matchesSpecialty;
+    return (
+      matchesSearch && matchesRating && matchesProfessional && matchesSpecialty
+    );
   });
 
   const getUniqueValues = (key: string) => {
-    const values = new Set(reviews.map(review => 
-      key === "professional" 
-        ? review.profesionalId._id 
-        : key === "specialty" 
-          ? review.especialidad 
-          : ""
-    ));
+    const values = new Set(
+      reviews.map((review) =>
+        key === "professional"
+          ? review.profesionalId._id
+          : key === "specialty"
+            ? review.especialidad
+            : "",
+      ),
+    );
     return Array.from(values);
   };
 
   const renderStars = (rating: number, size: "sm" | "md" | "lg" = "sm") => {
-    const sizeClass = size === "lg" ? "h-5 w-5" : size === "md" ? "h-4 w-4" : "h-3 w-3";
-    
+    const sizeClass =
+      size === "lg" ? "h-5 w-5" : size === "md" ? "h-4 w-4" : "h-3 w-3";
+
     return (
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`${sizeClass} ${
-              star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+              star <= rating
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-gray-300"
             }`}
           />
         ))}
@@ -213,8 +259,8 @@ export function ReviewsManager() {
   const getSpecialtyName = (specialty: string) => {
     const names = {
       teacher: "Kinesiología",
-      nutritionist: "Nutrición", 
-      psychologist: "Psicología"
+      nutritionist: "Nutrición",
+      psychologist: "Psicología",
     };
     return names[specialty as keyof typeof names] || specialty;
   };
@@ -225,7 +271,9 @@ export function ReviewsManager() {
         <CardContent className="p-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-gray-600 mt-2">Cargando evaluaciones...</p>
+            <p className="text-sm text-gray-600 mt-2">
+              Cargando evaluaciones...
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -239,12 +287,11 @@ export function ReviewsManager() {
         <div>
           <h2 className="text-2xl font-bold">Sistema de Evaluaciones</h2>
           <p className="text-gray-600">
-            {isStudent 
+            {isStudent
               ? "Revisa tus evaluaciones y las de otros estudiantes"
               : isProfessional
                 ? "Revisa las evaluaciones de tus clases"
-                : "Gestiona todas las evaluaciones del sistema"
-            }
+                : "Gestiona todas las evaluaciones del sistema"}
           </p>
         </div>
         {(isAdmin || isProfessional) && (
@@ -282,7 +329,9 @@ export function ReviewsManager() {
                 {professionalStats.length > 0 && (
                   <div>
                     <p className="font-medium">{professionalStats[0].nombre}</p>
-                    <p className="text-sm text-gray-600">{getSpecialtyName(professionalStats[0].especialidad)}</p>
+                    <p className="text-sm text-gray-600">
+                      {getSpecialtyName(professionalStats[0].especialidad)}
+                    </p>
                     {renderStars(professionalStats[0].averageRating, "md")}
                     <p className="text-xs text-gray-500 mt-1">
                       {professionalStats[0].totalReviews} evaluaciones
@@ -318,9 +367,20 @@ export function ReviewsManager() {
                 {reviews.length > 0 && (
                   <div>
                     <div className="text-2xl font-bold">
-                      {(reviews.reduce((sum, r) => sum + r.evaluacion.puntaje, 0) / reviews.length).toFixed(1)}
+                      {(
+                        reviews.reduce(
+                          (sum, r) => sum + r.evaluacion.puntaje,
+                          0,
+                        ) / reviews.length
+                      ).toFixed(1)}
                     </div>
-                    {renderStars(reviews.reduce((sum, r) => sum + r.evaluacion.puntaje, 0) / reviews.length, "md")}
+                    {renderStars(
+                      reviews.reduce(
+                        (sum, r) => sum + r.evaluacion.puntaje,
+                        0,
+                      ) / reviews.length,
+                      "md",
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -335,17 +395,27 @@ export function ReviewsManager() {
             <CardContent>
               <div className="space-y-4">
                 {professionalStats.map((stat, index) => (
-                  <div key={stat.profesionalId} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={stat.profesionalId}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-4">
-                      <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
+                      <div className="text-lg font-bold text-gray-500">
+                        #{index + 1}
+                      </div>
                       <Avatar>
                         <AvatarFallback>
-                          {stat.nombre.split(' ').map(n => n[0]).join('')}
+                          {stat.nombre
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-medium">{stat.nombre}</h3>
-                        <p className="text-sm text-gray-600">{getSpecialtyName(stat.especialidad)}</p>
+                        <p className="text-sm text-gray-600">
+                          {getSpecialtyName(stat.especialidad)}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -354,7 +424,8 @@ export function ReviewsManager() {
                         {stat.totalReviews} evaluaciones
                       </div>
                       <div className="text-xs text-gray-500">
-                        Puntualidad: {renderStars(stat.averagePunctuality, "sm")}
+                        Puntualidad:{" "}
+                        {renderStars(stat.averagePunctuality, "sm")}
                       </div>
                       <div className="text-xs text-gray-500">
                         Calidad: {renderStars(stat.averageQuality, "sm")}
@@ -386,7 +457,7 @@ export function ReviewsManager() {
                     />
                   </div>
                 </div>
-                
+
                 <Select value={filterRating} onValueChange={setFilterRating}>
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Calificación" />
@@ -400,7 +471,10 @@ export function ReviewsManager() {
                   </SelectContent>
                 </Select>
 
-                <Select value={filterSpecialty} onValueChange={setFilterSpecialty}>
+                <Select
+                  value={filterSpecialty}
+                  onValueChange={setFilterSpecialty}
+                >
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Especialidad" />
                   </SelectTrigger>
@@ -425,18 +499,22 @@ export function ReviewsManager() {
                       <div className="flex items-center space-x-4 mb-3">
                         <Avatar>
                           <AvatarFallback>
-                            {review.alumnoId.firstName[0]}{review.alumnoId.lastName[0]}
+                            {review.alumnoId.firstName[0]}
+                            {review.alumnoId.lastName[0]}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <h3 className="font-medium">
-                            {review.alumnoId.firstName} {review.alumnoId.lastName}
+                            {review.alumnoId.firstName}{" "}
+                            {review.alumnoId.lastName}
                           </h3>
                           <p className="text-sm text-gray-600">
-                            Clase con {review.profesionalId.firstName} {review.profesionalId.lastName}
+                            Clase con {review.profesionalId.firstName}{" "}
+                            {review.profesionalId.lastName}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {new Date(review.fecha).toLocaleDateString("es-ES")} - {review.hora}
+                            {new Date(review.fecha).toLocaleDateString("es-ES")}{" "}
+                            - {review.hora}
                           </p>
                         </div>
                       </div>
@@ -447,7 +525,9 @@ export function ReviewsManager() {
                           {renderStars(review.evaluacion.puntaje, "md")}
                         </div>
                         <div className="flex items-center space-x-4">
-                          <span className="text-sm font-medium">Puntualidad:</span>
+                          <span className="text-sm font-medium">
+                            Puntualidad:
+                          </span>
                           {renderStars(review.evaluacion.puntualidad, "sm")}
                         </div>
                         <div className="flex items-center space-x-4">
@@ -458,7 +538,9 @@ export function ReviewsManager() {
 
                       {review.evaluacion.comentario && (
                         <div className="bg-gray-50 p-3 rounded-lg">
-                          <p className="text-sm italic">"{review.evaluacion.comentario}"</p>
+                          <p className="text-sm italic">
+                            "{review.evaluacion.comentario}"
+                          </p>
                         </div>
                       )}
                     </div>
@@ -468,7 +550,10 @@ export function ReviewsManager() {
                         {getSpecialtyName(review.especialidad)}
                       </Badge>
                       <div className="text-xs text-gray-500">
-                        Evaluado el {new Date(review.evaluacion.fechaEvaluacion).toLocaleDateString("es-ES")}
+                        Evaluado el{" "}
+                        {new Date(
+                          review.evaluacion.fechaEvaluacion,
+                        ).toLocaleDateString("es-ES")}
                       </div>
                     </div>
                   </div>
@@ -480,10 +565,9 @@ export function ReviewsManager() {
               <Card>
                 <CardContent className="p-8 text-center">
                   <p className="text-gray-600">
-                    {reviews.length === 0 
+                    {reviews.length === 0
                       ? "No hay evaluaciones disponibles aún"
-                      : "No se encontraron evaluaciones con los filtros aplicados"
-                    }
+                      : "No se encontraron evaluaciones con los filtros aplicados"}
                   </p>
                 </CardContent>
               </Card>
@@ -504,19 +588,31 @@ export function ReviewsManager() {
           <div className="space-y-2 text-sm text-gray-700">
             <div className="flex items-start">
               <Star className="h-4 w-4 text-yellow-500 mr-2 mt-0.5" />
-              <p>Los estudiantes pueden evaluar las clases completadas con calificaciones de 1 a 5 estrellas</p>
+              <p>
+                Los estudiantes pueden evaluar las clases completadas con
+                calificaciones de 1 a 5 estrellas
+              </p>
             </div>
             <div className="flex items-start">
               <Clock className="h-4 w-4 text-blue-500 mr-2 mt-0.5" />
-              <p>Las evaluaciones incluyen puntualidad, calidad de la clase y comentarios opcionales</p>
+              <p>
+                Las evaluaciones incluyen puntualidad, calidad de la clase y
+                comentarios opcionales
+              </p>
             </div>
             <div className="flex items-start">
               <BarChart3 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-              <p>Las estadísticas ayudan a identificar a los mejores profesionales y áreas de mejora</p>
+              <p>
+                Las estadísticas ayudan a identificar a los mejores
+                profesionales y áreas de mejora
+              </p>
             </div>
             <div className="flex items-start">
               <MessageSquare className="h-4 w-4 text-purple-500 mr-2 mt-0.5" />
-              <p>Los comentarios proporcionan feedback valioso para mejorar la calidad del servicio</p>
+              <p>
+                Los comentarios proporcionan feedback valioso para mejorar la
+                calidad del servicio
+              </p>
             </div>
           </div>
         </CardContent>

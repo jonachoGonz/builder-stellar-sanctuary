@@ -48,7 +48,7 @@ export function AutoCompleteManager() {
 
   useEffect(() => {
     loadStats();
-    
+
     // Auto-refresh stats every 30 seconds
     const interval = setInterval(loadStats, 30000);
     return () => clearInterval(interval);
@@ -77,7 +77,11 @@ export function AutoCompleteManager() {
   };
 
   const executeAutoComplete = async () => {
-    if (!confirm("¿Estás seguro de que quieres ejecutar el auto-completado de clases?")) {
+    if (
+      !confirm(
+        "¿Estás seguro de que quieres ejecutar el auto-completado de clases?",
+      )
+    ) {
       return;
     }
 
@@ -90,7 +94,7 @@ export function AutoCompleteManager() {
       if (response.ok) {
         const data = await response.json();
         setLastResult(data.data);
-        
+
         toast({
           title: "Éxito",
           description: data.message,
@@ -100,7 +104,9 @@ export function AutoCompleteManager() {
         await loadStats();
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al ejecutar auto-completado");
+        throw new Error(
+          errorData.message || "Error al ejecutar auto-completado",
+        );
       }
     } catch (error: any) {
       toast({
@@ -113,14 +119,20 @@ export function AutoCompleteManager() {
     }
   };
 
-  const getStatusColor = (count: number, type: "pending" | "overdue" | "success") => {
+  const getStatusColor = (
+    count: number,
+    type: "pending" | "overdue" | "success",
+  ) => {
     if (type === "success") return "text-green-600";
     if (type === "overdue" && count > 0) return "text-red-600";
     if (type === "pending" && count > 0) return "text-yellow-600";
     return "text-gray-600";
   };
 
-  const getStatusBadge = (count: number, type: "pending" | "overdue" | "success") => {
+  const getStatusBadge = (
+    count: number,
+    type: "pending" | "overdue" | "success",
+  ) => {
     if (type === "success") return "bg-green-100 text-green-800";
     if (type === "overdue" && count > 0) return "bg-red-100 text-red-800";
     if (type === "pending" && count > 0) return "bg-yellow-100 text-yellow-800";
@@ -133,7 +145,9 @@ export function AutoCompleteManager() {
         <CardContent className="p-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-gray-600 mt-2">Cargando estadísticas...</p>
+            <p className="text-sm text-gray-600 mt-2">
+              Cargando estadísticas...
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -151,12 +165,10 @@ export function AutoCompleteManager() {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button
-            onClick={loadStats}
-            variant="outline"
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Button onClick={loadStats} variant="outline" disabled={loading}>
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Actualizar
           </Button>
           <Button
@@ -180,14 +192,21 @@ export function AutoCompleteManager() {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${getStatusColor(stats.pendientesCompletar, "pending")}`}>
+              <div
+                className={`text-2xl font-bold ${getStatusColor(stats.pendientesCompletar, "pending")}`}
+              >
                 {stats.pendientesCompletar}
               </div>
               <p className="text-xs text-muted-foreground">
                 Clases que deberían estar completadas
               </p>
               {stats.pendientesCompletar > 0 && (
-                <Badge className={getStatusBadge(stats.pendientesCompletar, "pending")}>
+                <Badge
+                  className={getStatusBadge(
+                    stats.pendientesCompletar,
+                    "pending",
+                  )}
+                >
                   Acción requerida
                 </Badge>
               )}
@@ -202,7 +221,9 @@ export function AutoCompleteManager() {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${getStatusColor(stats.completadasHoy, "success")}`}>
+              <div
+                className={`text-2xl font-bold ${getStatusColor(stats.completadasHoy, "success")}`}
+              >
                 {stats.completadasHoy}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -219,7 +240,9 @@ export function AutoCompleteManager() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${getStatusColor(stats.completadasSemana, "success")}`}>
+              <div
+                className={`text-2xl font-bold ${getStatusColor(stats.completadasSemana, "success")}`}
+              >
                 {stats.completadasSemana}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -236,14 +259,18 @@ export function AutoCompleteManager() {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${getStatusColor(stats.clasesAtrasadas, "overdue")}`}>
+              <div
+                className={`text-2xl font-bold ${getStatusColor(stats.clasesAtrasadas, "overdue")}`}
+              >
                 {stats.clasesAtrasadas}
               </div>
               <p className="text-xs text-muted-foreground">
                 Clases agendadas de hace más de 7 días
               </p>
               {stats.clasesAtrasadas > 0 && (
-                <Badge className={getStatusBadge(stats.clasesAtrasadas, "overdue")}>
+                <Badge
+                  className={getStatusBadge(stats.clasesAtrasadas, "overdue")}
+                >
                   Requiere atención
                 </Badge>
               )}
@@ -266,16 +293,18 @@ export function AutoCompleteManager() {
             {stats.pendientesCompletar > 0 && (
               <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ Hay {stats.pendientesCompletar} clases que deberían completarse automáticamente. 
-                  Se recomienda ejecutar el proceso ahora para mantener los registros actualizados.
+                  ⚠️ Hay {stats.pendientesCompletar} clases que deberían
+                  completarse automáticamente. Se recomienda ejecutar el proceso
+                  ahora para mantener los registros actualizados.
                 </p>
               </div>
             )}
             {stats.clasesAtrasadas > 0 && (
               <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-800">
-                  🚨 Hay {stats.clasesAtrasadas} clases muy atrasadas (más de 7 días). 
-                  Revisa estos casos manualmente para determinar su estado correcto.
+                  🚨 Hay {stats.clasesAtrasadas} clases muy atrasadas (más de 7
+                  días). Revisa estos casos manualmente para determinar su
+                  estado correcto.
                 </p>
               </div>
             )}
@@ -316,23 +345,33 @@ export function AutoCompleteManager() {
 
             {lastResult.detalles.length > 0 && (
               <div>
-                <h4 className="font-medium mb-3">Detalles de Clases Completadas (muestra):</h4>
+                <h4 className="font-medium mb-3">
+                  Detalles de Clases Completadas (muestra):
+                </h4>
                 <div className="space-y-2">
                   {lastResult.detalles.map((detalle, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                    >
                       <div>
                         <span className="font-medium">{detalle.alumno}</span>
                         <span className="text-gray-600 mx-2">con</span>
-                        <span className="font-medium">{detalle.profesional}</span>
+                        <span className="font-medium">
+                          {detalle.profesional}
+                        </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        {new Date(detalle.fecha).toLocaleDateString("es-ES")} {detalle.hora}
+                        {new Date(detalle.fecha).toLocaleDateString("es-ES")}{" "}
+                        {detalle.hora}
                       </div>
                     </div>
                   ))}
                   {lastResult.completadas > lastResult.detalles.length && (
                     <p className="text-sm text-gray-600 text-center">
-                      ... y {lastResult.completadas - lastResult.detalles.length} clases más
+                      ... y{" "}
+                      {lastResult.completadas - lastResult.detalles.length}{" "}
+                      clases más
                     </p>
                   )}
                 </div>
@@ -351,23 +390,37 @@ export function AutoCompleteManager() {
           <div className="space-y-3 text-sm text-gray-700">
             <div className="flex items-start">
               <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-              <p>Las clases se completan automáticamente 30 minutos después de su hora de finalización</p>
+              <p>
+                Las clases se completan automáticamente 30 minutos después de su
+                hora de finalización
+              </p>
             </div>
             <div className="flex items-start">
               <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-              <p>Para clases sin hora de fin definida, se asume una duración de 1 hora</p>
+              <p>
+                Para clases sin hora de fin definida, se asume una duración de 1
+                hora
+              </p>
             </div>
             <div className="flex items-start">
               <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-              <p>Al completarse, se actualiza automáticamente el plan del estudiante</p>
+              <p>
+                Al completarse, se actualiza automáticamente el plan del
+                estudiante
+              </p>
             </div>
             <div className="flex items-start">
               <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-              <p>Solo se procesan clases con estado "agendada" (no canceladas)</p>
+              <p>
+                Solo se procesan clases con estado "agendada" (no canceladas)
+              </p>
             </div>
             <div className="flex items-start">
               <AlertTriangle className="h-4 w-4 text-yellow-500 mr-2 mt-0.5" />
-              <p>Se recomienda ejecutar este proceso diariamente para mantener los registros actualizados</p>
+              <p>
+                Se recomienda ejecutar este proceso diariamente para mantener
+                los registros actualizados
+              </p>
             </div>
           </div>
         </CardContent>

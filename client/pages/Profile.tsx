@@ -41,7 +41,8 @@ import { apiCall } from "../lib/api";
 
 export function Profile() {
   const { user, updateUser, isLoading } = useAuth();
-  const { canManageUsers, isStudent, isAdmin, isProfessional } = usePermissions();
+  const { canManageUsers, isStudent, isAdmin, isProfessional } =
+    usePermissions();
   const [isEditing, setIsEditing] = useState(false);
   const [realAppointments, setRealAppointments] = useState<any[]>([]);
   const [realStats, setRealStats] = useState<any>(null);
@@ -93,7 +94,9 @@ export function Profile() {
       setDataLoading(true);
 
       // Load upcoming appointments for this professional
-      const appointmentsResponse = await apiCall(`/admin/appointments?professionalId=${user?.id}&status=scheduled&limit=3`);
+      const appointmentsResponse = await apiCall(
+        `/admin/appointments?professionalId=${user?.id}&status=scheduled&limit=3`,
+      );
 
       if (appointmentsResponse.ok) {
         const appointmentsData = await appointmentsResponse.json();
@@ -101,21 +104,29 @@ export function Profile() {
       }
 
       // Load professional stats
-      const statsResponse = await apiCall(`/admin/appointments?professionalId=${user?.id}&limit=1000`);
+      const statsResponse = await apiCall(
+        `/admin/appointments?professionalId=${user?.id}&limit=1000`,
+      );
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         const appointments = statsData.data.appointments || [];
 
         const stats = {
-          totalClassesTaught: appointments.filter(apt => apt.status === 'completed').length,
-          totalStudents: new Set(appointments.map(apt => apt.student?._id).filter(Boolean)).size,
+          totalClassesTaught: appointments.filter(
+            (apt) => apt.status === "completed",
+          ).length,
+          totalStudents: new Set(
+            appointments.map((apt) => apt.student?._id).filter(Boolean),
+          ).size,
           averageRating: 4.7, // This would come from actual rating data
-          classesThisMonth: appointments.filter(apt => {
+          classesThisMonth: appointments.filter((apt) => {
             const aptDate = new Date(apt.date);
             const now = new Date();
-            return aptDate.getMonth() === now.getMonth() &&
-                   aptDate.getFullYear() === now.getFullYear();
+            return (
+              aptDate.getMonth() === now.getMonth() &&
+              aptDate.getFullYear() === now.getFullYear()
+            );
           }).length,
           joinDate: user?.memberSince
             ? new Date(user.memberSince).toLocaleDateString("es-ES", {
@@ -128,7 +139,7 @@ export function Profile() {
         setRealStats(stats);
       }
     } catch (error) {
-      console.error('Error loading professional data:', error);
+      console.error("Error loading professional data:", error);
     } finally {
       setDataLoading(false);
     }
@@ -183,9 +194,16 @@ export function Profile() {
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
-        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />);
+        stars.push(
+          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />,
+        );
       } else if (i === fullStars && hasHalfStar) {
-        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400/50 text-yellow-400" />);
+        stars.push(
+          <Star
+            key={i}
+            className="h-4 w-4 fill-yellow-400/50 text-yellow-400"
+          />,
+        );
       } else {
         stars.push(<Star key={i} className="h-4 w-4 text-gray-300" />);
       }
@@ -336,7 +354,9 @@ export function Profile() {
               </h1>
               <div className="flex items-center space-x-4 mt-2">
                 <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
-                  {isProfessional ? getRoleDisplayName(user.role) : (user.plan || "Plan Trial")}
+                  {isProfessional
+                    ? getRoleDisplayName(user.role)
+                    : user.plan || "Plan Trial"}
                 </Badge>
                 {isProfessional && user.specialty && (
                   <Badge className="bg-white/10 text-white border-white/20 px-3 py-1">
@@ -344,7 +364,10 @@ export function Profile() {
                   </Badge>
                 )}
                 <span className="text-white/80">
-                  Miembro desde {isProfessional ? professionalStats.joinDate : userStats.joinDate}
+                  Miembro desde{" "}
+                  {isProfessional
+                    ? professionalStats.joinDate
+                    : userStats.joinDate}
                 </span>
               </div>
               <p className="text-white/90 mt-2">
@@ -390,14 +413,18 @@ export function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
                 <Award className="h-6 w-6 mr-2 text-primary" />
-                {isProfessional ? `Tu Rol: ${getRoleDisplayName(user.role)}` : `Tu Plan: ${user.plan || "Plan Trial"}`}
+                {isProfessional
+                  ? `Tu Rol: ${getRoleDisplayName(user.role)}`
+                  : `Tu Plan: ${user.plan || "Plan Trial"}`}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-semibold mb-4">
-                    {isProfessional ? "¿Qué puedes hacer como profesional?" : "¿Qué puedes hacer ahora?"}
+                    {isProfessional
+                      ? "¿Qué puedes hacer como profesional?"
+                      : "¿Qué puedes hacer ahora?"}
                   </h3>
                   <div className="space-y-3">
                     {isProfessional ? (
@@ -408,7 +435,9 @@ export function Profile() {
                         </div>
                         <div className="flex items-center space-x-3">
                           <CheckCircle className="h-5 w-5 text-accent" />
-                          <span>Ver y actualizar información de estudiantes</span>
+                          <span>
+                            Ver y actualizar información de estudiantes
+                          </span>
                         </div>
                         <div className="flex items-center space-x-3">
                           <CheckCircle className="h-5 w-5 text-accent" />
@@ -446,7 +475,9 @@ export function Profile() {
                     {isProfessional ? (
                       <>
                         <div className="text-3xl font-bold text-primary mb-2">
-                          {realStats ? realStats.totalStudents : professionalStats.totalStudents}
+                          {realStats
+                            ? realStats.totalStudents
+                            : professionalStats.totalStudents}
                         </div>
                         <div className="text-gray-600">estudiantes activos</div>
                       </>
@@ -471,7 +502,9 @@ export function Profile() {
                   <Link to="/dashboard" className="w-full">
                     <Button className="w-full btn-primary text-lg py-3">
                       <LayoutDashboard className="h-5 w-5 mr-2" />
-                      {isProfessional ? "Ir a Mi Dashboard" : "Comenzar a Entrenar"}
+                      {isProfessional
+                        ? "Ir a Mi Dashboard"
+                        : "Comenzar a Entrenar"}
                     </Button>
                   </Link>
                 </div>
@@ -497,23 +530,35 @@ export function Profile() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-4 bg-primary/5 rounded-lg">
                         <div className="text-2xl font-bold text-primary">
-                          {realStats ? realStats.totalClassesTaught : professionalStats.totalClassesTaught}
+                          {realStats
+                            ? realStats.totalClassesTaught
+                            : professionalStats.totalClassesTaught}
                         </div>
-                        <div className="text-sm text-gray-600">Total de clases</div>
+                        <div className="text-sm text-gray-600">
+                          Total de clases
+                        </div>
                       </div>
                       <div className="text-center p-4 bg-secondary/5 rounded-lg">
                         <div className="text-2xl font-bold text-secondary">
-                          {realStats ? realStats.totalStudents : professionalStats.totalStudents}
+                          {realStats
+                            ? realStats.totalStudents
+                            : professionalStats.totalStudents}
                         </div>
-                        <div className="text-sm text-gray-600">Total de alumnos</div>
+                        <div className="text-sm text-gray-600">
+                          Total de alumnos
+                        </div>
                       </div>
                     </div>
 
                     <div className="text-center p-4 bg-accent/5 rounded-lg">
                       <div className="text-2xl font-bold text-accent">
-                        {realStats ? realStats.classesThisMonth : professionalStats.classesThisMonth}
+                        {realStats
+                          ? realStats.classesThisMonth
+                          : professionalStats.classesThisMonth}
                       </div>
-                      <div className="text-sm text-gray-600">Clases este mes</div>
+                      <div className="text-sm text-gray-600">
+                        Clases este mes
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -525,7 +570,10 @@ export function Profile() {
                           {userStats.classesCompleted}/{userStats.totalClasses}
                         </span>
                       </div>
-                      <Progress value={userStats.completionRate} className="h-2" />
+                      <Progress
+                        value={userStats.completionRate}
+                        className="h-2"
+                      />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -533,7 +581,9 @@ export function Profile() {
                         <div className="text-2xl font-bold text-primary">
                           {userStats.currentStreak}
                         </div>
-                        <div className="text-sm text-gray-600">Días seguidos</div>
+                        <div className="text-sm text-gray-600">
+                          Días seguidos
+                        </div>
                       </div>
                       <div className="text-center p-4 bg-secondary/5 rounded-lg">
                         <div className="text-2xl font-bold text-secondary">
@@ -578,26 +628,44 @@ export function Profile() {
                   <>
                     <div className="text-center p-6 bg-yellow-50 rounded-lg border border-yellow-200">
                       <div className="flex items-center justify-center space-x-1 mb-2">
-                        {renderStarRating(realStats ? realStats.averageRating : professionalStats.averageRating)}
+                        {renderStarRating(
+                          realStats
+                            ? realStats.averageRating
+                            : professionalStats.averageRating,
+                        )}
                       </div>
                       <div className="text-3xl font-bold text-yellow-600 mb-1">
-                        {realStats ? realStats.averageRating.toFixed(1) : professionalStats.averageRating.toFixed(1)}
+                        {realStats
+                          ? realStats.averageRating.toFixed(1)
+                          : professionalStats.averageRating.toFixed(1)}
                       </div>
                       <div className="text-sm text-gray-600">
                         Evaluación promedio de estudiantes
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        Basado en {realStats ? realStats.totalStudents : professionalStats.totalStudents} evaluaciones
+                        Basado en{" "}
+                        {realStats
+                          ? realStats.totalStudents
+                          : professionalStats.totalStudents}{" "}
+                        evaluaciones
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-lg font-bold text-green-600">95%</div>
-                        <div className="text-xs text-gray-600">Satisfacción</div>
+                        <div className="text-lg font-bold text-green-600">
+                          95%
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Satisfacción
+                        </div>
                       </div>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-lg font-bold text-blue-600">98%</div>
-                        <div className="text-xs text-gray-600">Recomendación</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          98%
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Recomendación
+                        </div>
                       </div>
                     </div>
                   </>
@@ -909,69 +977,84 @@ export function Profile() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {isProfessional ? (
-                    (realAppointments.length > 0 ? realAppointments : upcomingProfessionalClasses).map((classItem) => (
-                      <div
-                        key={classItem.id || classItem._id}
-                        className="p-4 bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="font-semibold">
-                            {classItem.title || classItem.className || classItem.type || 'Sesión'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {classItem.duration ? `${classItem.duration} min` : (classItem.duration || '60 min')}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                          <div>
-                            <div className="font-medium">Fecha y Hora:</div>
-                            <div>
-                              {new Date(classItem.date).toLocaleDateString("es-ES")} • {classItem.startTime || classItem.time}
+                  {isProfessional
+                    ? (realAppointments.length > 0
+                        ? realAppointments
+                        : upcomingProfessionalClasses
+                      ).map((classItem) => (
+                        <div
+                          key={classItem.id || classItem._id}
+                          className="p-4 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="font-semibold">
+                              {classItem.title ||
+                                classItem.className ||
+                                classItem.type ||
+                                "Sesión"}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {classItem.duration
+                                ? `${classItem.duration} min`
+                                : classItem.duration || "60 min"}
                             </div>
                           </div>
-                          <div>
-                            <div className="font-medium">Estudiante:</div>
+                          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                             <div>
-                              {classItem.student ?
-                                `${classItem.student.firstName} ${classItem.student.lastName}` :
-                                classItem.student || 'Por asignar'
-                              }
+                              <div className="font-medium">Fecha y Hora:</div>
+                              <div>
+                                {new Date(classItem.date).toLocaleDateString(
+                                  "es-ES",
+                                )}{" "}
+                                • {classItem.startTime || classItem.time}
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-medium">Estudiante:</div>
+                              <div>
+                                {classItem.student
+                                  ? `${classItem.student.firstName} ${classItem.student.lastName}`
+                                  : classItem.student || "Por asignar"}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-2 text-sm text-gray-600">
+                            <span className="font-medium">Lugar:</span>{" "}
+                            {classItem.location || "Por definir"}
+                          </div>
+                        </div>
+                      ))
+                    : upcomingClasses.map((classItem) => (
+                        <div
+                          key={classItem.id}
+                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                        >
+                          <div>
+                            <div className="font-semibold">
+                              {classItem.type}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {classItem.trainer} • {classItem.location}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">
+                              {new Date(classItem.date).toLocaleDateString(
+                                "es-ES",
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {classItem.time}
                             </div>
                           </div>
                         </div>
-                        <div className="mt-2 text-sm text-gray-600">
-                          <span className="font-medium">Lugar:</span> {classItem.location || 'Por definir'}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    upcomingClasses.map((classItem) => (
-                      <div
-                        key={classItem.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                      >
-                        <div>
-                          <div className="font-semibold">{classItem.type}</div>
-                          <div className="text-sm text-gray-600">
-                            {classItem.trainer} • {classItem.location}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium">
-                            {new Date(classItem.date).toLocaleDateString("es-ES")}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {classItem.time}
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                      ))}
                 </div>
                 <div className="mt-4 text-center">
                   <Button variant="outline">
-                    {isProfessional ? "Ver Todo Mi Calendario" : "Ver Todas las Clases"}
+                    {isProfessional
+                      ? "Ver Todo Mi Calendario"
+                      : "Ver Todas las Clases"}
                   </Button>
                 </div>
               </CardContent>
@@ -995,7 +1078,10 @@ export function Profile() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center text-gray-600">
-                    <p className="mb-4">¡Evalúa tus clases completadas para ayudar a mejorar el servicio!</p>
+                    <p className="mb-4">
+                      ¡Evalúa tus clases completadas para ayudar a mejorar el
+                      servicio!
+                    </p>
                     <Link to="/reviews">
                       <Button variant="outline">
                         Ver Sistema de Evaluaciones
@@ -1014,21 +1100,33 @@ export function Profile() {
                       <Star className="h-5 w-5 mr-2 text-primary" />
                       Mis Evaluaciones
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => window.location.href = '/dashboard'}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => (window.location.href = "/dashboard")}
+                    >
                       Ver Dashboard
                     </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center text-gray-600">
-                    <p className="mb-4">Revisa las evaluaciones de tus estudiantes y mejora tu servicio</p>
+                    <p className="mb-4">
+                      Revisa las evaluaciones de tus estudiantes y mejora tu
+                      servicio
+                    </p>
                     <div className="flex items-center justify-center space-x-1 mb-4">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                        <Star
+                          key={star}
+                          className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                        />
                       ))}
                       <span className="ml-2 text-lg font-medium">4.8</span>
                     </div>
-                    <p className="text-sm text-gray-500">Promedio basado en evaluaciones de estudiantes</p>
+                    <p className="text-sm text-gray-500">
+                      Promedio basado en evaluaciones de estudiantes
+                    </p>
                   </div>
                 </CardContent>
               </Card>

@@ -205,12 +205,15 @@ export function CalendarioCompleto({
 
   // Auto-refresh calendar every 5 minutes to update past times and availability
   useEffect(() => {
-    const refreshInterval = setInterval(() => {
-      if (user) {
-        console.log("🔄 Auto-refreshing calendar for real-time updates");
-        generateScheduleGrid(); // Regenerate grid to update past times
-      }
-    }, 5 * 60 * 1000); // 5 minutes
+    const refreshInterval = setInterval(
+      () => {
+        if (user) {
+          console.log("🔄 Auto-refreshing calendar for real-time updates");
+          generateScheduleGrid(); // Regenerate grid to update past times
+        }
+      },
+      5 * 60 * 1000,
+    ); // 5 minutes
 
     return () => clearInterval(refreshInterval);
   }, [agenda, bloqueos, currentDate, user]);
@@ -369,7 +372,7 @@ export function CalendarioCompleto({
         // Check if slot is in the past (with 1-hour buffer for current day)
         const now = new Date();
         const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
-        const [horaNum, minutoNum] = time.split(':').map(Number);
+        const [horaNum, minutoNum] = time.split(":").map(Number);
         const slotDateTime = new Date(slotDate);
         slotDateTime.setHours(horaNum, minutoNum, 0, 0);
         const isPastTime = slotDateTime < oneHourFromNow;
@@ -477,14 +480,20 @@ export function CalendarioCompleto({
     if (!selectedSlot) return;
 
     // Frontend validation
-    if (!formAgendar.alumnoId || !formAgendar.profesionalId || !formAgendar.especialidad) {
+    if (
+      !formAgendar.alumnoId ||
+      !formAgendar.profesionalId ||
+      !formAgendar.especialidad
+    ) {
       setError("❌ Por favor completa todos los campos obligatorios");
       return;
     }
 
     // Check if slot is still available (real-time check)
     if (!selectedSlot.canSchedule) {
-      setError("❌ Este horario ya no está disponible. Selecciona otro horario.");
+      setError(
+        "❌ Este horario ya no está disponible. Selecciona otro horario.",
+      );
       return;
     }
 
@@ -530,7 +539,9 @@ export function CalendarioCompleto({
         } else if (errorMessage.includes("ya tiene una clase")) {
           setError("📅 " + errorMessage + " Elige otro horario disponible.");
         } else if (errorMessage.includes("clases esta semana")) {
-          setError("📊 " + errorMessage + " Tu próxima semana inicia el lunes.");
+          setError(
+            "📊 " + errorMessage + " Tu próxima semana inicia el lunes.",
+          );
         } else if (errorMessage.includes("plan ha expirado")) {
           setError("💳 " + errorMessage + " Contacta al administrador.");
         } else {
@@ -1002,10 +1013,18 @@ export function CalendarioCompleto({
             </p>
             <div className="text-xs text-blue-600 mt-2 space-y-1">
               <p>📱 En móvil: Mantén presionado un horario para bloquearlo</p>
-              <p>⏰ Horarios disponibles: 8:00 AM - 8:30 PM (intervalos de 30 min)</p>
-              <p>🔄 El calendario se actualiza automáticamente cada 5 minutos</p>
+              <p>
+                ⏰ Horarios disponibles: 8:00 AM - 8:30 PM (intervalos de 30
+                min)
+              </p>
+              <p>
+                🔄 El calendario se actualiza automáticamente cada 5 minutos
+              </p>
               {isStudent && planUsuario && (
-                <p>📊 Límite semanal: {planUsuario.clasesPorSemana} clases por semana</p>
+                <p>
+                  📊 Límite semanal: {planUsuario.clasesPorSemana} clases por
+                  semana
+                </p>
               )}
             </div>
           </div>

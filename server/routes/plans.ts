@@ -26,7 +26,7 @@ const requireAdmin = async (req: Request, res: Response, next: any) => {
 router.get("/public", async (req: Request, res: Response) => {
   try {
     const plans = await Plan.getPublicPlans();
-    
+
     res.json({
       success: true,
       data: plans,
@@ -44,17 +44,18 @@ router.get("/public", async (req: Request, res: Response) => {
 router.get("/public/:slug", async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
-    
-    const plan = await Plan.findOne({ slug, active: true })
-      .select("-discountCodes -createdBy -updatedBy");
-    
+
+    const plan = await Plan.findOne({ slug, active: true }).select(
+      "-discountCodes -createdBy -updatedBy",
+    );
+
     if (!plan) {
       return res.status(404).json({
         success: false,
         message: "Plan no encontrado",
       });
     }
-    
+
     res.json({
       success: true,
       data: plan,
@@ -73,32 +74,32 @@ router.post("/public/:slug/discount", async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     const { code } = req.body;
-    
+
     if (!code) {
       return res.status(400).json({
         success: false,
         message: "Código de descuento requerido",
       });
     }
-    
+
     const plan = await Plan.findOne({ slug, active: true });
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
         message: "Plan no encontrado",
       });
     }
-    
+
     const discountResult = plan.applyDiscountCode(code);
-    
+
     if (!discountResult) {
       return res.status(400).json({
         success: false,
         message: "Código de descuento inválido o expirado",
       });
     }
-    
+
     res.json({
       success: true,
       data: discountResult,
@@ -133,15 +134,15 @@ router.get(
 
       // Build filter
       let filter: any = {};
-      
+
       if (category) {
         filter.category = category;
       }
-      
+
       if (active !== undefined) {
         filter.active = active === "true";
       }
-      
+
       if (search) {
         filter.$or = [
           { name: { $regex: search, $options: "i" } },
@@ -193,18 +194,18 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      
+
       const plan = await Plan.findById(id)
         .populate("createdBy", "firstName lastName")
         .populate("updatedBy", "firstName lastName");
-      
+
       if (!plan) {
         return res.status(404).json({
           success: false,
           message: "Plan no encontrado",
         });
       }
-      
+
       res.json({
         success: true,
         data: plan,
@@ -228,7 +229,7 @@ router.post(
     try {
       const currentUser = (req as any).currentUser;
       const planData = req.body;
-      
+
       // Validate required fields
       const requiredFields = [
         "name",
@@ -239,7 +240,7 @@ router.post(
         "durationWeeks",
         "category",
       ];
-      
+
       for (const field of requiredFields) {
         if (!planData[field]) {
           return res.status(400).json({
@@ -248,7 +249,7 @@ router.post(
           });
         }
       }
-      
+
       // Check if slug already exists
       if (planData.slug) {
         const existingPlan = await Plan.findOne({ slug: planData.slug });
@@ -259,27 +260,27 @@ router.post(
           });
         }
       }
-      
+
       // If setting as popular, remove popular flag from other plans in same category
       if (planData.popular) {
         await Plan.updateMany(
           { category: planData.category, popular: true },
-          { popular: false }
+          { popular: false },
         );
       }
-      
+
       const newPlan = new Plan({
         ...planData,
         createdBy: currentUser._id,
         updatedBy: currentUser._id,
       });
-      
+
       await newPlan.save();
-      
+
       const populatedPlan = await Plan.findById(newPlan._id)
         .populate("createdBy", "firstName lastName")
         .populate("updatedBy", "firstName lastName");
-      
+
       res.status(201).json({
         success: true,
         message: "Plan creado exitosamente",
@@ -287,14 +288,14 @@ router.post(
       });
     } catch (error: any) {
       console.error("Error creating plan:", error);
-      
+
       if (error.code === 11000) {
         return res.status(400).json({
           success: false,
           message: "Ya existe un plan con ese nombre o identificador",
         });
       }
-      
+
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
@@ -313,7 +314,7 @@ router.put(
       const currentUser = (req as any).currentUser;
       const { id } = req.params;
       const updateData = req.body;
-      
+
       const plan = await Plan.findById(id);
       if (!plan) {
         return res.status(404).json({
@@ -321,12 +322,12 @@ router.put(
           message: "Plan no encontrado",
         });
       }
-      
+
       // Check if slug already exists (if being updated)
       if (updateData.slug && updateData.slug !== plan.slug) {
-        const existingPlan = await Plan.findOne({ 
+        const existingPlan = await Plan.findOne({
           slug: updateData.slug,
-          _id: { $ne: id }
+          _id: { $ne: id },
         });
         if (existingPlan) {
           return res.status(400).json({
@@ -335,30 +336,30 @@ router.put(
           });
         }
       }
-      
+
       // If setting as popular, remove popular flag from other plans in same category
       if (updateData.popular && !plan.popular) {
         await Plan.updateMany(
-          { 
-            category: updateData.category || plan.category, 
+          {
+            category: updateData.category || plan.category,
             popular: true,
-            _id: { $ne: id }
+            _id: { $ne: id },
           },
-          { popular: false }
+          { popular: false },
         );
       }
-      
+
       // Update plan
       Object.assign(plan, updateData, {
         updatedBy: currentUser._id,
       });
-      
+
       await plan.save();
-      
+
       const updatedPlan = await Plan.findById(id)
         .populate("createdBy", "firstName lastName")
         .populate("updatedBy", "firstName lastName");
-      
+
       res.json({
         success: true,
         message: "Plan actualizado exitosamente",
@@ -366,14 +367,14 @@ router.put(
       });
     } catch (error: any) {
       console.error("Error updating plan:", error);
-      
+
       if (error.code === 11000) {
         return res.status(400).json({
           success: false,
           message: "Ya existe un plan con ese nombre o identificador",
         });
       }
-      
+
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
@@ -390,7 +391,7 @@ router.delete(
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      
+
       const plan = await Plan.findById(id);
       if (!plan) {
         return res.status(404).json({
@@ -398,12 +399,12 @@ router.delete(
           message: "Plan no encontrado",
         });
       }
-      
+
       // Check if plan has active users (this would require checking PlanUsuario)
       // For now, we'll just soft delete by setting active to false
       plan.active = false;
       await plan.save();
-      
+
       res.json({
         success: true,
         message: "Plan desactivado exitosamente",
@@ -426,9 +427,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const currentUser = (req as any).currentUser;
-      
+
       await Plan.seedDefaultPlans(currentUser._id);
-      
+
       res.json({
         success: true,
         message: "Planes por defecto creados exitosamente",
@@ -452,7 +453,7 @@ router.post(
     try {
       const { id } = req.params;
       const { action, discountCode } = req.body;
-      
+
       const plan = await Plan.findById(id);
       if (!plan) {
         return res.status(404).json({
@@ -460,59 +461,63 @@ router.post(
           message: "Plan no encontrado",
         });
       }
-      
+
       switch (action) {
         case "add":
-          if (!discountCode.code || !discountCode.percentage || !discountCode.maxUses) {
+          if (
+            !discountCode.code ||
+            !discountCode.percentage ||
+            !discountCode.maxUses
+          ) {
             return res.status(400).json({
               success: false,
               message: "Datos del código de descuento incompletos",
             });
           }
-          
+
           // Check if code already exists
           const existingCode = plan.discountCodes.find(
-            (dc: any) => dc.code === discountCode.code.toUpperCase()
+            (dc: any) => dc.code === discountCode.code.toUpperCase(),
           );
-          
+
           if (existingCode) {
             return res.status(400).json({
               success: false,
               message: "El código de descuento ya existe",
             });
           }
-          
+
           plan.discountCodes.push({
             ...discountCode,
             code: discountCode.code.toUpperCase(),
             currentUses: 0,
           });
           break;
-          
+
         case "remove":
           plan.discountCodes = plan.discountCodes.filter(
-            (dc: any) => dc.code !== discountCode.code.toUpperCase()
+            (dc: any) => dc.code !== discountCode.code.toUpperCase(),
           );
           break;
-          
+
         case "toggle":
           const codeToToggle = plan.discountCodes.find(
-            (dc: any) => dc.code === discountCode.code.toUpperCase()
+            (dc: any) => dc.code === discountCode.code.toUpperCase(),
           );
           if (codeToToggle) {
             codeToToggle.active = !codeToToggle.active;
           }
           break;
-          
+
         default:
           return res.status(400).json({
             success: false,
             message: "Acción no válida",
           });
       }
-      
+
       await plan.save();
-      
+
       res.json({
         success: true,
         message: "Código de descuento actualizado exitosamente",

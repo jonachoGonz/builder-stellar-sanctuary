@@ -201,7 +201,8 @@ router.post(
           if (!plan.estaVigente()) {
             return res.status(400).json({
               success: false,
-              message: "Tu plan ha expirado. Renueva tu plan para agendar clases.",
+              message:
+                "Tu plan ha expirado. Renueva tu plan para agendar clases.",
             });
           }
 
@@ -216,7 +217,9 @@ router.post(
             const usedThisWeek = plan.historial.filter((clase: any) => {
               const now = new Date();
               const startOfWeek = new Date(now);
-              startOfWeek.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+              startOfWeek.setDate(
+                now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1),
+              );
               startOfWeek.setHours(0, 0, 0, 0);
               return clase.fecha >= startOfWeek && clase.estado !== "cancelada";
             }).length;
@@ -237,14 +240,15 @@ router.post(
       const fechaMinima = new Date(ahora);
       fechaMinima.setHours(ahora.getHours() + 1, 0, 0, 0);
 
-      const [horaNum, minutoNum] = hora.split(':').map(Number);
+      const [horaNum, minutoNum] = hora.split(":").map(Number);
       const fechaHoraClase = new Date(fechaClase);
       fechaHoraClase.setHours(horaNum, minutoNum, 0, 0);
 
       if (fechaHoraClase < fechaMinima) {
         return res.status(400).json({
           success: false,
-          message: "No se puede agendar en horarios pasados. Debe ser al menos 1 hora en el futuro.",
+          message:
+            "No se puede agendar en horarios pasados. Debe ser al menos 1 hora en el futuro.",
         });
       }
 
@@ -298,7 +302,7 @@ router.post(
 
       // For overlapping time slots (check if there are classes within the session duration)
       if (horaFin) {
-        const [horaFinNum, minutoFinNum] = horaFin.split(':').map(Number);
+        const [horaFinNum, minutoFinNum] = horaFin.split(":").map(Number);
 
         // Check for professional overlapping conflicts
         const conflictosOverlap = await Agenda.find({
@@ -311,26 +315,33 @@ router.post(
               hora: { $lte: hora },
               $expr: {
                 $gte: [
-                  { $dateFromString: {
-                    dateString: { $concat: ["1970-01-01T", "$horaFin", ":00Z"] }
-                  }},
-                  { $dateFromString: {
-                    dateString: { $concat: ["1970-01-01T", hora, ":00Z"] }
-                  }}
-                ]
-              }
+                  {
+                    $dateFromString: {
+                      dateString: {
+                        $concat: ["1970-01-01T", "$horaFin", ":00Z"],
+                      },
+                    },
+                  },
+                  {
+                    $dateFromString: {
+                      dateString: { $concat: ["1970-01-01T", hora, ":00Z"] },
+                    },
+                  },
+                ],
+              },
             },
             // New class ends during existing class
             {
-              hora: { $gte: hora, $lt: horaFin }
-            }
-          ]
+              hora: { $gte: hora, $lt: horaFin },
+            },
+          ],
         });
 
         if (conflictosOverlap.length > 0) {
           return res.status(400).json({
             success: false,
-            message: "El horario seleccionado se superpone con otra clase del profesional",
+            message:
+              "El horario seleccionado se superpone con otra clase del profesional",
           });
         }
       }
@@ -785,45 +796,47 @@ router.post(
                   $dateFromString: {
                     dateString: {
                       $concat: [
-                        { $dateToString: { date: "$fecha", format: "%Y-%m-%d" } },
+                        {
+                          $dateToString: { date: "$fecha", format: "%Y-%m-%d" },
+                        },
                         "T",
                         "$horaFin",
-                        ":00Z"
-                      ]
-                    }
-                  }
+                        ":00Z",
+                      ],
+                    },
+                  },
                 },
-                hace30Minutos
-              ]
-            }
+                hace30Minutos,
+              ],
+            },
           },
           // Classes without end time (default 1 hour duration)
           {
-            $or: [
-              { horaFin: { $exists: false } },
-              { horaFin: null }
-            ],
+            $or: [{ horaFin: { $exists: false } }, { horaFin: null }],
             $expr: {
               $lte: [
                 {
                   $dateFromString: {
                     dateString: {
                       $concat: [
-                        { $dateToString: { date: "$fecha", format: "%Y-%m-%d" } },
+                        {
+                          $dateToString: { date: "$fecha", format: "%Y-%m-%d" },
+                        },
                         "T",
                         "$hora",
-                        ":00Z"
-                      ]
-                    }
-                  }
+                        ":00Z",
+                      ],
+                    },
+                  },
                 },
-                new Date(hace30Minutos.getTime() - 60 * 60 * 1000) // 1 hour + 30 minutes ago
-              ]
-            }
-          }
-        ]
-      }).populate('alumnoId', 'firstName lastName email')
-        .populate('profesionalId', 'firstName lastName email');
+                new Date(hace30Minutos.getTime() - 60 * 60 * 1000), // 1 hour + 30 minutes ago
+              ],
+            },
+          },
+        ],
+      })
+        .populate("alumnoId", "firstName lastName email")
+        .populate("profesionalId", "firstName lastName email");
 
       let completadas = 0;
       let errores = 0;
@@ -838,7 +851,10 @@ router.post(
           // Update student's plan
           const plan = await PlanUsuario.findOne({ userId: clase.alumnoId });
           if (plan) {
-            await plan.actualizarEstadoClase(clase._id.toString(), "completada");
+            await plan.actualizarEstadoClase(
+              clase._id.toString(),
+              "completada",
+            );
           }
 
           completadas++;
@@ -849,10 +865,12 @@ router.post(
             fecha: clase.fecha,
             hora: clase.hora,
             estadoAnterior,
-            estadoNuevo: "completada"
+            estadoNuevo: "completada",
           });
 
-          console.log(`✅ Auto-completed class: ${clase._id} - ${clase.alumnoId.firstName} with ${clase.profesionalId.firstName}`);
+          console.log(
+            `✅ Auto-completed class: ${clase._id} - ${clase.alumnoId.firstName} with ${clase.profesionalId.firstName}`,
+          );
         } catch (error) {
           console.error(`❌ Error auto-completing class ${clase._id}:`, error);
           errores++;
@@ -861,12 +879,12 @@ router.post(
 
       res.json({
         success: true,
-        message: `Se completaron automáticamente ${completadas} clases${errores > 0 ? ` (${errores} errores)` : ''}`,
+        message: `Se completaron automáticamente ${completadas} clases${errores > 0 ? ` (${errores} errores)` : ""}`,
         data: {
           completadas,
           errores,
           detalles: detalles.slice(0, 10), // Limit details to first 10
-          totalEvaluadas: clasesParaCompletar.length
+          totalEvaluadas: clasesParaCompletar.length,
         },
       });
     } catch (error) {
@@ -894,28 +912,28 @@ router.get(
         clasesPendientesCompletar,
         clasesCompletadasHoy,
         clasesCompletadasSemana,
-        clasesAtrasadas
+        clasesAtrasadas,
       ] = await Promise.all([
         // Classes that should be auto-completed
         Agenda.countDocuments({
           estado: "agendada",
-          fecha: { $lt: hace24Horas }
+          fecha: { $lt: hace24Horas },
         }),
         // Classes completed today
         Agenda.countDocuments({
           estado: "completada",
-          updatedAt: { $gte: hace24Horas }
+          updatedAt: { $gte: hace24Horas },
         }),
         // Classes completed this week
         Agenda.countDocuments({
           estado: "completada",
-          updatedAt: { $gte: hace7Dias }
+          updatedAt: { $gte: hace7Dias },
         }),
         // Very old scheduled classes that might need attention
         Agenda.countDocuments({
           estado: "agendada",
-          fecha: { $lt: hace7Dias }
-        })
+          fecha: { $lt: hace7Dias },
+        }),
       ]);
 
       res.json({
@@ -925,10 +943,11 @@ router.get(
           completadasHoy: clasesCompletadasHoy,
           completadasSemana: clasesCompletadasSemana,
           clasesAtrasadas,
-          recomendacion: clasesPendientesCompletar > 0
-            ? "Se recomienda ejecutar auto-completar clases"
-            : "No hay clases pendientes de completar"
-        }
+          recomendacion:
+            clasesPendientesCompletar > 0
+              ? "Se recomienda ejecutar auto-completar clases"
+              : "No hay clases pendientes de completar",
+        },
       });
     } catch (error) {
       console.error("Error getting auto-complete stats:", error);

@@ -76,7 +76,8 @@ export function PlanManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [discountModalOpen, setDiscountModalOpen] = useState(false);
-  const [selectedPlanForDiscount, setSelectedPlanForDiscount] = useState<Plan | null>(null);
+  const [selectedPlanForDiscount, setSelectedPlanForDiscount] =
+    useState<Plan | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [activeFilter, setActiveFilter] = useState("all");
@@ -183,8 +184,10 @@ export function PlanManagement() {
   const handleSavePlan = async () => {
     try {
       // Filter out empty benefits
-      const cleanedBenefits = formData.benefits.filter(benefit => benefit.trim() !== "");
-      
+      const cleanedBenefits = formData.benefits.filter(
+        (benefit) => benefit.trim() !== "",
+      );
+
       const planData = {
         ...formData,
         benefits: cleanedBenefits,
@@ -273,7 +276,11 @@ export function PlanManagement() {
   };
 
   const handleDeletePlan = async (plan: Plan) => {
-    if (!confirm(`¿Estás seguro de que quieres desactivar el plan "${plan.name}"?`)) {
+    if (
+      !confirm(
+        `¿Estás seguro de que quieres desactivar el plan "${plan.name}"?`,
+      )
+    ) {
       return;
     }
 
@@ -317,7 +324,7 @@ export function PlanManagement() {
             action: "add",
             discountCode: newDiscountCode,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -335,7 +342,9 @@ export function PlanManagement() {
         loadPlans();
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al agregar código de descuento");
+        throw new Error(
+          errorData.message || "Error al agregar código de descuento",
+        );
       }
     } catch (error: any) {
       toast({
@@ -347,7 +356,9 @@ export function PlanManagement() {
   };
 
   const handleSeedDefaultPlans = async () => {
-    if (!confirm("¿Estás seguro de que quieres crear los planes por defecto?")) {
+    if (
+      !confirm("¿Estás seguro de que quieres crear los planes por defecto?")
+    ) {
       return;
     }
 
@@ -364,7 +375,9 @@ export function PlanManagement() {
         loadPlans();
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al crear planes por defecto");
+        throw new Error(
+          errorData.message || "Error al crear planes por defecto",
+        );
       }
     } catch (error: any) {
       toast({
@@ -394,11 +407,14 @@ export function PlanManagement() {
   };
 
   const filteredPlans = plans.filter((plan) => {
-    const matchesSearch = plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         plan.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || plan.category === categoryFilter;
-    const matchesActive = activeFilter === "all" || plan.active.toString() === activeFilter;
-    
+    const matchesSearch =
+      plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      plan.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "all" || plan.category === categoryFilter;
+    const matchesActive =
+      activeFilter === "all" || plan.active.toString() === activeFilter;
+
     return matchesSearch && matchesCategory && matchesActive;
   });
 
@@ -421,7 +437,9 @@ export function PlanManagement() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Gestión de Planes</h2>
-          <p className="text-gray-600">Administra los planes de suscripción disponibles</p>
+          <p className="text-gray-600">
+            Administra los planes de suscripción disponibles
+          </p>
         </div>
         <div className="flex space-x-2">
           <Button onClick={handleSeedDefaultPlans} variant="outline">
@@ -479,7 +497,10 @@ export function PlanManagement() {
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPlans.map((plan) => (
-          <Card key={plan._id} className={`${!plan.active ? "opacity-60" : ""}`}>
+          <Card
+            key={plan._id}
+            className={`${!plan.active ? "opacity-60" : ""}`}
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -489,7 +510,10 @@ export function PlanManagement() {
                   ></div>
                   <CardTitle className="text-lg">{plan.name}</CardTitle>
                   {plan.popular && (
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                    <Badge
+                      variant="secondary"
+                      className="bg-yellow-100 text-yellow-800"
+                    >
                       <Star className="h-3 w-3 mr-1 fill-current" />
                       Popular
                     </Badge>
@@ -500,7 +524,9 @@ export function PlanManagement() {
                     size="sm"
                     variant="ghost"
                     onClick={() => handleTogglePopular(plan)}
-                    title={plan.popular ? "Quitar de popular" : "Marcar como popular"}
+                    title={
+                      plan.popular ? "Quitar de popular" : "Marcar como popular"
+                    }
                   >
                     {plan.popular ? (
                       <StarOff className="h-4 w-4" />
@@ -531,7 +557,7 @@ export function PlanManagement() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-              
+
               <div className="space-y-2 mb-4">
                 <div className="flex items-center text-sm">
                   <Users className="h-4 w-4 mr-2 text-gray-400" />
@@ -548,7 +574,8 @@ export function PlanManagement() {
                 {plan.discountCodes.length > 0 && (
                   <div className="flex items-center text-sm">
                     <Percent className="h-4 w-4 mr-2 text-gray-400" />
-                    {plan.discountCodes.filter(dc => dc.active).length} códigos de descuento
+                    {plan.discountCodes.filter((dc) => dc.active).length}{" "}
+                    códigos de descuento
                   </div>
                 )}
               </div>
@@ -600,7 +627,9 @@ export function PlanManagement() {
       {filteredPlans.length === 0 && (
         <Card>
           <CardContent className="p-8 text-center">
-            <p className="text-gray-600">No se encontraron planes con los filtros aplicados</p>
+            <p className="text-gray-600">
+              No se encontraron planes con los filtros aplicados
+            </p>
           </CardContent>
         </Card>
       )}
@@ -621,7 +650,9 @@ export function PlanManagement() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Plan Básico"
                 />
               </div>
@@ -630,7 +661,9 @@ export function PlanManagement() {
                 <Input
                   id="slug"
                   value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, slug: e.target.value })
+                  }
                   placeholder="plan-basico"
                 />
               </div>
@@ -641,7 +674,9 @@ export function PlanManagement() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Ideal para comenzar tu transformación"
                 rows={3}
               />
@@ -655,7 +690,9 @@ export function PlanManagement() {
                   id="price"
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: Number(e.target.value) })
+                  }
                   placeholder="0"
                 />
               </div>
@@ -663,7 +700,9 @@ export function PlanManagement() {
                 <Label htmlFor="currency">Moneda</Label>
                 <Select
                   value={formData.currency}
-                  onValueChange={(value) => setFormData({ ...formData, currency: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, currency: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -679,7 +718,9 @@ export function PlanManagement() {
                 <Label htmlFor="category">Categoría *</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value: any) => setFormData({ ...formData, category: value })}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, category: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -705,7 +746,12 @@ export function PlanManagement() {
                   min="1"
                   max="20"
                   value={formData.classesPorSemana}
-                  onChange={(e) => setFormData({ ...formData, classesPorSemana: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      classesPorSemana: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
               <div>
@@ -715,7 +761,12 @@ export function PlanManagement() {
                   type="number"
                   min="1"
                   value={formData.clasesTotales}
-                  onChange={(e) => setFormData({ ...formData, clasesTotales: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clasesTotales: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
               <div>
@@ -726,7 +777,12 @@ export function PlanManagement() {
                   min="1"
                   max="52"
                   value={formData.durationWeeks}
-                  onChange={(e) => setFormData({ ...formData, durationWeeks: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      durationWeeks: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
@@ -774,10 +830,12 @@ export function PlanManagement() {
                   id="color"
                   type="color"
                   value={formData.metadata.color}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    metadata: { ...formData.metadata, color: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      metadata: { ...formData.metadata, color: e.target.value },
+                    })
+                  }
                 />
               </div>
               <div>
@@ -786,10 +844,15 @@ export function PlanManagement() {
                   id="order"
                   type="number"
                   value={formData.metadata.order}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    metadata: { ...formData.metadata, order: Number(e.target.value) }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      metadata: {
+                        ...formData.metadata,
+                        order: Number(e.target.value),
+                      },
+                    })
+                  }
                 />
               </div>
             </div>
@@ -799,7 +862,9 @@ export function PlanManagement() {
                 <Checkbox
                   id="popular"
                   checked={formData.popular}
-                  onCheckedChange={(checked) => setFormData({ ...formData, popular: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, popular: checked as boolean })
+                  }
                 />
                 <Label htmlFor="popular">Plan popular</Label>
               </div>
@@ -807,7 +872,9 @@ export function PlanManagement() {
                 <Checkbox
                   id="active"
                   checked={formData.active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, active: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, active: checked as boolean })
+                  }
                 />
                 <Label htmlFor="active">Plan activo</Label>
               </div>
@@ -830,30 +897,41 @@ export function PlanManagement() {
       <Dialog open={discountModalOpen} onOpenChange={setDiscountModalOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Códigos de Descuento - {selectedPlanForDiscount?.name}</DialogTitle>
+            <DialogTitle>
+              Códigos de Descuento - {selectedPlanForDiscount?.name}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {/* Existing discount codes */}
-            {selectedPlanForDiscount?.discountCodes && selectedPlanForDiscount.discountCodes.length > 0 && (
-              <div>
-                <Label>Códigos Existentes</Label>
-                <div className="space-y-2">
-                  {selectedPlanForDiscount.discountCodes.map((code, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded">
-                      <div>
-                        <div className="font-medium">{code.code}</div>
-                        <div className="text-sm text-gray-600">
-                          {code.percentage}% - {code.currentUses}/{code.maxUses} usos
+            {selectedPlanForDiscount?.discountCodes &&
+              selectedPlanForDiscount.discountCodes.length > 0 && (
+                <div>
+                  <Label>Códigos Existentes</Label>
+                  <div className="space-y-2">
+                    {selectedPlanForDiscount.discountCodes.map(
+                      (code, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-2 border rounded"
+                        >
+                          <div>
+                            <div className="font-medium">{code.code}</div>
+                            <div className="text-sm text-gray-600">
+                              {code.percentage}% - {code.currentUses}/
+                              {code.maxUses} usos
+                            </div>
+                          </div>
+                          <Badge
+                            variant={code.active ? "default" : "secondary"}
+                          >
+                            {code.active ? "Activo" : "Inactivo"}
+                          </Badge>
                         </div>
-                      </div>
-                      <Badge variant={code.active ? "default" : "secondary"}>
-                        {code.active ? "Activo" : "Inactivo"}
-                      </Badge>
-                    </div>
-                  ))}
+                      ),
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Add new discount code */}
             <div>
@@ -862,10 +940,12 @@ export function PlanManagement() {
                 <Input
                   placeholder="Código (ej: DESCUENTO10)"
                   value={newDiscountCode.code}
-                  onChange={(e) => setNewDiscountCode({ 
-                    ...newDiscountCode, 
-                    code: e.target.value.toUpperCase() 
-                  })}
+                  onChange={(e) =>
+                    setNewDiscountCode({
+                      ...newDiscountCode,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <div>
@@ -875,10 +955,12 @@ export function PlanManagement() {
                       min="1"
                       max="100"
                       value={newDiscountCode.percentage}
-                      onChange={(e) => setNewDiscountCode({ 
-                        ...newDiscountCode, 
-                        percentage: Number(e.target.value) 
-                      })}
+                      onChange={(e) =>
+                        setNewDiscountCode({
+                          ...newDiscountCode,
+                          percentage: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
                   <div>
@@ -887,25 +969,31 @@ export function PlanManagement() {
                       type="number"
                       min="1"
                       value={newDiscountCode.maxUses}
-                      onChange={(e) => setNewDiscountCode({ 
-                        ...newDiscountCode, 
-                        maxUses: Number(e.target.value) 
-                      })}
+                      onChange={(e) =>
+                        setNewDiscountCode({
+                          ...newDiscountCode,
+                          maxUses: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-sm">Fecha de expiración (opcional)</Label>
+                  <Label className="text-sm">
+                    Fecha de expiración (opcional)
+                  </Label>
                   <Input
                     type="date"
                     value={newDiscountCode.expiryDate}
-                    onChange={(e) => setNewDiscountCode({ 
-                      ...newDiscountCode, 
-                      expiryDate: e.target.value 
-                    })}
+                    onChange={(e) =>
+                      setNewDiscountCode({
+                        ...newDiscountCode,
+                        expiryDate: e.target.value,
+                      })
+                    }
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={handleAddDiscountCode}
                   disabled={!newDiscountCode.code}
                   className="w-full"
