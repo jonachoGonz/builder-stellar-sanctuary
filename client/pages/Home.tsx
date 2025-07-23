@@ -30,6 +30,8 @@ import {
 } from "../components/ui/card";
 
 export function Home() {
+  const [professionals, setProfessionals] = useState<any[]>([]);
+
   const plans = [
     {
       id: 1,
