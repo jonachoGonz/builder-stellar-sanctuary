@@ -53,7 +53,8 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
       ...options.headers,
     },
     // Add timeout for production environment
-    signal: AbortSignal.timeout(15000), // 15 second timeout
+    ...(typeof AbortSignal !== 'undefined' && AbortSignal.timeout ?
+        { signal: AbortSignal.timeout(15000) } : {}),
   };
 
   // Try multiple API base URLs for production environment
@@ -93,8 +94,8 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}, retry
         ok: response.ok,
       });
 
-      // If successful, return the response
-      if (response.ok || response.status < 500) {
+      // If successful or client error (not server error), return the response
+      if (response.status < 500) {
         return response;
       }
 
