@@ -132,6 +132,8 @@ export function EnhancedUnifiedCalendar({
 
   const loadData = async () => {
     setLoading(true);
+    setNetworkError(false);
+
     try {
       await Promise.all([
         loadAppointments(),
@@ -139,8 +141,14 @@ export function EnhancedUnifiedCalendar({
         loadBlockedTimes(),
       ]);
       generateScheduleGrid();
+      console.log("✅ All calendar data loaded successfully");
     } catch (error) {
-      console.error("Error loading calendar data:", error);
+      console.error("❌ Error loading calendar data:", error);
+
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        setNetworkError(true);
+      }
     } finally {
       setLoading(false);
     }
