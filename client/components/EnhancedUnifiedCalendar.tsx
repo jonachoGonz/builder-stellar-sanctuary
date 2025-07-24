@@ -328,9 +328,16 @@ export function EnhancedUnifiedCalendar({
 
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading appointments:", error);
       setAppointments([]); // Set empty array to prevent UI issues
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
 
       // Re-throw to let Promise.allSettled handle it
       throw error;
