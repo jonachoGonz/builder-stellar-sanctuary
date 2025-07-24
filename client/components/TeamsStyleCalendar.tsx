@@ -305,15 +305,15 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
           <div className="overflow-auto max-h-[600px]">
             <div className="grid grid-cols-8 min-w-[800px]">
               {/* Time column header */}
-              <div className="sticky top-0 bg-white z-10 border-r border-b border-gray-200 p-3">
-                <div className="text-sm font-medium text-gray-500">Hora</div>
+              <div className="sticky top-0 bg-gray-50 z-10 border-r border-b border-gray-300 p-3">
+                <div className="text-sm font-medium text-gray-600"></div>
               </div>
-              
+
               {/* Day headers */}
               {weekDates.map((date, index) => (
                 <div
                   key={index}
-                  className="sticky top-0 bg-white z-10 border-r border-b border-gray-200 p-3"
+                  className="sticky top-0 bg-gray-50 z-10 border-r border-b border-gray-300 p-3"
                 >
                   {formatDateHeader(date, weekDays[index])}
                 </div>
