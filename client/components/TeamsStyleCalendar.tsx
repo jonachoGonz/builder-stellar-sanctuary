@@ -339,9 +339,9 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
                     return (
                       <div
                         key={`${time}-${dayIndex}`}
-                        className={`relative border-r border-gray-200 min-h-[30px] hover:bg-gray-50 cursor-pointer group ${
-                          isFirst30Min ? 'border-b border-gray-200' : 'border-b border-gray-100'
-                        } ${slot?.isPastTime ? 'bg-gray-50' : ''}`}
+                        className={`relative border-r border-gray-200 h-[32px] hover:bg-blue-50 cursor-pointer group transition-colors ${
+                          isFirst30Min ? 'border-b border-gray-300' : 'border-b border-gray-100'
+                        } ${slot?.isPastTime ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                         onClick={() => slot && handleSlotClick(slot)}
                       >
                         {appointment && (
