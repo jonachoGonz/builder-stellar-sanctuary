@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build:client && cp _headers dist/spa/ && cp _redirects dist/spa/"
+  command = "npm ci && npm run build:production"
   functions = "netlify/functions"
   publish = "dist/spa"
 
