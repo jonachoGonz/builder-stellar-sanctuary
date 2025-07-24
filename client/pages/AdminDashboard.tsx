@@ -77,6 +77,7 @@ export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<
     "users" | "calendar" | "plans" | "automation" | "reviews" | "blocking"
   >("users");
+  const [calendarView, setCalendarView] = useState<"enhanced" | "teams">("teams");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
@@ -426,7 +427,7 @@ export function AdminDashboard() {
               </Button>
               <Button variant="outline">
                 <Settings className="h-4 w-4 mr-2" />
-                Configuraci��n
+                Configuración
               </Button>
             </div>
           </div>
