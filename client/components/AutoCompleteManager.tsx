@@ -202,7 +202,7 @@ export function AutoCompleteManager() {
             Actualizar
           </Button>
           <Button
-            onClick={executeAutoComplete}
+            onClick={() => executeAutoComplete()}
             disabled={executing || (stats?.pendientesCompletar || 0) === 0}
           >
             <Play className="h-4 w-4 mr-2" />
@@ -323,7 +323,7 @@ export function AutoCompleteManager() {
             {stats.pendientesCompletar > 0 && (
               <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ Hay {stats.pendientesCompletar} clases que deberían
+                  ⚠��� Hay {stats.pendientesCompletar} clases que deberían
                   completarse automáticamente. Se recomienda ejecutar el proceso
                   ahora para mantener los registros actualizados.
                 </p>
