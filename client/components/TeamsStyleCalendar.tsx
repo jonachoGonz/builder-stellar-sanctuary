@@ -118,17 +118,25 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
       setLoading(true);
       const startDate = weekDates[0].toISOString().split('T')[0];
       const endDate = weekDates[6].toISOString().split('T')[0];
-      
+
       const response = await apiCall(
         `/admin/appointments?startDate=${startDate}&endDate=${endDate}&limit=1000`
       );
-      
+
       if (response.ok) {
         const data = await response.json();
-        setAppointments(data.data.appointments);
+        // Filter out any invalid appointments
+        const validAppointments = (data.data.appointments || []).filter((apt: any) =>
+          apt && apt.date && apt.startTime && apt.endTime
+        );
+        setAppointments(validAppointments);
+      } else {
+        console.error("Failed to load appointments:", response.status);
+        setAppointments([]);
       }
     } catch (error) {
       console.error("Error loading appointments:", error);
+      setAppointments([]);
     } finally {
       setLoading(false);
     }
