@@ -110,13 +110,24 @@ export function AutoCompleteManager() {
         const data = await response.json();
         setLastResult(data.data);
 
-        toast({
-          title: "Éxito",
-          description: data.message,
-        });
+        if (!silentMode) {
+          toast({
+            title: "Éxito",
+            description: data.message,
+          });
+        } else if (data.data.completadas > 0) {
+          console.log(`✅ Auto-completed ${data.data.completadas} classes automatically`);
+        }
 
         // Refresh stats after execution
         await loadStats();
+
+        // Trigger calendar update for real-time sync
+        if (data.data.completadas > 0) {
+          window.dispatchEvent(new CustomEvent('calendarUpdate', {
+            detail: { type: 'classes_auto_completed', count: data.data.completadas }
+          }));
+        }
       } else {
         const errorData = await response.json();
         throw new Error(
@@ -124,11 +135,15 @@ export function AutoCompleteManager() {
         );
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (!silentMode) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        console.error("Silent auto-complete error:", error.message);
+      }
     } finally {
       setExecuting(false);
     }
