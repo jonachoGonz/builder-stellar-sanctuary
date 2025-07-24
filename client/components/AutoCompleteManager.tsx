@@ -50,8 +50,22 @@ export function AutoCompleteManager() {
     loadStats();
 
     // Auto-refresh stats every 30 seconds
-    const interval = setInterval(loadStats, 30000);
-    return () => clearInterval(interval);
+    const statsInterval = setInterval(loadStats, 30000);
+
+    // Auto-execute completion every 5 minutes
+    const autoCompleteInterval = setInterval(async () => {
+      try {
+        console.log("🔄 Auto-executing class completion check...");
+        await executeAutoComplete(true); // Silent execution
+      } catch (error) {
+        console.error("Auto-complete execution error:", error);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => {
+      clearInterval(statsInterval);
+      clearInterval(autoCompleteInterval);
+    };
   }, []);
 
   const loadStats = async () => {
