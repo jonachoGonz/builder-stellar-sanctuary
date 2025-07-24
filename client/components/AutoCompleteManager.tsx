@@ -90,8 +90,9 @@ export function AutoCompleteManager() {
     }
   };
 
-  const executeAutoComplete = async () => {
+  const executeAutoComplete = async (silentMode = false) => {
     if (
+      !silentMode &&
       !confirm(
         "¿Estás seguro de que quieres ejecutar el auto-completado de clases?",
       )
