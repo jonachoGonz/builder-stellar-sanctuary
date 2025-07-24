@@ -606,10 +606,18 @@ export function CalendarioCompleto({
       });
 
       if (response.ok) {
+        // Immediate real-time update
         await loadData();
         if (isStudent) await loadPlanUsuario();
+
+        // Trigger custom event for other components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'appointment_updated', claseId, updates }
+        }));
+
         setModalDetalle(false);
         setModalEvaluar(false);
+        console.log("✅ Clase actualizada - Real-time update triggered");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Error al actualizar la clase");
