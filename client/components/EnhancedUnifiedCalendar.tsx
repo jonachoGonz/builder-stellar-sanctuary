@@ -386,6 +386,9 @@ export function EnhancedUnifiedCalendar({
             } else {
               console.error("❌ Professionals API error:", response.status);
               setProfessionals([]);
+              if (response.status === 401 || response.status === 403) {
+                setAuthError(true);
+              }
               throw new Error(`Professionals API error: ${response.status}`);
             }
           }),
