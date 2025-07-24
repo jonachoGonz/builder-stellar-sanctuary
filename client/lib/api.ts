@@ -71,9 +71,10 @@ export const apiCall = async (
       !window.location.hostname.includes("localhost")
     ) {
       // For production deployments, try multiple potential backend URLs
+      // Try Netlify Functions first, then fallback to direct API path
       return [
-        `${window.location.origin}/api${baseEndpoint}`,
         `/.netlify/functions/api${baseEndpoint}`,
+        `${window.location.origin}/api${baseEndpoint}`,
       ];
     }
 
