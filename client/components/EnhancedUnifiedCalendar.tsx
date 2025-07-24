@@ -706,7 +706,7 @@ export function EnhancedUnifiedCalendar({
           ...blockData,
           createdAt: new Date(),
         };
-        setBlockedTimes((prev) => [...prev, newBlock]);
+        setBlockedTimes((prev) => Array.isArray(prev) ? [...prev, newBlock] : [newBlock]);
 
         // Regenerate schedule grid to show blocked time immediately
         generateScheduleGrid();
