@@ -303,16 +303,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(String(errorMessage));
       }
 
+      // Read response as text first to avoid "body stream already read" error
+      const responseText = await response.text();
+
       let data;
       try {
-        data = await response.json();
+        data = JSON.parse(responseText);
         console.log("✅ Login successful:", {
           userId: data.user?.id,
           email: data.user?.email,
           fullResponse: data,
         });
       } catch (parseError) {
-        const responseText = await response.text();
         console.error("❌ Could not parse successful response as JSON:", {
           parseError: parseError.message,
           responseText: responseText.substring(0, 500),
