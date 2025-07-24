@@ -245,6 +245,26 @@ export function ScheduleManagement() {
     return names[day as keyof typeof names] || day;
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin mr-2" />
+        <span>Cargando datos...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 mb-4">{error}</p>
+        <Button onClick={() => window.location.reload()}>
+          Recargar página
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
