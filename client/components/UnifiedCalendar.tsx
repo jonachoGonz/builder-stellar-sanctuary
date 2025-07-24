@@ -12,7 +12,7 @@ import {
   ChevronRight,
   User,
   MapPin,
-  Block,
+  Ban,
   CheckCircle,
   XCircle,
   AlertTriangle,
