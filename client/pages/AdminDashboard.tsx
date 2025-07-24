@@ -840,7 +840,35 @@ export function AdminDashboard() {
           </>
         )}
 
-        {activeTab === "calendar" && <EnhancedUnifiedCalendar />}
+        {activeTab === "calendar" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Vista de Calendario</h3>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={calendarView === "teams" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCalendarView("teams")}
+                >
+                  Vista Teams
+                </Button>
+                <Button
+                  variant={calendarView === "enhanced" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCalendarView("enhanced")}
+                >
+                  Vista Clásica
+                </Button>
+              </div>
+            </div>
+
+            {calendarView === "teams" ? (
+              <TeamsStyleCalendar />
+            ) : (
+              <EnhancedUnifiedCalendar />
+            )}
+          </div>
+        )}
 
         {activeTab === "plans" && <PlanManagement />}
 
