@@ -401,8 +401,9 @@ export function EnhancedUnifiedCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Blocked times loaded:", data.data?.length || 0);
-        setBlockedTimes(data.data || []);
+        const blockedTimesData = Array.isArray(data.data) ? data.data : [];
+        console.log("✅ Blocked times loaded:", blockedTimesData.length);
+        setBlockedTimes(blockedTimesData);
       } else {
         console.error("❌ Blocked times API error:", response.status);
         setBlockedTimes([]);
