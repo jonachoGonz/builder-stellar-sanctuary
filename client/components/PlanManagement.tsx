@@ -154,7 +154,7 @@ export function PlanManagement() {
       category: "basic",
       metadata: {
         color: "#3B82F6",
-        icon: "",
+        icon: "star",
         order: 0,
       },
     });
