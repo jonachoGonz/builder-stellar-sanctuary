@@ -44,6 +44,16 @@ export interface IAppointment extends Document {
   deductFromPlan: boolean; // Whether this appointment counts against student's plan
   planType?: string;
 
+  // Evaluation (filled by student after completion)
+  evaluation?: {
+    rating: number;
+    comments?: string;
+    punctuality: number;
+    quality: number;
+    overall: number;
+    evaluatedAt: Date;
+  };
+
   // Metadata
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -113,6 +123,14 @@ const appointmentSchema = new Schema<IAppointment>(
       default: true,
     },
     planType: String,
+    evaluation: {
+      rating: { type: Number, min: 1, max: 5 },
+      comments: String,
+      punctuality: { type: Number, min: 1, max: 5 },
+      quality: { type: Number, min: 1, max: 5 },
+      overall: { type: Number, min: 1, max: 5 },
+      evaluatedAt: Date,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

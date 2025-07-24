@@ -45,16 +45,22 @@ export function Header() {
               // Authenticated user navigation
               <>
                 <Link
-                  to="/profile"
-                  className="text-gray-700 hover:text-primary transition-colors font-medium"
-                >
-                  Mi Perfil
-                </Link>
-                <Link
                   to="/dashboard"
                   className="text-gray-700 hover:text-primary transition-colors font-medium"
                 >
                   Mi Dashboard
+                </Link>
+                <Link
+                  to="/calendar"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Calendario
+                </Link>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  Mi Perfil
                 </Link>
               </>
             ) : (

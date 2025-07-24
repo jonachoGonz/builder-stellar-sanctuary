@@ -1,7 +1,10 @@
+// Load environment variables first
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import dotenv from "dotenv";
 import connectDB from "./config/database";
 import passport from "./config/passport";
 import { initializeSeedData } from "./utils/seedData";
@@ -11,9 +14,9 @@ import { handleDemo } from "./routes/demo";
 import authRoutes from "./routes/auth";
 import classRoutes from "./routes/classes";
 import testRoutes from "./routes/test";
-
-// Load environment variables
-dotenv.config();
+import adminRoutes from "./routes/admin";
+import calendarioRoutes from "./routes/calendario";
+import plansRoutes from "./routes/plans";
 
 export function createServer() {
   const app = express();
@@ -27,7 +30,35 @@ export function createServer() {
   // Middleware
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || "http://localhost:8080",
+      origin: (origin, callback) => {
+        // Allow all origins in development
+        if (process.env.NODE_ENV === "development") {
+          return callback(null, true);
+        }
+
+        // In production, allow the configured client URL and any fly.dev domains
+        const allowedOrigins = [
+          process.env.CLIENT_URL,
+          "http://localhost:8080",
+          "https://localhost:8080",
+        ];
+
+        // Allow any fly.dev domain for cloud deployments
+        if (origin && origin.includes(".fly.dev")) {
+          return callback(null, true);
+        }
+
+        // Allow same-origin requests (no origin header)
+        if (!origin) {
+          return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        callback(new Error("Not allowed by CORS"));
+      },
       credentials: true,
     }),
   );
@@ -56,13 +87,31 @@ export function createServer() {
     res.json({ message: "Hello from HTK center Express server!" });
   });
 
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "OK",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      server: "HTK Center API",
+    });
+  });
+
   app.get("/api/demo", handleDemo);
 
   // Authentication routes
   app.use("/api/auth", authRoutes);
 
+  // Admin routes
+  app.use("/api/admin", adminRoutes);
+
   // Classes routes
   app.use("/api/classes", classRoutes);
+
+  // Calendar/Agenda routes
+  app.use("/api/calendario", calendarioRoutes);
+
+  // Plans routes
+  app.use("/api/plans", plansRoutes);
 
   // Test routes (for development/debugging)
   app.use("/api/test", testRoutes);

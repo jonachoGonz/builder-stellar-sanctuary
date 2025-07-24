@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { apiCall } from "../lib/api";
 import {
   Calendar,
   Clock,
@@ -47,33 +48,66 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Textarea } from "../components/ui/textarea";
+import { CreateAppointmentModal } from "../components/CreateAppointmentModal";
+import { ProfessionalConfigModal } from "../components/ProfessionalConfigModal";
+import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 
 export function TeacherDashboard() {
   const { user, isLoading } = useAuth();
   const [classes, setClasses] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [blockedTimes, setBlockedTimes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Get teacher specialties based on user role and specialty
+  const getTeacherSpecialties = () => {
+    if (!user) return [];
+
+    const specialtyMapping = {
+      teacher: ["Fitness", "Personal Training"],
+      nutritionist: ["Nutrition", "Diet Planning"],
+      psychologist: ["Psychology", "Mental Health"],
+    };
+
+    const baseSpecialties =
+      specialtyMapping[user.role as keyof typeof specialtyMapping] || [];
+
+    // Add user's specific specialty if it exists
+    if (user.specialty && !baseSpecialties.includes(user.specialty)) {
+      baseSpecialties.push(user.specialty);
+    }
+
+    return baseSpecialties;
+  };
 
   // Get professional info from real user data
   const getProfessionalInfo = () => {
     if (!user) return null;
 
     const calculateStats = () => {
-      const totalClasses = classes.filter(
-        (c) => c.status === "completed",
+      const totalClasses = (classes || []).filter(
+        (c) => c?.status === "completed",
       ).length;
       const uniqueStudents = new Set(
-        classes.flatMap((c) => c.students?.map((s: any) => s.id) || []),
+        (classes || []).flatMap(
+          (c) => c?.students?.map((s: any) => s?.id) || [],
+        ),
       ).size;
 
       return {
         totalClasses,
         totalStudents: uniqueStudents,
-        upcomingClasses: classes.filter((c) => new Date(c.date) > new Date())
-          .length,
-        completedThisWeek: classes.filter((c) => {
+        upcomingClasses: (classes || []).filter(
+          (c) => c?.date && new Date(c.date) > new Date(),
+        ).length,
+        completedThisWeek: (classes || []).filter((c) => {
+          if (!c?.date || !c?.status) return false;
           const classDate = new Date(c.date);
           const now = new Date();
           const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -118,7 +152,9 @@ export function TeacherDashboard() {
     ];
 
     // Could be based on the types of classes this teacher has created
-    const classTypes = [...new Set(classes.map((c) => c.type || "functional"))];
+    const classTypes = [
+      ...new Set((classes || []).map((c) => c?.type || "functional")),
+    ];
     const typeMapping: { [key: string]: string } = {
       functional: "Entrenamiento Funcional",
       crossfit: "CrossFit",
@@ -135,107 +171,177 @@ export function TeacherDashboard() {
     return specialties.length > 0 ? specialties : defaultSpecialties;
   };
 
-  const teacherInfo = getTeacherInfo();
+  const teacherInfo = getProfessionalInfo();
 
-  // Mock data - replace with real API calls
+  // Load real data from API
   useEffect(() => {
-    const mockClasses = [
-      {
-        id: "1",
-        title: "Entrenamiento Funcional Matutino",
-        date: "2024-01-16",
-        startTime: "08:00",
-        endTime: "09:00",
-        duration: 60,
-        maxCapacity: 15,
-        currentCapacity: 12,
-        location: "Sala Principal",
-        status: "scheduled",
-        students: [
-          { id: "1", name: "Juan Pérez", email: "juan@email.com" },
-          { id: "2", name: "María Silva", email: "maria@email.com" },
-          { id: "3", name: "Carlos López", email: "carlos@email.com" },
-        ],
-        waitingList: [{ id: "4", name: "Ana García", email: "ana@email.com" }],
-      },
-      {
-        id: "2",
-        title: "CrossFit Avanzado",
-        date: "2024-01-16",
-        startTime: "18:00",
-        endTime: "19:00",
-        duration: 60,
-        maxCapacity: 12,
-        currentCapacity: 10,
-        location: "Área CrossFit",
-        status: "scheduled",
-        students: [
-          { id: "5", name: "Pedro Ruiz", email: "pedro@email.com" },
-          { id: "6", name: "Laura Mendez", email: "laura@email.com" },
-        ],
-        waitingList: [],
-      },
-      {
-        id: "3",
-        title: "Entrenamiento Funcional",
-        date: "2024-01-15",
-        startTime: "10:00",
-        endTime: "11:00",
-        duration: 60,
-        maxCapacity: 15,
-        currentCapacity: 14,
-        location: "Sala Principal",
-        status: "completed",
-        students: [],
-        waitingList: [],
-      },
-    ];
+    if (user) {
+      loadAppointments();
+      loadStudents();
+    }
+  }, [user]);
 
-    setClasses(mockClasses);
+  const loadAppointments = async () => {
+    try {
+      setLoading(true);
+      const response = await apiCall(
+        `/admin/appointments?professionalId=${user?.id}&limit=100`,
+      );
 
-    // Generate weekly schedule
+      if (response.ok) {
+        const data = await response.json();
+        setAppointments(data.data.appointments || []);
+
+        // Transform appointments to classes format
+        const transformedClasses =
+          data.data.appointments?.map((apt: any) => ({
+            id: apt._id,
+            title: apt.title || apt.type || "Sesión",
+            date: apt.date.split("T")[0],
+            startTime: apt.startTime,
+            endTime: apt.endTime,
+            duration: apt.duration || 60,
+            location: apt.location || "Por definir",
+            status: apt.status,
+            students: apt.student ? [apt.student] : [],
+            notes: apt.notes,
+          })) || [];
+
+        setClasses(transformedClasses);
+      }
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStudents = async () => {
+    try {
+      const response = await apiCall("/admin/users?role=student&limit=100");
+
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(data.data.users || []);
+      }
+    } catch (error) {
+      console.error("Error loading students:", error);
+    }
+  };
+
+  // Generate weekly schedule grid
+  useEffect(() => {
     const weekSchedule = [];
     const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
     const times = ["08:00", "10:00", "16:00", "18:00", "20:00"];
 
     days.forEach((day, dayIndex) => {
       times.forEach((time) => {
+        const hasClass = classes.some((c) => {
+          const classDate = new Date(c.date);
+          const currentDate = new Date();
+          const dayDiff = (classDate.getDay() + 6) % 7; // Monday = 0
+          return dayDiff === dayIndex && c.startTime === time;
+        });
+
         weekSchedule.push({
           day,
           dayIndex,
           time,
-          isBlocked: Math.random() > 0.7, // 30% chance of being blocked
-          hasClass: Math.random() > 0.6, // 40% chance of having a class
-          classTitle:
-            Math.random() > 0.5 ? "Entrenamiento Funcional" : "CrossFit",
+          isBlocked: false, // Will be loaded from user preferences
+          hasClass,
+          classTitle: hasClass
+            ? classes.find((c) => {
+                const classDate = new Date(c.date);
+                const dayDiff = (classDate.getDay() + 6) % 7;
+                return dayDiff === dayIndex && c.startTime === time;
+              })?.title
+            : "",
         });
       });
     });
 
     setSchedule(weekSchedule);
-  }, []);
+  }, [classes]);
 
-  const todayClasses = classes.filter(
-    (c) => c.date === "2024-01-16" && c.status === "scheduled",
+  const today = new Date().toISOString().split("T")[0];
+  const todayClasses = (classes || []).filter(
+    (c) => c?.date === today && c?.status === "scheduled",
   );
-  const upcomingClasses = classes.filter(
+  const upcomingClasses = (classes || []).filter(
     (c) =>
-      new Date(c.date) > new Date("2024-01-16") && c.status === "scheduled",
+      c?.date &&
+      new Date(c.date) > new Date(today) &&
+      c?.status === "scheduled",
   );
 
   const stats = {
     todayClasses: todayClasses.length,
-    weeklyClasses: classes.filter((c) => c.status === "scheduled").length,
-    totalStudents: classes.reduce((acc, c) => acc + c.currentCapacity, 0),
+    weeklyClasses: (classes || []).filter((c) => c?.status === "scheduled")
+      .length,
+    totalStudents: (classes || []).reduce(
+      (acc, c) => acc + (c?.currentCapacity || 0),
+      0,
+    ),
     averageCapacity: Math.round(
-      (classes.reduce((acc, c) => acc + c.currentCapacity, 0) /
-        classes.reduce((acc, c) => acc + c.maxCapacity, 0)) *
+      ((classes || []).reduce((acc, c) => acc + (c?.currentCapacity || 0), 0) /
+        Math.max(
+          (classes || []).reduce((acc, c) => acc + (c?.maxCapacity || 0), 0),
+          1,
+        )) *
         100,
     ),
   };
 
   const handleCreateClass = () => {
     setIsCreateDialogOpen(true);
+  };
+
+  const handleCreateAppointment = async (appointmentData: any) => {
+    try {
+      setLoading(true);
+      const response = await apiCall("/admin/appointments", {
+        method: "POST",
+        body: JSON.stringify({
+          ...appointmentData,
+          professionalId: user?.id,
+        }),
+      });
+
+      if (response.ok) {
+        await loadAppointments(); // Reload appointments
+        setIsCreateDialogOpen(false);
+      } else {
+        console.error("Error creating appointment");
+      }
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveConfig = async (config: any) => {
+    try {
+      setLoading(true);
+      const response = await apiCall(`/auth/profile`, {
+        method: "PUT",
+        body: JSON.stringify(config),
+      });
+
+      if (response.ok) {
+        setIsConfigDialogOpen(false);
+        alert("Configuración guardada exitosamente");
+      } else {
+        console.error("Error saving configuration");
+        alert("Error al guardar la configuración");
+      }
+    } catch (error) {
+      console.error("Error saving configuration:", error);
+      alert("Error al guardar la configuración");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditClass = (classItem: any) => {
@@ -309,7 +415,7 @@ export function TeacherDashboard() {
                   {teacherInfo.specialties.join(" • ")}
                 </Badge>
                 <span className="text-gray-600">
-                  ⭐ {teacherInfo.rating} • {teacherInfo.totalClasses} clases
+                  �� {teacherInfo.rating} • {teacherInfo.totalClasses} clases
                 </span>
               </div>
             </div>
@@ -318,7 +424,10 @@ export function TeacherDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Clase
               </Button>
-              <Button variant="outline">
+              <Button
+                variant="outline"
+                onClick={() => setIsConfigDialogOpen(true)}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Configuración
               </Button>
@@ -392,80 +501,7 @@ export function TeacherDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Schedule Management */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Gestión de Horarios
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Bloquea o desbloquea horarios según tu disponibilidad
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-8 gap-2">
-                  {/* Header */}
-                  <div className="font-medium text-sm"></div>
-                  {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map(
-                    (day) => (
-                      <div
-                        key={day}
-                        className="text-center font-medium text-sm"
-                      >
-                        {day}
-                      </div>
-                    ),
-                  )}
-
-                  {/* Time slots */}
-                  {["08:00", "10:00", "16:00", "18:00", "20:00"].map((time) => (
-                    <div key={time} className="contents">
-                      <div className="text-sm font-medium py-2">{time}</div>
-                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                        const scheduleItem = schedule.find(
-                          (s) => s.time === time && s.dayIndex === dayIndex,
-                        );
-                        return (
-                          <button
-                            key={`${time}-${dayIndex}`}
-                            onClick={() =>
-                              scheduleItem && handleBlockTime(scheduleItem)
-                            }
-                            className={`h-12 border rounded-md text-xs font-medium transition-colors ${
-                              scheduleItem?.isBlocked
-                                ? "bg-red-100 border-red-300 text-red-700"
-                                : scheduleItem?.hasClass
-                                  ? "bg-green-100 border-green-300 text-green-700"
-                                  : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                            }`}
-                          >
-                            {scheduleItem?.isBlocked
-                              ? "Bloqueado"
-                              : scheduleItem?.hasClass
-                                ? "Clase"
-                                : "Libre"}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex items-center space-x-6 text-xs">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded mr-2"></div>
-                    <span>Disponible</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-green-100 border border-green-300 rounded mr-2"></div>
-                    <span>Con clase</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-red-100 border border-red-300 rounded mr-2"></div>
-                    <span>Bloqueado</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <EnhancedUnifiedCalendar />
 
             {/* Today's Classes */}
             <Card className="mt-6">
@@ -491,9 +527,9 @@ export function TeacherDashboard() {
                               {classItem.currentCapacity}/
                               {classItem.maxCapacity} estudiantes
                             </span>
-                            {classItem.waitingList.length > 0 && (
+                            {(classItem.waitingList?.length || 0) > 0 && (
                               <Badge variant="outline" className="text-xs">
-                                {classItem.waitingList.length} en espera
+                                {classItem.waitingList?.length || 0} en espera
                               </Badge>
                             )}
                           </div>
@@ -614,98 +650,23 @@ export function TeacherDashboard() {
         </div>
       </div>
 
-      {/* Create Class Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Crear Nueva Clase</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">Título de la Clase</Label>
-                <Input id="title" placeholder="Ej: Entrenamiento Funcional" />
-              </div>
-              <div>
-                <Label htmlFor="type">Tipo de Clase</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="functional">
-                      Entrenamiento Funcional
-                    </SelectItem>
-                    <SelectItem value="crossfit">CrossFit</SelectItem>
-                    <SelectItem value="strength">Musculación</SelectItem>
-                    <SelectItem value="cardio">Cardio</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+      {/* Create Appointment Modal */}
+      <CreateAppointmentModal
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        students={students}
+        onCreateAppointment={handleCreateAppointment}
+        loading={loading}
+      />
 
-            <div>
-              <Label htmlFor="description">Descripción</Label>
-              <Textarea
-                id="description"
-                placeholder="Descripción de la clase..."
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="date">Fecha</Label>
-                <Input id="date" type="date" />
-              </div>
-              <div>
-                <Label htmlFor="startTime">Hora Inicio</Label>
-                <Input id="startTime" type="time" />
-              </div>
-              <div>
-                <Label htmlFor="duration">Duración (min)</Label>
-                <Input id="duration" type="number" placeholder="60" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="capacity">Capacidad Máxima</Label>
-                <Input
-                  id="capacity"
-                  type="number"
-                  placeholder="15"
-                  max={teacherInfo.maxStudentsPerClass}
-                />
-              </div>
-              <div>
-                <Label htmlFor="location">Ubicación</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sala" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="main">Sala Principal</SelectItem>
-                    <SelectItem value="crossfit">Área CrossFit</SelectItem>
-                    <SelectItem value="yoga">Sala Zen</SelectItem>
-                    <SelectItem value="weights">Área de Pesas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button className="btn-primary">Crear Clase</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Professional Configuration Modal */}
+      <ProfessionalConfigModal
+        isOpen={isConfigDialogOpen}
+        onClose={() => setIsConfigDialogOpen(false)}
+        user={user}
+        onSaveConfig={handleSaveConfig}
+        loading={loading}
+      />
 
       {/* Edit Class Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -758,7 +719,7 @@ export function TeacherDashboard() {
                 <div>
                   <h3 className="font-semibold mb-4">Estudiantes Inscritos</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {selectedClass.students.map((student: any) => (
+                    {(selectedClass?.students || []).map((student: any) => (
                       <div
                         key={student.id}
                         className="flex items-center justify-between p-2 bg-gray-50 rounded"
@@ -771,23 +732,25 @@ export function TeacherDashboard() {
                     ))}
                   </div>
 
-                  {selectedClass.waitingList.length > 0 && (
+                  {(selectedClass?.waitingList?.length || 0) > 0 && (
                     <div className="mt-4">
                       <h4 className="font-medium text-sm mb-2">
                         Lista de Espera
                       </h4>
                       <div className="space-y-2">
-                        {selectedClass.waitingList.map((student: any) => (
-                          <div
-                            key={student.id}
-                            className="flex items-center justify-between p-2 bg-yellow-50 rounded"
-                          >
-                            <span className="text-sm">{student.name}</span>
-                            <Button size="sm" variant="outline">
-                              <UserCheck className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
+                        {(selectedClass?.waitingList || []).map(
+                          (student: any) => (
+                            <div
+                              key={student.id}
+                              className="flex items-center justify-between p-2 bg-yellow-50 rounded"
+                            >
+                              <span className="text-sm">{student.name}</span>
+                              <Button size="sm" variant="outline">
+                                <UserCheck className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
                   )}

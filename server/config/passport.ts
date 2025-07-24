@@ -1,19 +1,24 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User, { IUser } from "../models/User";
+import dotenv from "dotenv";
+
+// Ensure environment variables are loaded
+dotenv.config();
 
 // Only configure Google OAuth if credentials are provided
 if (
   process.env.GOOGLE_CLIENT_ID &&
   process.env.GOOGLE_CLIENT_SECRET &&
-  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id"
+  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id" &&
+  process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"
 ) {
   passport.use(
     new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/api/auth/google/callback",
+        callbackURL: `${process.env.API_BASE_URL || "http://localhost:3001"}/api/auth/google/callback`,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -42,7 +47,7 @@ if (
             firstName: profile.name?.givenName || "",
             lastName: profile.name?.familyName || "",
             avatar: profile.photos?.[0].value,
-            phone: "", // Will be required to complete profile
+            phone: "Por completar", // Will be required to complete profile later
             birthDate: new Date("1990-01-01"), // Default, will be required to complete
             role: "student",
             plan: "trial",

@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
+import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 
 export function StudentDashboard() {
   const { user, isLoading } = useAuth();
@@ -207,7 +208,7 @@ export function StudentDashboard() {
         id: "2",
         title: "Yoga Flow",
         instructor: {
-          name: "María González",
+          name: "Mar��a González",
           rating: 4.8,
           specialties: ["Yoga", "Pilates"],
         },
@@ -558,6 +559,14 @@ export function StudentDashboard() {
               <p className="text-xs text-muted-foreground">días consecutivos</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Unified Calendar */}
+        <div className="mb-8">
+          <EnhancedUnifiedCalendar
+            showCreateButton={true}
+            showConfigButton={false}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

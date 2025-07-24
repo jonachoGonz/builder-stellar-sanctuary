@@ -140,11 +140,34 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// Google OAuth configuration status endpoint
+router.get("/google/status", (req: Request, res: Response) => {
+  const isConfigured =
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id" &&
+    process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here";
+
+  res.json({
+    success: true,
+    configured: isConfigured,
+    clientId: process.env.GOOGLE_CLIENT_ID || "Not set",
+    hasSecret: !!(
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"
+    ),
+    message: isConfigured
+      ? "Google OAuth está configurado correctamente"
+      : "Google OAuth necesita configuración adicional",
+  });
+});
+
 // Google OAuth routes - only if properly configured
 if (
   process.env.GOOGLE_CLIENT_ID &&
   process.env.GOOGLE_CLIENT_SECRET &&
-  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id"
+  process.env.GOOGLE_CLIENT_ID !== "placeholder_client_id" &&
+  process.env.GOOGLE_CLIENT_SECRET !== "GOCSPX-your_client_secret_here"
 ) {
   // Google OAuth login
   router.get(
@@ -161,6 +184,13 @@ if (
     async (req: Request, res: Response) => {
       try {
         const user = req.user as any;
+
+        if (!user) {
+          console.error("No user returned from Google OAuth");
+          return res.redirect(
+            `${process.env.CLIENT_URL}/login?error=oauth_no_user`,
+          );
+        }
 
         // Generate token
         const token = generateToken(user._id.toString());
@@ -188,9 +218,25 @@ if (
 } else {
   // Provide fallback routes when Google OAuth is not configured
   router.get("/google", (req: Request, res: Response) => {
+    const missingConfig = [];
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      process.env.GOOGLE_CLIENT_ID === "placeholder_client_id"
+    ) {
+      missingConfig.push("GOOGLE_CLIENT_ID");
+    }
+    if (
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      process.env.GOOGLE_CLIENT_SECRET === "GOCSPX-your_client_secret_here"
+    ) {
+      missingConfig.push("GOOGLE_CLIENT_SECRET");
+    }
+
     res.status(501).json({
       success: false,
-      message: "Google OAuth no está configurado en el servidor",
+      message: "Google OAuth no está completamente configurado",
+      missingConfig,
+      instructions: "Por favor configura las variables de entorno faltantes",
     });
   });
 

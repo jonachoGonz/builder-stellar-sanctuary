@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Import contexts
 import { AuthProvider } from "./contexts/AuthContext";
@@ -21,6 +22,10 @@ import { Auth } from "./pages/Auth";
 import { AuthSuccess } from "./pages/AuthSuccess";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
+import { Calendar } from "./pages/Calendar";
+import CalendarioCompletoPage from "./pages/CalendarioCompleto";
+import { Reviews } from "./pages/Reviews";
+import Diagnostic from "./pages/Diagnostic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +33,17 @@ const queryClient = new QueryClient();
 // Layout component for pages with header and footer
 const PublicLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
-    <Header />
+    <ErrorBoundary
+      fallback={
+        <div className="bg-white border-b p-4 text-center">
+          <span className="text-gray-600">
+            Navigation temporarily unavailable
+          </span>
+        </div>
+      }
+    >
+      <Header />
+    </ErrorBoundary>
     <main className="flex-1">{children}</main>
     <Footer />
   </div>
@@ -105,6 +120,48 @@ const App = () => (
               }
             />
 
+            <Route
+              path="/calendar"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <Calendar />
+                </div>
+              }
+            />
+
+            {/* New comprehensive calendar */}
+            <Route
+              path="/agenda"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <CalendarioCompletoPage />
+                </div>
+              }
+            />
+
+            {/* Reviews page */}
+            <Route
+              path="/reviews"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <Reviews />
+                </div>
+              }
+            />
+
+            {/* Diagnostic route for debugging */}
+            <Route
+              path="/diagnostic"
+              element={
+                <PublicLayout>
+                  <Diagnostic />
+                </PublicLayout>
+              }
+            />
+
             {/* Legal pages placeholders */}
             <Route
               path="/terms"
@@ -154,4 +211,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Prevent double mounting in development
+const rootElement = document.getElementById("root")!;
+
+// Check if root already exists (for hot reloading)
+let root = (rootElement as any)._reactRoot;
+if (!root) {
+  root = createRoot(rootElement);
+  (rootElement as any)._reactRoot = root;
+}
+
+root.render(<App />);
