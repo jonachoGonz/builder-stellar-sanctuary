@@ -8,6 +8,9 @@ export function ApiStatus() {
   >("checking");
   const [details, setDetails] = useState<any>(null);
 
+  // Check if we're in development mode
+  const isDevelopment = import.meta.env.DEV;
+
   useEffect(() => {
     checkApiStatus();
   }, []);
@@ -46,6 +49,11 @@ export function ApiStatus() {
       console.error("❌ API connection failed:", error);
     }
   };
+
+  // Don't render UI component in production
+  if (!isDevelopment) {
+    return null;
+  }
 
   const getStatusIcon = () => {
     switch (status) {

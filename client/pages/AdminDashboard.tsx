@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { UserManagementModal } from "../components/UserManagementModal";
 import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
+import { PlanManagement } from "../components/PlanManagement";
+import { AutoCompleteManager } from "../components/AutoCompleteManager";
+import { ReviewsManager } from "../components/ReviewsManager";
 import {
   Users,
   Calendar,
@@ -69,7 +72,9 @@ export function AdminDashboard() {
     limit: 20,
   });
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"users" | "calendar">("users");
+  const [activeTab, setActiveTab] = useState<
+    "users" | "calendar" | "plans" | "automation" | "reviews"
+  >("users");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
@@ -79,7 +84,9 @@ export function AdminDashboard() {
       const totalUsers = users.length;
       const activeUsers = users.filter((u) => u.isActive).length;
       const totalStudents = users.filter((u) => u.role === "student").length;
-      const totalTeachers = users.filter((u) => u.role === "teacher").length;
+      const totalTeachers = users.filter((u) =>
+        ["teacher", "nutritionist", "psychologist"].includes(u.role),
+      ).length;
       const totalClasses = 0; // Will be loaded from appointments API
       const upcomingClasses = 0; // Will be loaded from appointments API
 
@@ -437,6 +444,39 @@ export function AdminDashboard() {
               <Calendar className="h-4 w-4 mr-2 inline" />
               Calendario de Citas
             </button>
+            <button
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "plans"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+              onClick={() => setActiveTab("plans")}
+            >
+              <TrendingUp className="h-4 w-4 mr-2 inline" />
+              Gestión de Planes
+            </button>
+            <button
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "automation"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+              onClick={() => setActiveTab("automation")}
+            >
+              <Settings className="h-4 w-4 mr-2 inline" />
+              Automatización
+            </button>
+            <button
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "reviews"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+              onClick={() => setActiveTab("reviews")}
+            >
+              <User className="h-4 w-4 mr-2 inline" />
+              Evaluaciones
+            </button>
           </div>
         </div>
       </div>
@@ -774,6 +814,12 @@ export function AdminDashboard() {
         )}
 
         {activeTab === "calendar" && <EnhancedUnifiedCalendar />}
+
+        {activeTab === "plans" && <PlanManagement />}
+
+        {activeTab === "automation" && <AutoCompleteManager />}
+
+        {activeTab === "reviews" && <ReviewsManager />}
       </div>
 
       {/* User Management Modal */}

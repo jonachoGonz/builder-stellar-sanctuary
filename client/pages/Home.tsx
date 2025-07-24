@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { apiCall } from "../lib/api";
 import {
   Activity,
   Users,
@@ -28,7 +30,10 @@ import {
 } from "../components/ui/card";
 
 export function Home() {
-  const plans = [
+  const [professionals, setProfessionals] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
+
+  const defaultPlans = [
     {
       id: 1,
       name: "Plan Básico",
@@ -92,32 +97,103 @@ export function Home() {
     },
   ];
 
-  const professionals = [
-    {
-      name: "Dr. Carlos Mendoza",
-      specialty: "Kinesiólogo y Entrenador",
-      experience: "8 años",
-      certifications: [
-        "Licenciado en Kinesiología",
-        "Cert. Entrenamiento Funcional",
-      ],
-      image: "/placeholder.svg",
-    },
-    {
-      name: "María González",
-      specialty: "Nutricionista y Yoga",
-      experience: "6 años",
-      certifications: ["Licenciada en Nutrición", "Instructora Yoga RYT-500"],
-      image: "/placeholder.svg",
-    },
-    {
-      name: "Ps. Ana Silva",
-      specialty: "Psicóloga Deportiva",
-      experience: "7 años",
-      certifications: ["Psicóloga Clínica", "Especialista en Deporte"],
-      image: "/placeholder.svg",
-    },
-  ];
+  // Fetch professionals and plans from API
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      try {
+        const response = await apiCall("/admin/users?limit=20");
+        if (response.ok) {
+          const data = await response.json();
+          const professionalUsers =
+            data.data.users?.filter((u: any) =>
+              ["teacher", "nutritionist", "psychologist"].includes(u.role),
+            ) || [];
+
+          // Transform API data to match expected format
+          const transformedProfessionals = professionalUsers.map(
+            (user: any) => ({
+              name: `${user.firstName} ${user.lastName}`,
+              specialty: getRoleDisplayName(user.role),
+              experience: "Experiencia certificada",
+              certifications: getRoleCertifications(user.role),
+              image: user.avatar || "/placeholder.svg",
+              id: user._id,
+            }),
+          );
+
+          setProfessionals(transformedProfessionals);
+        }
+      } catch (error) {
+        console.error("Error fetching professionals:", error);
+        // Fallback to show example professionals
+        setProfessionals([
+          {
+            name: "Equipo HTK",
+            specialty: "Profesionales Especializados",
+            experience: "Amplia experiencia",
+            certifications: ["Certificaciones Profesionales"],
+            image: "/placeholder.svg",
+          },
+        ]);
+      }
+    };
+
+    const fetchPlans = async () => {
+      try {
+        const response = await apiCall("/plans/public");
+        if (response.ok) {
+          const data = await response.json();
+
+          // Transform API data to match expected format
+          const transformedPlans = data.data.map((plan: any) => ({
+            id: plan._id,
+            name: plan.name,
+            classes: `${plan.classesPorSemana} clases semanales`,
+            description: plan.description,
+            price: `$${plan.price.toLocaleString()}`,
+            duration: `por ${plan.durationWeeks} semanas`,
+            popular: plan.popular,
+            features: plan.benefits,
+          }));
+
+          setPlans(transformedPlans);
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        // Fallback to default plans
+        setPlans(defaultPlans);
+      }
+    };
+
+    fetchProfessionals();
+    fetchPlans();
+  }, []);
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "teacher":
+        return "Kinesiólogo";
+      case "nutritionist":
+        return "Nutricionista";
+      case "psychologist":
+        return "Psicólogo";
+      default:
+        return "Profesional";
+    }
+  };
+
+  const getRoleCertifications = (role: string) => {
+    switch (role) {
+      case "teacher":
+        return ["Kinesiología", "Entrenamiento"];
+      case "nutritionist":
+        return ["Nutrición", "Alimentación"];
+      case "psychologist":
+        return ["Psicología", "Terapia"];
+      default:
+        return ["Certificación Profesional"];
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -505,53 +581,65 @@ export function Home() {
                 Nuestros Profesionales
               </h3>
               <div className="space-y-6">
-                {professionals.map((professional, index) => (
-                  <Card key={index} className="shadow-lg border-0">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={professional.image}
-                          alt={professional.name}
-                          className="w-16 h-16 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold text-gym-dark">
-                            {professional.name}
-                          </h4>
-                          <p className="text-primary font-medium">
-                            {professional.specialty}
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            {professional.experience} de experiencia
-                          </p>
-                          <div className="flex items-center mt-2">
-                            {professional.certifications.map(
-                              (cert, certIndex) => (
-                                <span
-                                  key={certIndex}
-                                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2"
-                                >
-                                  {cert}
-                                </span>
-                              ),
-                            )}
+                {professionals.length > 0 ? (
+                  professionals.map((professional, index) => (
+                    <Card
+                      key={professional.id || index}
+                      className="shadow-lg border-0"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={professional.image}
+                            alt={professional.name}
+                            className="w-16 h-16 rounded-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder.svg";
+                            }}
+                          />
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold text-gym-dark">
+                              {professional.name}
+                            </h4>
+                            <p className="text-primary font-medium">
+                              {professional.specialty}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              {professional.experience}
+                            </p>
+                            <div className="flex items-center mt-2 flex-wrap">
+                              {professional.certifications.map(
+                                (cert, certIndex) => (
+                                  <span
+                                    key={certIndex}
+                                    className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs mr-2 mb-1"
+                                  >
+                                    {cert}
+                                  </span>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <div className="flex items-center mb-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="h-4 w-4 text-yellow-400 fill-current"
+                                />
+                              ))}
+                            </div>
+                            <span className="text-sm text-gray-600">5.0</span>
                           </div>
                         </div>
-                        <div className="flex flex-col items-center">
-                          <div className="flex items-center mb-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className="h-4 w-4 text-yellow-400 fill-current"
-                              />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-600">5.0</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-600">
+                    <p>Cargando información de profesionales...</p>
+                  </div>
+                )}
               </div>
               <div className="mt-6 text-center">
                 <Button variant="outline" size="lg">

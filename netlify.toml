@@ -1,15 +1,27 @@
 [build]
-  command = "npm run build:client"
+  command = "npm run build:client && cp _headers dist/spa/ && cp _redirects dist/spa/"
   functions = "netlify/functions"
   publish = "dist/spa"
 
+[build.environment]
+  NODE_VERSION = "18"
 
 [functions]
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "mongoose", "bcryptjs", "jsonwebtoken", "passport", "passport-google-oauth20"]
   node_bundler = "esbuild"
-  
+
 [[redirects]]
   force = true
   from = "/api/*"
   status = 200
   to = "/.netlify/functions/api/:splat"
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["path"], headers = {accept = "text/html"}}
+
+[context.production.environment]
+  NODE_ENV = "production"

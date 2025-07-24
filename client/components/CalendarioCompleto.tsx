@@ -108,6 +108,7 @@ interface TimeSlot {
   canEdit: boolean;
   canSchedule: boolean;
   isGlobalBlock?: boolean;
+  isPastTime?: boolean;
 }
 
 interface Filtros {
@@ -201,6 +202,21 @@ export function CalendarioCompleto({
       }
     }
   }, [user, currentDate, filtros]);
+
+  // Auto-refresh calendar every 5 minutes to update past times and availability
+  useEffect(() => {
+    const refreshInterval = setInterval(
+      () => {
+        if (user) {
+          console.log("🔄 Auto-refreshing calendar for real-time updates");
+          generateScheduleGrid(); // Regenerate grid to update past times
+        }
+      },
+      5 * 60 * 1000,
+    ); // 5 minutes
+
+    return () => clearInterval(refreshInterval);
+  }, [agenda, bloqueos, currentDate, user]);
 
   useEffect(() => {
     generateScheduleGrid();
@@ -353,22 +369,30 @@ export function CalendarioCompleto({
           return false;
         });
 
+        // Check if slot is in the past (with 1-hour buffer for current day)
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+        const [horaNum, minutoNum] = time.split(":").map(Number);
+        const slotDateTime = new Date(slotDate);
+        slotDateTime.setHours(horaNum, minutoNum, 0, 0);
+        const isPastTime = slotDateTime < oneHourFromNow;
+
         // Determinar permisos
         let canEdit = false;
         let canSchedule = false;
 
         if (isAdmin) {
           canEdit = true;
-          canSchedule = !isBlocked;
+          canSchedule = !isBlocked && !isPastTime;
         } else if (isProfessional) {
           canEdit = !clase || clase.profesionalId._id === user?.id;
-          canSchedule = !isBlocked && !clase;
+          canSchedule = !isBlocked && !clase && !isPastTime;
         } else if (isStudent) {
           canEdit = clase && clase.alumnoId._id === user?.id;
           canSchedule =
             !isBlocked &&
             !clase &&
-            slotDate > new Date() &&
+            !isPastTime &&
             planUsuario?.clasesRestantes! > 0;
         }
 
@@ -390,6 +414,7 @@ export function CalendarioCompleto({
           canEdit,
           canSchedule,
           isGlobalBlock,
+          isPastTime,
         });
       });
     });
@@ -454,8 +479,33 @@ export function CalendarioCompleto({
   const handleCrearClase = async () => {
     if (!selectedSlot) return;
 
+    // Frontend validation
+    if (
+      !formAgendar.alumnoId ||
+      !formAgendar.profesionalId ||
+      !formAgendar.especialidad
+    ) {
+      setError("❌ Por favor completa todos los campos obligatorios");
+      return;
+    }
+
+    // Check if slot is still available (real-time check)
+    if (!selectedSlot.canSchedule) {
+      setError(
+        "❌ Este horario ya no está disponible. Selecciona otro horario.",
+      );
+      return;
+    }
+
+    // Double-check for past time
+    if (selectedSlot.isPastTime) {
+      setError("⏰ No se puede agendar en horarios pasados");
+      return;
+    }
+
     try {
       setLoading(true);
+      setError(""); // Clear previous errors
 
       const claseData = {
         ...formAgendar,
@@ -474,9 +524,29 @@ export function CalendarioCompleto({
         resetFormAgendar();
         await loadData();
         if (isStudent) await loadPlanUsuario();
+
+        // Show success message
+        setError("");
+        console.log("✅ Clase agendada exitosamente");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Error al crear la clase");
+        const errorMessage = errorData.message || "Error al crear la clase";
+        setError(errorMessage);
+
+        // Provide more helpful error context
+        if (errorMessage.includes("horarios pasados")) {
+          setError("⏰ " + errorMessage + " Selecciona un horario futuro.");
+        } else if (errorMessage.includes("ya tiene una clase")) {
+          setError("📅 " + errorMessage + " Elige otro horario disponible.");
+        } else if (errorMessage.includes("clases esta semana")) {
+          setError(
+            "📊 " + errorMessage + " Tu próxima semana inicia el lunes.",
+          );
+        } else if (errorMessage.includes("plan ha expirado")) {
+          setError("💳 " + errorMessage + " Contacta al administrador.");
+        } else {
+          setError("❌ " + errorMessage);
+        }
       }
     } catch (err: any) {
       setError(err.message || "Error al crear la clase");
@@ -593,7 +663,9 @@ export function CalendarioCompleto({
   };
 
   const getSlotStyles = (slot: TimeSlot) => {
-    if (slot.isGlobalBlock) {
+    if (slot.isPastTime && !slot.hasClass) {
+      return "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed opacity-40";
+    } else if (slot.isGlobalBlock) {
       return "bg-red-200 border-red-400 text-red-800 cursor-not-allowed";
     } else if (slot.isBlocked) {
       return "bg-red-100 border-red-300 text-red-700 cursor-not-allowed";
@@ -614,6 +686,7 @@ export function CalendarioCompleto({
   };
 
   const getSlotContent = (slot: TimeSlot) => {
+    if (slot.isPastTime && !slot.hasClass) return "Pasado";
     if (slot.isGlobalBlock) return "Bloqueado (Global)";
     if (slot.isBlocked) return "Bloqueado";
     if (slot.hasClass && slot.clase) {
@@ -916,6 +989,10 @@ export function CalendarioCompleto({
               <div className="w-3 h-3 bg-red-100 border border-red-300 rounded mr-2"></div>
               <span>Bloqueada</span>
             </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded mr-2 opacity-40"></div>
+              <span>Horario pasado</span>
+            </div>
             {isAdmin && (
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-red-200 border border-red-400 rounded mr-2"></div>
@@ -928,15 +1005,28 @@ export function CalendarioCompleto({
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
               {isAdmin &&
-                "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente."}
+                "Como administrador, puedes gestionar todas las citas y bloquear horarios globalmente. Los horarios pasados se muestran en gris."}
               {isProfessional &&
-                "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios."}
+                "Haz click en un horario libre para crear una clase. Click derecho (o mantén presionado en móvil) para bloquear horarios. No se permite agendar en horarios pasados."}
               {isStudent &&
-                "Haz click en un horario disponible para agendar una clase. Puedes evaluar clases completadas."}
+                "Haz click en un horario disponible para agendar una clase. Solo puedes agendar con al menos 1 hora de anticipación. Puedes evaluar clases completadas."}
             </p>
-            <p className="text-xs text-blue-600 mt-2">
-              📱 En móvil: Mantén presionado un horario para bloquearlo
-            </p>
+            <div className="text-xs text-blue-600 mt-2 space-y-1">
+              <p>📱 En móvil: Mantén presionado un horario para bloquearlo</p>
+              <p>
+                ⏰ Horarios disponibles: 8:00 AM - 8:30 PM (intervalos de 30
+                min)
+              </p>
+              <p>
+                🔄 El calendario se actualiza automáticamente cada 5 minutos
+              </p>
+              {isStudent && planUsuario && (
+                <p>
+                  📊 Límite semanal: {planUsuario.clasesPorSemana} clases por
+                  semana
+                </p>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
