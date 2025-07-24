@@ -95,10 +95,10 @@ export function PlanManagement() {
     benefits: [""],
     popular: false,
     active: true,
-    category: "basic" as const,
+    category: "basic" as "trial" | "basic" | "premium" | "elite" | "custom",
     metadata: {
       color: "#3B82F6",
-      icon: "",
+      icon: "star",
       order: 0,
     },
   });
@@ -154,7 +154,7 @@ export function PlanManagement() {
       category: "basic",
       metadata: {
         color: "#3B82F6",
-        icon: "",
+        icon: "star",
         order: 0,
       },
     });

@@ -259,11 +259,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: Object.fromEntries(response.headers.entries()),
       });
 
+      // Clone response to avoid "body stream already read" error
+      const responseForErrorHandling = response.clone();
+      const responseForSuccessHandling = response.clone();
+
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
+        // Read response as text first to avoid "body stream already read" error
+        const responseText = await responseForErrorHandling.text();
+        console.log("📝 Raw response text:", responseText.substring(0, 500));
+
         try {
-          const errorData = await response.json();
+          const errorData = JSON.parse(responseText);
           console.error("❌ Login failed - JSON response:", {
             status: response.status,
             statusText: response.statusText,
@@ -276,6 +284,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             status: response.status,
             statusText: response.statusText,
             parseError: parseError.message,
+            responseText: responseText.substring(0, 500),
+            contentType: response.headers.get("Content-Type"),
           });
 
           // Use a more user-friendly error message based on status
@@ -297,11 +307,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(String(errorMessage));
       }
 
-      const data = await response.json();
-      console.log("✅ Login successful:", {
-        userId: data.user?.id,
-        email: data.user?.email,
-      });
+      // Read response as text first to avoid "body stream already read" error
+      const responseText = await responseForSuccessHandling.text();
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("✅ Login successful:", {
+          userId: data.user?.id,
+          email: data.user?.email,
+          fullResponse: data,
+        });
+      } catch (parseError) {
+        console.error("❌ Could not parse successful response as JSON:", {
+          parseError: parseError.message,
+          responseText: responseText.substring(0, 500),
+          contentType: response.headers.get("Content-Type"),
+        });
+        throw new Error("Error al procesar la respuesta del servidor");
+      }
 
       setUser(data.user);
       localStorage.setItem("authToken", data.token);
@@ -395,7 +419,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Autenticación con Google no está configurada completamente. " +
             (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
               ? "Se requiere configurar el Client Secret de Google."
-              : "Configuración de Google OAuth incompleta."),
+              : "Configuraci��n de Google OAuth incompleta."),
         );
       }
 

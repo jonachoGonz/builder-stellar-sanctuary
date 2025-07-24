@@ -291,7 +291,8 @@ router.post("/recreate-users", async (req, res) => {
     // Create new users
     const { users } = await req.body;
 
-    // Recreate users by calling the original seed function
+    // Import and call the seed function
+    const { createTestUsers } = await import("../utils/seedData");
     const seedResult = await createTestUsers();
 
     res.json({

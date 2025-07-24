@@ -85,7 +85,7 @@ export async function initializeSeedData() {
   }
 }
 
-async function createTestUsers() {
+export async function createTestUsers() {
   // Admin user
   const admin = new User({
     email: "admin@htkcenter.com",
