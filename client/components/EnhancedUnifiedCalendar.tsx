@@ -1034,17 +1034,29 @@ export function EnhancedUnifiedCalendar({
 
           {authError && (
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 mr-2" />
-                <div>
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    Error de Autenticación
-                  </h3>
-                  <p className="text-xs text-yellow-600 mt-1">
-                    Tu sesión podría haber expirado. Por favor, inicia sesión
-                    nuevamente.
-                  </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-yellow-800">
+                      Error de Autenticación
+                    </h3>
+                    <p className="text-xs text-yellow-600 mt-1">
+                      Tu sesión ha expirado. Por favor, inicia sesión nuevamente.
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    // Clear auth token and redirect to login
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/auth";
+                  }}
+                >
+                  Iniciar Sesión
+                </Button>
               </div>
             </div>
           )}
