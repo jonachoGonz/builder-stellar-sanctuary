@@ -208,11 +208,12 @@ export function CalendarioCompleto({
       () => {
         if (user) {
           console.log("🔄 Auto-refreshing calendar for real-time updates");
+          loadData(); // Full data reload for real-time updates
           generateScheduleGrid(); // Regenerate grid to update past times
         }
       },
-      5 * 60 * 1000,
-    ); // 5 minutes
+      2 * 60 * 1000,
+    ); // 2 minutes for more responsive updates
 
     return () => clearInterval(refreshInterval);
   }, [agenda, bloqueos, currentDate, user]);
