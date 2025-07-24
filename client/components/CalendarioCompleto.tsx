@@ -522,12 +522,19 @@ export function CalendarioCompleto({
       if (response.ok) {
         setModalAgendar(false);
         resetFormAgendar();
+
+        // Immediate real-time update
         await loadData();
         if (isStudent) await loadPlanUsuario();
 
+        // Trigger custom event for other components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'appointment_created', data: claseData }
+        }));
+
         // Show success message
         setError("");
-        console.log("✅ Clase agendada exitosamente");
+        console.log("✅ Clase agendada exitosamente - Real-time update triggered");
       } else {
         const errorData = await response.json();
         const errorMessage = errorData.message || "Error al crear la clase";
