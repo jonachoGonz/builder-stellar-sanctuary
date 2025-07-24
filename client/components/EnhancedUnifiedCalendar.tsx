@@ -356,6 +356,9 @@ export function EnhancedUnifiedCalendar({
             } else {
               console.error("❌ Students API error:", response.status);
               setStudents([]);
+              if (response.status === 401 || response.status === 403) {
+                setAuthError(true);
+              }
               throw new Error(`Students API error: ${response.status}`);
             }
           }),
