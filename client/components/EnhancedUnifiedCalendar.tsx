@@ -419,6 +419,13 @@ export function EnhancedUnifiedCalendar({
   };
 
   const generateScheduleGrid = () => {
+    // Ensure blockedTimes is always an array to prevent runtime errors
+    if (!Array.isArray(blockedTimes)) {
+      console.warn("⚠️ blockedTimes is not an array, initializing as empty array");
+      setBlockedTimes([]);
+      return;
+    }
+
     const grid: TimeSlot[] = [];
     const startOfWeek = new Date(currentDate);
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
