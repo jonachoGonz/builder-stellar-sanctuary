@@ -218,6 +218,19 @@ export function AdminDashboard() {
     loadStats();
   }, [pagination.currentPage, searchTerm, filterRole]);
 
+  // Real-time updates for stats and users
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      console.log("🔄 Auto-refreshing admin dashboard for real-time updates");
+      loadStats(); // Refresh stats for real-time metrics
+      if (activeTab === "users") {
+        loadUsers(); // Refresh users list if on users tab
+      }
+    }, 3 * 60 * 1000); // 3 minutes for admin dashboard
+
+    return () => clearInterval(refreshInterval);
+  }, [activeTab]);
+
   useEffect(() => {
     // Reset to first page when search/filter changes
     if (pagination.currentPage !== 1) {
