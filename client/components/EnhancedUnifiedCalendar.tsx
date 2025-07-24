@@ -442,9 +442,17 @@ export function EnhancedUnifiedCalendar({
           throw new Error(`Blocked times API error: ${response.status}`);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading blocked times:", error);
       setBlockedTimes([]);
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
+
       throw error;
     }
   };
