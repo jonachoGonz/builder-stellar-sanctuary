@@ -41,10 +41,17 @@ export function createServer() {
           process.env.CLIENT_URL,
           "http://localhost:8080",
           "https://localhost:8080",
+          "https://htkcenter.netlify.app",
+          "http://htkcenter.netlify.app",
         ];
 
         // Allow any fly.dev domain for cloud deployments
         if (origin && origin.includes(".fly.dev")) {
+          return callback(null, true);
+        }
+
+        // Allow any netlify.app domain for Netlify deployments
+        if (origin && origin.includes(".netlify.app")) {
           return callback(null, true);
         }
 
