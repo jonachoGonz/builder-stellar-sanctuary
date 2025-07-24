@@ -1158,10 +1158,9 @@ router.get(
   },
 );
 
-// In-memory storage for blocked times (in production, use MongoDB collection)
-let blockedTimes: any[] = [];
+// ==================== SCHEDULE BLOCKING MANAGEMENT ====================
 
-// Get blocked times
+// Get blocked times with filtering and pagination
 router.get(
   "/blocked-times",
   authenticateToken,
@@ -1169,23 +1168,150 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const currentUser = (req as any).currentUser;
+      const {
+        page = 1,
+        limit = 50,
+        type,
+        professionalId,
+        startDate,
+        endDate,
+        active,
+      } = req.query;
 
-      let filteredBlocks = blockedTimes;
+      // Build filter
+      const filter: any = {};
 
-      // Filter blocked times based on user role
+      // Role-based filtering
       if (currentUser.role !== "admin") {
-        filteredBlocks = blockedTimes.filter(
-          (block) =>
-            block.type === "global" || block.professionalId === currentUser._id,
-        );
+        filter.$or = [
+          { type: "global" },
+          { type: "professional", professionalId: currentUser._id },
+        ];
+      } else {
+        // Admin can filter by any criteria
+        if (type && type !== "all") {
+          filter.type = type;
+        }
+        if (professionalId) {
+          filter.professionalId = professionalId;
+        }
+      }
+
+      // Date filtering
+      if (startDate || endDate) {
+        filter.$and = filter.$and || [];
+        const dateFilter: any = {};
+
+        if (startDate) {
+          dateFilter.$or = [
+            { date: { $gte: new Date(startDate as string) } },
+            { startDate: { $gte: new Date(startDate as string) } },
+          ];
+        }
+
+        if (endDate) {
+          const endDateFilter = {
+            $or: [
+              { date: { $lte: new Date(endDate as string) } },
+              { endDate: { $lte: new Date(endDate as string) } },
+            ]
+          };
+
+          if (dateFilter.$or) {
+            filter.$and.push({ $and: [dateFilter, endDateFilter] });
+          } else {
+            filter.$and.push(endDateFilter);
+          }
+        } else if (dateFilter.$or) {
+          filter.$and.push(dateFilter);
+        }
+      }
+
+      // Active status filtering
+      if (active !== undefined) {
+        filter.active = active === "true";
+      }
+
+      const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+      const [blocks, totalBlocks] = await Promise.all([
+        Bloqueo.find(filter)
+          .populate("professionalId", "firstName lastName role")
+          .populate("createdBy", "firstName lastName")
+          .populate("updatedBy", "firstName lastName")
+          .sort({ createdAt: -1, date: 1, startTime: 1 })
+          .skip(skip)
+          .limit(parseInt(limit as string))
+          .lean(),
+        Bloqueo.countDocuments(filter),
+      ]);
+
+      const totalPages = Math.ceil(totalBlocks / parseInt(limit as string));
+
+      res.json({
+        success: true,
+        data: {
+          blocks,
+          pagination: {
+            currentPage: parseInt(page as string),
+            totalPages,
+            totalBlocks,
+            limit: parseInt(limit as string),
+            hasNext: parseInt(page as string) < totalPages,
+            hasPrev: parseInt(page as string) > 1,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching blocked times:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Get specific blocked time
+router.get(
+  "/blocked-times/:id",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const currentUser = (req as any).currentUser;
+      const { id } = req.params;
+
+      const block = await Bloqueo.findById(id)
+        .populate("professionalId", "firstName lastName role")
+        .populate("createdBy", "firstName lastName")
+        .populate("updatedBy", "firstName lastName");
+
+      if (!block) {
+        return res.status(404).json({
+          success: false,
+          message: "Bloqueo no encontrado",
+        });
+      }
+
+      // Check permissions
+      if (
+        currentUser.role !== "admin" &&
+        block.type === "professional" &&
+        block.professionalId?.toString() !== currentUser._id.toString()
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "No tienes permisos para ver este bloqueo",
+        });
       }
 
       res.json({
         success: true,
-        data: filteredBlocks,
+        data: block,
       });
     } catch (error) {
-      console.error("Error fetching blocked times:", error);
+      console.error("Error fetching blocked time:", error);
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
@@ -1202,35 +1328,163 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const currentUser = (req as any).currentUser;
-      const { date, time, day, type, professionalId } = req.body;
+      const {
+        title,
+        description,
+        date,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        allDay,
+        isRecurring,
+        recurrencePattern,
+        type,
+        professionalId,
+        location,
+        room,
+        reason,
+      } = req.body;
 
       // Validate permissions
-      if (type === "global" && currentUser.role !== "admin") {
+      if ((type === "global" || type === "location" || type === "room") && currentUser.role !== "admin") {
         return res.status(403).json({
           success: false,
-          message: "Solo administradores pueden crear bloqueos globales",
+          message: "Solo administradores pueden crear bloqueos globales, de ubicación o de sala",
         });
       }
 
-      const newBlock = {
-        _id: new Date().getTime().toString(),
-        date,
-        time,
-        day,
+      // Validate required fields
+      if (!title) {
+        return res.status(400).json({
+          success: false,
+          message: "El título es requerido",
+        });
+      }
+
+      // Validate professional exists if professional block
+      if (type === "professional" && professionalId) {
+        const professional = await User.findById(professionalId);
+        if (!professional || !["teacher", "nutritionist", "psychologist"].includes(professional.role)) {
+          return res.status(400).json({
+            success: false,
+            message: "Profesional no válido",
+          });
+        }
+      }
+
+      const blockData = {
+        title,
+        description,
+        date: date ? new Date(date) : undefined,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
+        startTime,
+        endTime,
+        allDay: allDay || false,
+        isRecurring: isRecurring || false,
+        recurrencePattern,
         type: type || "professional",
-        professionalId: professionalId || currentUser._id,
-        createdAt: new Date(),
+        professionalId: type === "professional" ? (professionalId || currentUser._id) : undefined,
+        location,
+        room,
+        reason,
+        createdBy: currentUser._id,
       };
 
-      blockedTimes.push(newBlock);
+      const newBlock = new Bloqueo(blockData);
+      await newBlock.save();
+
+      const populatedBlock = await Bloqueo.findById(newBlock._id)
+        .populate("professionalId", "firstName lastName role")
+        .populate("createdBy", "firstName lastName");
+
+      res.status(201).json({
+        success: true,
+        message: "Horario bloqueado exitosamente",
+        data: populatedBlock,
+      });
+    } catch (error: any) {
+      console.error("Error creating blocked time:", error);
+
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Update blocked time
+router.put(
+  "/blocked-times/:id",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const currentUser = (req as any).currentUser;
+      const { id } = req.params;
+      const updateData = { ...req.body };
+
+      const existingBlock = await Bloqueo.findById(id);
+      if (!existingBlock) {
+        return res.status(404).json({
+          success: false,
+          message: "Bloqueo no encontrado",
+        });
+      }
+
+      // Check permissions
+      if (
+        currentUser.role !== "admin" &&
+        existingBlock.type === "professional" &&
+        existingBlock.professionalId?.toString() !== currentUser._id.toString()
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "No tienes permisos para editar este bloqueo",
+        });
+      }
+
+      // Remove fields that shouldn't be updated directly
+      delete updateData._id;
+      delete updateData.createdAt;
+      delete updateData.createdBy;
+
+      // Update metadata
+      updateData.updatedBy = currentUser._id;
+
+      const updatedBlock = await Bloqueo.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+      )
+        .populate("professionalId", "firstName lastName role")
+        .populate("createdBy", "firstName lastName")
+        .populate("updatedBy", "firstName lastName");
 
       res.json({
         success: true,
-        message: "Horario bloqueado exitosamente",
-        data: newBlock,
+        message: "Bloqueo actualizado exitosamente",
+        data: updatedBlock,
       });
-    } catch (error) {
-      console.error("Error creating blocked time:", error);
+    } catch (error: any) {
+      console.error("Error updating blocked time:", error);
+
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
@@ -1249,21 +1503,20 @@ router.delete(
       const currentUser = (req as any).currentUser;
       const { id } = req.params;
 
-      const blockIndex = blockedTimes.findIndex((block) => block._id === id);
+      const block = await Bloqueo.findById(id);
 
-      if (blockIndex === -1) {
+      if (!block) {
         return res.status(404).json({
           success: false,
           message: "Bloqueo no encontrado",
         });
       }
 
-      const block = blockedTimes[blockIndex];
-
       // Check permissions
       if (
         currentUser.role !== "admin" &&
-        block.professionalId !== currentUser._id
+        block.type === "professional" &&
+        block.professionalId?.toString() !== currentUser._id.toString()
       ) {
         return res.status(403).json({
           success: false,
@@ -1271,7 +1524,7 @@ router.delete(
         });
       }
 
-      blockedTimes.splice(blockIndex, 1);
+      await Bloqueo.findByIdAndDelete(id);
 
       res.json({
         success: true,
@@ -1279,6 +1532,95 @@ router.delete(
       });
     } catch (error) {
       console.error("Error deleting blocked time:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Check if specific datetime is blocked
+router.post(
+  "/check-availability",
+  authenticateToken,
+  requireAdminOrProfessional,
+  async (req: Request, res: Response) => {
+    try {
+      const { date, time, professionalId, location, room } = req.body;
+
+      if (!date) {
+        return res.status(400).json({
+          success: false,
+          message: "Fecha es requerida",
+        });
+      }
+
+      const blocks = await Bloqueo.findBlocksForDateTime(
+        new Date(date),
+        time,
+        professionalId,
+        location,
+        room
+      );
+
+      const isBlocked = blocks.some((block: any) =>
+        block.isBlocked(new Date(date), time)
+      );
+
+      res.json({
+        success: true,
+        data: {
+          isBlocked,
+          blocks: isBlocked ? blocks : [],
+          date,
+          time,
+          professionalId,
+          location,
+          room,
+        },
+      });
+    } catch (error) {
+      console.error("Error checking availability:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
+    }
+  },
+);
+
+// Bulk toggle active status
+router.post(
+  "/blocked-times/bulk-toggle",
+  authenticateToken,
+  requireAdmin,
+  async (req: Request, res: Response) => {
+    try {
+      const { blockIds, active } = req.body;
+
+      if (!Array.isArray(blockIds) || typeof active !== "boolean") {
+        return res.status(400).json({
+          success: false,
+          message: "IDs de bloqueos y estado activo son requeridos",
+        });
+      }
+
+      const result = await Bloqueo.updateMany(
+        { _id: { $in: blockIds } },
+        {
+          active,
+          updatedBy: (req as any).user.userId,
+        }
+      );
+
+      res.json({
+        success: true,
+        message: `${result.modifiedCount} bloqueos ${active ? "activados" : "desactivados"} exitosamente`,
+        modifiedCount: result.modifiedCount,
+      });
+    } catch (error) {
+      console.error("Error bulk toggling blocked times:", error);
       res.status(500).json({
         success: false,
         message: "Error interno del servidor",
