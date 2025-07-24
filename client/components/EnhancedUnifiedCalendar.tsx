@@ -145,7 +145,7 @@ export function EnhancedUnifiedCalendar({
 
   // Regenerate schedule grid when appointments or blocked times change
   useEffect(() => {
-    if (appointments.length > 0 || blockedTimes.length > 0) {
+    if (appointments.length > 0 || (Array.isArray(blockedTimes) && blockedTimes.length > 0)) {
       generateScheduleGrid();
     }
   }, [appointments, blockedTimes, currentDate, user]);
