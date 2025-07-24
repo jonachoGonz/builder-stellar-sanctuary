@@ -9,6 +9,7 @@ import {
   Settings,
   UserPlus,
   Save,
+  Loader2,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -38,6 +39,7 @@ import {
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
+import { apiCall } from "../lib/api";
 
 interface Professional {
   id: string;
