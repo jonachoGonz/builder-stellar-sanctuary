@@ -107,12 +107,9 @@ export const apiCall = async (
         ok: response.ok,
       });
 
-      // Clone the response so it can be read multiple times
-      const clonedResponse = response.clone();
-
-      // If successful or client error (not server error), return the cloned response
+      // If successful or client error (not server error), return the response
       if (response.status < 500) {
-        return clonedResponse;
+        return response;
       }
 
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
