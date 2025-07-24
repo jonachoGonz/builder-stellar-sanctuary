@@ -406,10 +406,18 @@ export function EnhancedUnifiedCalendar({
       if (promises.length > 0) {
         await Promise.all(promises);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading users:", error);
       setStudents([]);
       setProfessionals([]);
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
+
       throw error;
     }
   };
