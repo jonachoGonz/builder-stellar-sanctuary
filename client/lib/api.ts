@@ -116,13 +116,23 @@ export const apiCall = async (
       console.warn(`API call failed for ${url}:`, error.message);
       lastError = error;
 
-      // Don't try other URLs if this was an auth error or client error
-      if (
-        error.name === "AbortError" ||
-        (error.message &&
-          (error.message.includes("401") || error.message.includes("403")))
+      // Check for specific error types
+      if (error.name === "TypeError" && error.message === "Failed to fetch") {
+        // This is typically a network connectivity issue
+        console.error("🌐 Network connectivity issue detected");
+        lastError = new Error("NETWORK_ERROR: Failed to connect to server");
+      } else if (error.name === "AbortError") {
+        // Request timeout
+        console.error("⏰ Request timeout");
+        lastError = new Error("TIMEOUT_ERROR: Request timed out");
+      } else if (
+        error.message &&
+        (error.message.includes("401") || error.message.includes("403"))
       ) {
-        break;
+        // Authentication/authorization error
+        console.error("🔒 Authentication error");
+        lastError = new Error("AUTH_ERROR: Authentication failed");
+        break; // Don't try other URLs for auth errors
       }
     }
   }
