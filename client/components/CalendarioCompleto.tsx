@@ -176,15 +176,14 @@ export function CalendarioCompleto({
     calidad: 5,
   });
 
-  // Configuración de horarios (30 minutos)
+  // Configuración de horarios 24h (30 minutos)
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 8; hour <= 20; hour++) {
+    // Generate 24-hour slots with 30-minute intervals
+    for (let hour = 0; hour < 24; hour++) {
       slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 20) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
+      slots.push(`${hour.toString().padStart(2, "0")}:30`);
     }
     return slots;
   };
