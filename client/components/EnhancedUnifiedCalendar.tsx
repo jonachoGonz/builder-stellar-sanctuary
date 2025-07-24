@@ -420,6 +420,9 @@ export function EnhancedUnifiedCalendar({
       } else {
         console.error("❌ Blocked times API error:", response.status);
         setBlockedTimes([]);
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(true);
+        }
         if (response.status !== 404) {
           throw new Error(`Blocked times API error: ${response.status}`);
         }
