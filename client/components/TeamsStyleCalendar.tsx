@@ -357,7 +357,10 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
                               {appointment.title}
                             </div>
                             <div className="truncate opacity-75">
-                              {appointment.student.firstName} {appointment.student.lastName}
+                              {appointment.student ?
+                                `${appointment.student.firstName} ${appointment.student.lastName}` :
+                                'Sin estudiante asignado'
+                              }
                             </div>
                             <div className="text-xs opacity-50">
                               {appointment.startTime} - {appointment.endTime}
