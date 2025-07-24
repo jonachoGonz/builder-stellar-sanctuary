@@ -262,8 +262,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
+        // Read response as text first to avoid "body stream already read" error
+        const responseText = await response.text();
+        console.log("📝 Raw response text:", responseText.substring(0, 500));
+
         try {
-          const errorData = await response.json();
+          const errorData = JSON.parse(responseText);
           console.error("❌ Login failed - JSON response:", {
             status: response.status,
             statusText: response.statusText,
@@ -272,13 +276,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           errorMessage = errorData.message || errorData.error || errorMessage;
         } catch (parseError) {
-          // Get the raw response text to debug what we're receiving
-          const responseText = await response.text();
           console.error("❌ Login failed - Could not parse JSON response:", {
             status: response.status,
             statusText: response.statusText,
             parseError: parseError.message,
-            responseText: responseText.substring(0, 500), // First 500 chars
+            responseText: responseText.substring(0, 500),
             contentType: response.headers.get('Content-Type'),
           });
 
