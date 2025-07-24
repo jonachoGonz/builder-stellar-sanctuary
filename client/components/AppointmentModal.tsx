@@ -373,6 +373,7 @@ export function AppointmentModal({
                 <Input
                   id="date"
                   type="date"
+                  min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
                   value={formData.date}
                   onChange={(e) => handleInputChange("date", e.target.value)}
                   className={errors.date ? "border-destructive" : ""}
