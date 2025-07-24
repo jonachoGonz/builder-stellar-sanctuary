@@ -272,10 +272,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           errorMessage = errorData.message || errorData.error || errorMessage;
         } catch (parseError) {
+          // Get the raw response text to debug what we're receiving
+          const responseText = await response.text();
           console.error("❌ Login failed - Could not parse JSON response:", {
             status: response.status,
             statusText: response.statusText,
             parseError: parseError.message,
+            responseText: responseText.substring(0, 500), // First 500 chars
+            contentType: response.headers.get('Content-Type'),
           });
 
           // Use a more user-friendly error message based on status
