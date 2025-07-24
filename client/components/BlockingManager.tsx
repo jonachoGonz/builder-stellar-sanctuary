@@ -109,6 +109,16 @@ export function BlockingManager() {
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>([]);
   const { toast } = useToast();
 
+  // Real-time updates
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      console.log("🔄 Auto-refreshing blocks for real-time updates");
+      loadBlocks();
+    }, 2 * 60 * 1000); // 2 minutes
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
