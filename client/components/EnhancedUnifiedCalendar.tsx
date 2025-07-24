@@ -499,7 +499,7 @@ export function EnhancedUnifiedCalendar({
           appointment,
           canEdit,
           canSchedule,
-          isGlobalBlock: blockedTimes.some(
+          isGlobalBlock: Array.isArray(blockedTimes) && blockedTimes.some(
             (b) => b.type === "global" && b.date === dateStr && b.time === time,
           ),
         });
