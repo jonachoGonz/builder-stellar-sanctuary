@@ -308,7 +308,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Read response as text first to avoid "body stream already read" error
-      const responseText = await response.text();
+      const responseText = await responseForSuccessHandling.text();
 
       let data;
       try {
@@ -419,7 +419,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Autenticación con Google no está configurada completamente. " +
             (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
               ? "Se requiere configurar el Client Secret de Google."
-              : "Configuración de Google OAuth incompleta."),
+              : "Configuraci��n de Google OAuth incompleta."),
         );
       }
 
