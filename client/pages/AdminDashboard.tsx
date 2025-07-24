@@ -832,6 +832,8 @@ export function AdminDashboard() {
         {activeTab === "automation" && <AutoCompleteManager />}
 
         {activeTab === "reviews" && <ReviewsManager />}
+
+        {activeTab === "blocking" && <BlockingManager />}
       </div>
 
       {/* User Management Modal */}
