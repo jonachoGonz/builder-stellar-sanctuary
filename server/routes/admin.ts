@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import User from "../models/User";
 import Appointment from "../models/Appointment";
+import Bloqueo from "../models/Bloqueo";
 import { authenticateToken } from "./auth";
 
 const router = Router();
