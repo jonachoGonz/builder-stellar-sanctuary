@@ -5,6 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_FLAGS = "--include=dev"
 
 [functions]
   external_node_modules = ["express", "mongoose", "bcryptjs", "jsonwebtoken", "passport", "passport-google-oauth20"]
