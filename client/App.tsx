@@ -112,6 +112,16 @@ const App = () => (
             />
 
             <Route
+              path="/admin"
+              element={
+                <div className="min-h-screen">
+                  <Header />
+                  <AdminDashboard />
+                </div>
+              }
+            />
+
+            <Route
               path="/profile"
               element={
                 <div className="min-h-screen">
