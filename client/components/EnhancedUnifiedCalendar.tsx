@@ -461,7 +461,7 @@ export function EnhancedUnifiedCalendar({
         });
 
         // Check if this time is blocked
-        const isBlocked = blockedTimes.some((block) => {
+        const isBlocked = Array.isArray(blockedTimes) && blockedTimes.some((block) => {
           return (
             (block.type === "global" &&
               (block.date === dateStr || block.day === dayIndex) &&
