@@ -74,7 +74,7 @@ export function AdminDashboard() {
   });
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "users" | "calendar" | "plans" | "automation" | "reviews"
+    "users" | "calendar" | "plans" | "automation" | "reviews" | "blocking"
   >("users");
 
   // Get admin info from real user data
