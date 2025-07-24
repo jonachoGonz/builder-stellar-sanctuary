@@ -201,14 +201,18 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
   const getAppointmentDisplay = (appointment: Appointment) => {
     const duration = appointment.duration || 60;
     const blocks = Math.ceil(duration / 30); // Number of 30-min blocks
-    
+
     return {
-      title: appointment.title,
-      subtitle: `${appointment.student.firstName} ${appointment.student.lastName}`,
-      professional: `${appointment.professional.firstName} ${appointment.professional.lastName}`,
+      title: appointment.title || 'Sin título',
+      subtitle: appointment.student ?
+        `${appointment.student.firstName} ${appointment.student.lastName}` :
+        'Sin estudiante asignado',
+      professional: appointment.professional ?
+        `${appointment.professional.firstName} ${appointment.professional.lastName}` :
+        'Sin profesional asignado',
       duration: `${duration}min`,
       blocks,
-      color: getAppointmentColor(appointment.type, appointment.status),
+      color: getAppointmentColor(appointment.type || 'general', appointment.status || 'scheduled'),
     };
   };
 
