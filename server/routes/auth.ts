@@ -5,6 +5,29 @@ import passport from "../config/passport";
 
 const router = Router();
 
+// Debug endpoint to check users
+router.get("/debug/users", async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({}).select("email firstName lastName role");
+    res.json({
+      success: true,
+      count: users.length,
+      users: users.map(u => ({
+        email: u.email,
+        name: `${u.firstName} ${u.lastName}`,
+        role: u.role
+      }))
+    });
+  } catch (error) {
+    console.error("Debug users error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error connecting to database",
+      error: error.message
+    });
+  }
+});
+
 // Generate JWT token
 const generateToken = (userId: string): string => {
   const secret = process.env.JWT_SECRET || "htk-center-secret";
