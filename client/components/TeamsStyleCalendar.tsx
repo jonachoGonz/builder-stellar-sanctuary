@@ -145,6 +145,9 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
     weekDates.forEach((date, dayIndex) => {
       timeSlots.forEach((time) => {
         const slotAppointments = appointments.filter((apt) => {
+          if (!apt || !apt.date || !apt.startTime || !apt.endTime) {
+            return false;
+          }
           const aptDate = new Date(apt.date);
           return (
             aptDate.toDateString() === date.toDateString() &&
