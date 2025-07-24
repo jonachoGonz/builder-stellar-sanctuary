@@ -345,15 +345,25 @@ export function TeamsStyleCalendar({ className = "" }: TeamsStyleCalendarProps) 
                         onClick={() => slot && handleSlotClick(slot)}
                       >
                         {appointment && (
-                          <div className={`absolute inset-0 m-0.5 rounded border ${getAppointmentColor(appointment.type, appointment.status)} p-1 text-xs overflow-hidden`}>
+                          <div
+                            className={`absolute inset-0 m-0.5 rounded border ${getAppointmentColor(appointment.type, appointment.status)} p-1 text-xs overflow-hidden shadow-sm`}
+                            style={{
+                              // Extend the appointment block for longer sessions
+                              height: `${Math.max(1, Math.ceil(appointment.duration / 30)) * 30 - 4}px`,
+                              zIndex: 10,
+                            }}
+                          >
                             <div className="font-medium truncate">
                               {appointment.title}
                             </div>
                             <div className="truncate opacity-75">
                               {appointment.student.firstName} {appointment.student.lastName}
                             </div>
+                            <div className="text-xs opacity-50">
+                              {appointment.startTime} - {appointment.endTime}
+                            </div>
                             {appointment.duration > 30 && (
-                              <div className="text-xs opacity-50">
+                              <div className="text-xs opacity-50 font-medium">
                                 {appointment.duration}min
                               </div>
                             )}
