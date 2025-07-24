@@ -86,113 +86,105 @@ export function ScheduleManagement() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedProfessional, setSelectedProfessional] =
     useState<Professional | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data - replace with real API calls
+  // Fetch data from API
   useEffect(() => {
-    const mockProfessionals: Professional[] = [
-      {
-        id: "1",
-        name: "Carlos Mendoza",
-        role: "teacher",
-        specialty: "Entrenamiento Funcional",
-        workingHours: {
-          start: "08:00",
-          end: "20:00",
-          days: [
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-          ],
-        },
-        assignedStudents: ["1", "2"],
-      },
-      {
-        id: "2",
-        name: "María González",
-        role: "nutritionist",
-        specialty: "Nutrición Deportiva",
-        workingHours: {
-          start: "09:00",
-          end: "18:00",
-          days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
-        },
-        assignedStudents: ["1"],
-      },
-      {
-        id: "3",
-        name: "Ana Silva",
-        role: "psychologist",
-        specialty: "Psicología Deportiva",
-        workingHours: {
-          start: "10:00",
-          end: "19:00",
-          days: ["tuesday", "wednesday", "thursday", "friday", "saturday"],
-        },
-        assignedStudents: [],
-      },
-    ];
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const mockStudents: Student[] = [
-      {
-        id: "1",
-        name: "Juan Pérez",
-        email: "juan@email.com",
-        plan: "pro",
-        remainingClasses: 9,
-        assignedProfessionals: {
-          teacher: "1",
-          nutritionist: "2",
-        },
-      },
-      {
-        id: "2",
-        name: "María Silva",
-        email: "maria@email.com",
-        plan: "elite",
-        remainingClasses: 12,
-        assignedProfessionals: {
-          teacher: "1",
-        },
-      },
-    ];
+        // Fetch professionals from users collection
+        const professionalsResponse = await apiCall("/admin/users?limit=100&role=professional");
+        if (professionalsResponse.ok) {
+          const professionalsData = await professionalsResponse.json();
+          const professionalUsers = professionalsData.data.users?.filter((u: any) =>
+            ["teacher", "nutritionist", "psychologist"].includes(u.role),
+          ) || [];
 
-    const mockAppointmentTypes: AppointmentType[] = [
-      {
-        id: "1",
-        name: "Clase de Prueba",
-        duration: 60,
-        professionalTypes: ["teacher"],
-        color: "#10B981",
-      },
-      {
-        id: "2",
-        name: "Entrenamiento Personal",
-        duration: 60,
-        professionalTypes: ["teacher"],
-        color: "#3B82F6",
-      },
-      {
-        id: "3",
-        name: "Primera Sesión Nutricional",
-        duration: 90,
-        professionalTypes: ["nutritionist"],
-        color: "#F59E0B",
-      },
-      {
-        id: "4",
-        name: "Sesión de Psicología",
-        duration: 60,
-        professionalTypes: ["psychologist"],
-        color: "#EC4899",
-      },
-    ];
+          const transformedProfessionals: Professional[] = professionalUsers.map(
+            (user: any) => ({
+              id: user._id,
+              name: `${user.firstName} ${user.lastName}`,
+              role: user.role,
+              specialty: user.specialty || getRoleDisplayName(user.role),
+              workingHours: user.workingHours || {
+                start: "09:00",
+                end: "18:00",
+                days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+              },
+              assignedStudents: user.assignedStudents || [],
+            }),
+          );
 
-    setProfessionals(mockProfessionals);
-    setStudents(mockStudents);
-    setAppointmentTypes(mockAppointmentTypes);
+          setProfessionals(transformedProfessionals);
+        }
+
+        // Fetch students from users collection
+        const studentsResponse = await apiCall("/admin/users?limit=100&role=student");
+        if (studentsResponse.ok) {
+          const studentsData = await studentsResponse.json();
+          const studentUsers = studentsData.data.users?.filter((u: any) => u.role === "student") || [];
+
+          const transformedStudents: Student[] = studentUsers.map(
+            (user: any) => ({
+              id: user._id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              plan: user.plan || "basic",
+              remainingClasses: user.remainingClasses || 0,
+              assignedProfessionals: user.assignedProfessionals || {},
+            }),
+          );
+
+          setStudents(transformedStudents);
+        }
+
+        // Default appointment types
+        const defaultAppointmentTypes: AppointmentType[] = [
+          {
+            id: "1",
+            name: "Clase de Prueba",
+            duration: 60,
+            professionalTypes: ["teacher"],
+            color: "#10B981",
+          },
+          {
+            id: "2",
+            name: "Entrenamiento Personal",
+            duration: 60,
+            professionalTypes: ["teacher"],
+            color: "#3B82F6",
+          },
+          {
+            id: "3",
+            name: "Primera Sesión Nutricional",
+            duration: 90,
+            professionalTypes: ["nutritionist"],
+            color: "#F59E0B",
+          },
+          {
+            id: "4",
+            name: "Sesión de Psicología",
+            duration: 60,
+            professionalTypes: ["psychologist"],
+            color: "#EC4899",
+          },
+        ];
+
+        setAppointmentTypes(defaultAppointmentTypes);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Error al cargar los datos. Por favor, recarga la página.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const assignStudentToProfessional = (
