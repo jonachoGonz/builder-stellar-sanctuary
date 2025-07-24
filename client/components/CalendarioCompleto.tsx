@@ -202,6 +202,20 @@ export function CalendarioCompleto({
     }
   }, [user, currentDate, filtros]);
 
+  // Listen for real-time updates from other components
+  useEffect(() => {
+    const handleCalendarUpdate = (event: any) => {
+      console.log("🔄 Received real-time calendar update:", event.detail);
+      loadData(); // Reload data when other components trigger updates
+      if (isStudent) {
+        loadPlanUsuario();
+      }
+    };
+
+    window.addEventListener('calendarUpdate', handleCalendarUpdate);
+    return () => window.removeEventListener('calendarUpdate', handleCalendarUpdate);
+  }, [isStudent]);
+
   // Auto-refresh calendar every 5 minutes to update past times and availability
   useEffect(() => {
     const refreshInterval = setInterval(
