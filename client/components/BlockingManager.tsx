@@ -373,6 +373,12 @@ export function BlockingManager() {
           description: "Bloqueo eliminado correctamente",
         });
         loadBlocks();
+
+        // Trigger custom event for calendar components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'block_deleted', blockId: block._id }
+        }));
+        console.log("✅ Bloqueo eliminado - Real-time update triggered");
       } else {
         throw new Error("Error al eliminar el bloqueo");
       }
