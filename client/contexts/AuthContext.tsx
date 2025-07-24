@@ -301,11 +301,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(String(errorMessage));
       }
 
-      const data = await response.json();
-      console.log("✅ Login successful:", {
-        userId: data.user?.id,
-        email: data.user?.email,
-      });
+      let data;
+      try {
+        data = await response.json();
+        console.log("✅ Login successful:", {
+          userId: data.user?.id,
+          email: data.user?.email,
+          fullResponse: data,
+        });
+      } catch (parseError) {
+        const responseText = await response.text();
+        console.error("❌ Could not parse successful response as JSON:", {
+          parseError: parseError.message,
+          responseText: responseText.substring(0, 500),
+          contentType: response.headers.get('Content-Type'),
+        });
+        throw new Error("Error al procesar la respuesta del servidor");
+      }
 
       setUser(data.user);
       localStorage.setItem("authToken", data.token);
