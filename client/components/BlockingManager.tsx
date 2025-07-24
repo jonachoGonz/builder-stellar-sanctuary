@@ -339,6 +339,12 @@ export function BlockingManager() {
           description: `Bloqueo ${!block.active ? "activado" : "desactivado"} correctamente`,
         });
         loadBlocks();
+
+        // Trigger custom event for calendar components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'block_status_changed', blockId: block._id, active: !block.active }
+        }));
+        console.log("✅ Estado de bloqueo cambiado - Real-time update triggered");
       } else {
         throw new Error("Error al actualizar el bloqueo");
       }
