@@ -6,6 +6,7 @@ import { PlanManagement } from "../components/PlanManagement";
 import { AutoCompleteManager } from "../components/AutoCompleteManager";
 import { ReviewsManager } from "../components/ReviewsManager";
 import { BlockingManager } from "../components/BlockingManager";
+import { TeamsStyleCalendar } from "../components/TeamsStyleCalendar";
 import {
   Users,
   Calendar,
@@ -425,7 +426,7 @@ export function AdminDashboard() {
               </Button>
               <Button variant="outline">
                 <Settings className="h-4 w-4 mr-2" />
-                Configuración
+                Configuraci��n
               </Button>
             </div>
           </div>
