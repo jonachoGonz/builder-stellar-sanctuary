@@ -5,6 +5,7 @@ import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 import { PlanManagement } from "../components/PlanManagement";
 import { AutoCompleteManager } from "../components/AutoCompleteManager";
 import { ReviewsManager } from "../components/ReviewsManager";
+import { BlockingManager } from "../components/BlockingManager";
 import {
   Users,
   Calendar,
