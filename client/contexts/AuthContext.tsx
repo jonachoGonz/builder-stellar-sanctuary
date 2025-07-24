@@ -259,11 +259,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: Object.fromEntries(response.headers.entries()),
       });
 
+      // Clone response to avoid "body stream already read" error
+      const responseForErrorHandling = response.clone();
+      const responseForSuccessHandling = response.clone();
+
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         // Read response as text first to avoid "body stream already read" error
-        const responseText = await response.text();
+        const responseText = await responseForErrorHandling.text();
         console.log("📝 Raw response text:", responseText.substring(0, 500));
 
         try {
