@@ -161,10 +161,50 @@ export function AppointmentModal({
     if (!formData.professionalId)
       newErrors.professionalId = "Profesional es requerido";
     if (!formData.title.trim()) newErrors.title = "Título es requerido";
-    if (!formData.date) newErrors.date = "Fecha es requerida";
-    if (!formData.startTime)
+    if (!formData.date) {
+      newErrors.date = "Fecha es requerida";
+    } else {
+      // Check if date is in the past
+      const selectedDate = new Date(formData.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time for date comparison
+
+      if (selectedDate < today) {
+        newErrors.date = "No se pueden crear citas en fechas pasadas";
+      }
+    }
+
+    if (!formData.startTime) {
       newErrors.startTime = "Hora de inicio es requerida";
-    if (!formData.endTime) newErrors.endTime = "Hora de fin es requerida";
+    } else if (formData.date && formData.startTime) {
+      // Check if date and time combination is in the past
+      const selectedDateTime = new Date(formData.date);
+      const [hours, minutes] = formData.startTime.split(':').map(Number);
+      selectedDateTime.setHours(hours, minutes, 0, 0);
+
+      // Add 1-hour buffer for current day
+      const now = new Date();
+      const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+
+      if (selectedDateTime < oneHourFromNow) {
+        newErrors.startTime = "No se pueden crear citas en horarios pasados (mínimo 1 hora de anticipación)";
+      }
+    }
+
+    if (!formData.endTime) {
+      newErrors.endTime = "Hora de fin es requerida";
+    } else if (formData.startTime && formData.endTime) {
+      // Check if end time is after start time
+      const [startHours, startMinutes] = formData.startTime.split(':').map(Number);
+      const [endHours, endMinutes] = formData.endTime.split(':').map(Number);
+
+      const startTime = startHours * 60 + startMinutes;
+      const endTime = endHours * 60 + endMinutes;
+
+      if (endTime <= startTime) {
+        newErrors.endTime = "La hora de fin debe ser posterior a la hora de inicio";
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
