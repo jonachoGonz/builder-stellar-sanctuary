@@ -145,7 +145,10 @@ export function EnhancedUnifiedCalendar({
 
   // Regenerate schedule grid when appointments or blocked times change
   useEffect(() => {
-    if (appointments.length > 0 || (Array.isArray(blockedTimes) && blockedTimes.length > 0)) {
+    if (
+      appointments.length > 0 ||
+      (Array.isArray(blockedTimes) && blockedTimes.length > 0)
+    ) {
       generateScheduleGrid();
     }
   }, [appointments, blockedTimes, currentDate, user]);
@@ -322,7 +325,9 @@ export function EnhancedUnifiedCalendar({
 
         // Check for authentication errors
         if (response.status === 401 || response.status === 403) {
-          console.warn("🔒 Authentication error - user may need to login again");
+          console.warn(
+            "🔒 Authentication error - user may need to login again",
+          );
           setAuthError(true);
         }
 
@@ -460,7 +465,9 @@ export function EnhancedUnifiedCalendar({
   const generateScheduleGrid = () => {
     // Ensure blockedTimes is always an array to prevent runtime errors
     if (!Array.isArray(blockedTimes)) {
-      console.warn("⚠️ blockedTimes is not an array, initializing as empty array");
+      console.warn(
+        "⚠️ blockedTimes is not an array, initializing as empty array",
+      );
       setBlockedTimes([]);
       return;
     }
@@ -508,17 +515,19 @@ export function EnhancedUnifiedCalendar({
         });
 
         // Check if this time is blocked
-        const isBlocked = Array.isArray(blockedTimes) && blockedTimes.some((block) => {
-          return (
-            (block.type === "global" &&
-              (block.date === dateStr || block.day === dayIndex) &&
-              block.time === time) ||
-            (block.professionalId === user?.id &&
-              block.day === dayIndex &&
-              block.time === time) ||
-            (block.date === dateStr && block.time === time)
-          );
-        });
+        const isBlocked =
+          Array.isArray(blockedTimes) &&
+          blockedTimes.some((block) => {
+            return (
+              (block.type === "global" &&
+                (block.date === dateStr || block.day === dayIndex) &&
+                block.time === time) ||
+              (block.professionalId === user?.id &&
+                block.day === dayIndex &&
+                block.time === time) ||
+              (block.date === dateStr && block.time === time)
+            );
+          });
 
         // Determine permissions
         let canEdit = false;
@@ -546,9 +555,12 @@ export function EnhancedUnifiedCalendar({
           appointment,
           canEdit,
           canSchedule,
-          isGlobalBlock: Array.isArray(blockedTimes) && blockedTimes.some(
-            (b) => b.type === "global" && b.date === dateStr && b.time === time,
-          ),
+          isGlobalBlock:
+            Array.isArray(blockedTimes) &&
+            blockedTimes.some(
+              (b) =>
+                b.type === "global" && b.date === dateStr && b.time === time,
+            ),
         });
       });
     });
@@ -753,7 +765,9 @@ export function EnhancedUnifiedCalendar({
           ...blockData,
           createdAt: new Date(),
         };
-        setBlockedTimes((prev) => Array.isArray(prev) ? [...prev, newBlock] : [newBlock]);
+        setBlockedTimes((prev) =>
+          Array.isArray(prev) ? [...prev, newBlock] : [newBlock],
+        );
 
         // Regenerate schedule grid to show blocked time immediately
         generateScheduleGrid();
@@ -1042,7 +1056,8 @@ export function EnhancedUnifiedCalendar({
                       Error de Autenticación
                     </h3>
                     <p className="text-xs text-yellow-600 mt-1">
-                      Tu sesión ha expirado. Por favor, inicia sesión nuevamente.
+                      Tu sesión ha expirado. Por favor, inicia sesión
+                      nuevamente.
                     </p>
                   </div>
                 </div>
