@@ -746,6 +746,7 @@ export function BlockingManager() {
                   <Input
                     id="date"
                     type="date"
+                    min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
                     value={formData.date}
                     onChange={(e) =>
                       setFormData({ ...formData, date: e.target.value })
