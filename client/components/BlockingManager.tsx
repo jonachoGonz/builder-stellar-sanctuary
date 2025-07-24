@@ -304,6 +304,15 @@ export function BlockingManager() {
         });
         setModalOpen(false);
         loadBlocks();
+
+        // Trigger custom event for calendar components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: {
+            type: editingBlock ? 'block_updated' : 'block_created',
+            data: blockData
+          }
+        }));
+        console.log("✅ Bloqueo guardado - Real-time update triggered");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Error al guardar el bloqueo");
