@@ -319,6 +319,13 @@ export function EnhancedUnifiedCalendar({
           error: errorText,
         });
         setAppointments([]); // Set empty array to prevent UI issues
+
+        // Check for authentication errors
+        if (response.status === 401 || response.status === 403) {
+          console.warn("🔒 Authentication error - user may need to login again");
+          setAuthError(true);
+        }
+
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
