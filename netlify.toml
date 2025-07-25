@@ -1,6 +1,5 @@
 [build]
   command = "npm install && npm run build:netlify && cp _headers dist/spa/ && cp _redirects dist/spa/"
-  functions = "netlify/functions"
   publish = "dist/spa"
 
 [build.environment]
@@ -8,8 +7,15 @@
   NPM_FLAGS = "--include=dev"
 
 [functions]
-  external_node_modules = ["express", "mongoose", "bcryptjs", "jsonwebtoken", "passport", "passport-google-oauth20"]
   node_bundler = "esbuild"
+  external_node_modules = [
+    "express",
+    "mongoose",
+    "bcryptjs",
+    "jsonwebtoken",
+    "passport",
+    "passport-google-oauth20"
+  ]
 
 [[redirects]]
   force = true
