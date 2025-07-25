@@ -401,7 +401,7 @@ export function AdminDashboard() {
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center sm:justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-3xl font-bold text-gym-dark">
                 Panel de Administración
@@ -410,24 +410,24 @@ export function AdminDashboard() {
                 Gestiona usuarios, clases y configuración del sistema
               </p>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button className="btn-primary" onClick={handleCreateUser}>
-                <UserPlus className="h-4 w-4 mr-2" />
+            <div className="flex items-center space-x-4 flex-wrap mt-2">
+              <Button className="btn-primary m-0" onClick={handleCreateUser}>
+                <UserPlus className="h-4 w-4" />
                 Nuevo Usuario
               </Button>
-              <Button
+              <Button className="m-0"
                 variant="outline"
                 onClick={() => {
                   loadUsers();
                   loadStats();
                 }}
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Actualizar
+                <RefreshCw className="h-4 w-4 m-0" />
+                {/* Actualizar */}
               </Button>
-              <Button variant="outline">
-                <Settings className="h-4 w-4 mr-2" />
-                Configuración
+              <Button variant="outline" className="m-0">
+                <Settings className="h-4 w-4 m-0" />
+                {/* Configuración */}
               </Button>
             </div>
           </div>

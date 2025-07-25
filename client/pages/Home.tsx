@@ -223,7 +223,7 @@ export function Home() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-600"
+                  className="text-lg px-8 py-4 text-blue-600 hover:bg-black-300 hover:text-blue-600"
                 >
                   Ver Planes
                 </Button>
@@ -601,6 +601,7 @@ export function Home() {
                             <h4 className="text-lg font-semibold text-gym-dark">
                               {professional.name}
                             </h4>
+
                             <p className="text-primary font-medium">
                               {professional.specialty}
                             </p>
@@ -620,7 +621,7 @@ export function Home() {
                               )}
                             </div>
                           </div>
-                          <div className="flex flex-col items-center">
+                          {/* <div className="flex flex-col items-center">
                             <div className="flex items-center mb-1">
                               {[...Array(5)].map((_, i) => (
                                 <Star
@@ -630,7 +631,7 @@ export function Home() {
                               ))}
                             </div>
                             <span className="text-sm text-gray-600">5.0</span>
-                          </div>
+                          </div> */}
                         </div>
                       </CardContent>
                     </Card>
@@ -641,11 +642,7 @@ export function Home() {
                   </div>
                 )}
               </div>
-              <div className="mt-6 text-center">
-                <Button variant="outline" size="lg">
-                  Ver Todos los Profesionales
-                </Button>
-              </div>
+              
             </div>
           </div>
         </div>
