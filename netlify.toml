@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm run build:netlify"
+  command = "npm install && npm run build:netlify && cp _headers dist/spa/ && cp _redirects dist/spa/"
   functions = "netlify/functions"
   publish = "dist/spa"
 
