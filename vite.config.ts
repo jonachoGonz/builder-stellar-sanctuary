@@ -18,6 +18,21 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    chunkSizeWarningLimit: 1000, // Aumenta el límite antes de lanzar warning
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return id
+              .toString()
+              .split("node_modules/")[1]
+              .split("/")[0]
+              .replace("@", "")
+              .replace("/", "-");
+          }
+        },
+      },
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
