@@ -72,9 +72,7 @@ export const apiCall = async (
       url,
       method: mergedOptions.method || "GET",
       headers: mergedOptions.headers,
-      bodyLength: mergedOptions.body
-        ? mergedOptions.body.toString().length
-        : 0,
+      bodyLength: mergedOptions.body ? mergedOptions.body.toString().length : 0,
     });
 
     const response = await fetch(url, mergedOptions);
@@ -94,7 +92,7 @@ export const apiCall = async (
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   } catch (error: any) {
     console.warn(`API call failed for ${url}:`, error.message);
-    
+
     // Check for specific error types
     let processedError = error;
     if (error.name === "TypeError" && error.message === "Failed to fetch") {
