@@ -52,7 +52,7 @@ export const apiCall = async (
 
   // Clone the body to prevent "body stream already read" errors on retry
   let bodyToUse = options.body;
-  if (options.body && typeof options.body === 'string') {
+  if (options.body && typeof options.body === "string") {
     bodyToUse = options.body; // String bodies can be reused
   } else if (options.body) {
     // For other body types, we might need to handle differently

@@ -399,7 +399,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
-        console.error("❌ Could not parse register response as JSON:", parseError);
+        console.error(
+          "❌ Could not parse register response as JSON:",
+          parseError,
+        );
         throw new Error("Error al procesar la respuesta del servidor");
       }
 
@@ -473,7 +476,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
-        console.error("❌ Could not parse profile update response as JSON:", parseError);
+        console.error(
+          "❌ Could not parse profile update response as JSON:",
+          parseError,
+        );
         throw new Error("Error al procesar la respuesta del servidor");
       }
 
