@@ -209,6 +209,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           console.log("🔓 Token invalid, removing...");
           localStorage.removeItem("authToken");
+          // Consume the response body to avoid issues
+          try {
+            await response.text();
+          } catch (e) {
+            // Ignore errors from consuming response body
+          }
         }
       }
     } catch (error) {
@@ -386,7 +392,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(userData),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("❌ Could not parse register response as JSON:", parseError);
+        throw new Error("Error al procesar la respuesta del servidor");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Error al registrar usuario");
