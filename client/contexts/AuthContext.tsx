@@ -258,18 +258,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      // Immediately read the response body to prevent any consumption issues
+      const responseText = await response.text();
+
       console.log("📡 Login response:", {
         status: response.status,
         statusText: response.statusText,
         ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries()),
+        responseTextLength: responseText.length,
       });
-
-      // Clone response immediately to prevent "body stream already read" errors
-      const responseClone = response.clone();
-
-      // Read response as text first to avoid "body stream already read" error
-      const responseText = await responseClone.text();
       console.log("📝 Raw response text:", responseText.substring(0, 500));
 
       if (!response.ok) {
