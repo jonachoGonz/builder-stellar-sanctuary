@@ -3,8 +3,6 @@
   publish = "dist/spa"
   environment = { NODE_VERSION = "18" }
 
-[build.environment]
-  NODE_VERSION = "20.12.2" # Puedes cambiar según lo que uses localmente
 
 [functions]
   directory = "netlify/functions"
