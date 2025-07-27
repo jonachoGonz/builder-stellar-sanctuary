@@ -50,18 +50,8 @@ export const apiCall = async (
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 
-  // Clone the body to prevent "body stream already read" errors on retry
-  let bodyToUse = options.body;
-  if (options.body && typeof options.body === "string") {
-    bodyToUse = options.body; // String bodies can be reused
-  } else if (options.body) {
-    // For other body types, we might need to handle differently
-    bodyToUse = options.body;
-  }
-
   const mergedOptions: RequestInit = {
     ...options,
-    body: bodyToUse,
     headers: {
       ...defaultHeaders,
       ...options.headers,
@@ -72,86 +62,71 @@ export const apiCall = async (
       : {}),
   };
 
-  // Get the URL to try for the API call
-  const getUrlToTry = (endpoint: string) => {
-    if (endpoint.startsWith("http")) {
-      return endpoint;
+  // Get the URL for the API call
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : `${API_BASE_URL}${endpoint}`;
+
+  try {
+    console.log(`🌐 Making API call (attempt ${retryCount + 1}):`, {
+      url,
+      method: mergedOptions.method || "GET",
+      headers: mergedOptions.headers,
+      bodyLength: mergedOptions.body
+        ? mergedOptions.body.toString().length
+        : 0,
+    });
+
+    const response = await fetch(url, mergedOptions);
+
+    console.log("📡 API call response:", {
+      url,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+    });
+
+    // If successful or client error (not server error), return the response
+    if (response.status < 500) {
+      return response;
     }
 
-    // For production deployments, use the API_BASE_URL which resolves to same origin + /api
-    return `${API_BASE_URL}${endpoint}`;
-  };
-
-  const urlsToTry = getUrlsToTry(endpoint);
-  let lastError: Error | null = null;
-
-  for (const url of urlsToTry) {
-    try {
-      // Create fresh options for each URL attempt to prevent body stream reuse issues
-      const freshOptions = {
-        ...mergedOptions,
-        body: mergedOptions.body, // Body can be reused for string/FormData/etc.
-      };
-
-      console.log(`🌐 Making API call (attempt ${retryCount + 1}):`, {
-        url,
-        method: freshOptions.method || "GET",
-        headers: freshOptions.headers,
-        bodyLength: freshOptions.body
-          ? freshOptions.body.toString().length
-          : 0,
-      });
-
-      const response = await fetch(url, freshOptions);
-
-      console.log("📡 API call response:", {
-        url,
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-      });
-
-      // If successful or client error (not server error), return the response
-      if (response.status < 500) {
-        return response;
-      }
-
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    } catch (error: any) {
-      console.warn(`API call failed for ${url}:`, error.message);
-      lastError = error;
-
-      // Check for specific error types
-      if (error.name === "TypeError" && error.message === "Failed to fetch") {
-        // This is typically a network connectivity issue
-        console.error("🌐 Network connectivity issue detected");
-        lastError = new Error("NETWORK_ERROR: Failed to connect to server");
-      } else if (error.name === "AbortError") {
-        // Request timeout
-        console.error("⏰ Request timeout");
-        lastError = new Error("TIMEOUT_ERROR: Request timed out");
-      } else if (
-        error.message &&
-        (error.message.includes("401") || error.message.includes("403"))
-      ) {
-        // Authentication/authorization error
-        console.error("🔒 Authentication error");
-        lastError = new Error("AUTH_ERROR: Authentication failed");
-        break; // Don't try other URLs for auth errors
-      }
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  } catch (error: any) {
+    console.warn(`API call failed for ${url}:`, error.message);
+    
+    // Check for specific error types
+    let processedError = error;
+    if (error.name === "TypeError" && error.message === "Failed to fetch") {
+      // This is typically a network connectivity issue
+      console.error("🌐 Network connectivity issue detected");
+      processedError = new Error("NETWORK_ERROR: Failed to connect to server");
+    } else if (error.name === "AbortError") {
+      // Request timeout
+      console.error("⏰ Request timeout");
+      processedError = new Error("TIMEOUT_ERROR: Request timed out");
+    } else if (
+      error.message &&
+      (error.message.includes("401") || error.message.includes("403"))
+    ) {
+      // Authentication/authorization error
+      console.error("🔒 Authentication error");
+      processedError = new Error("AUTH_ERROR: Authentication failed");
+      // Don't retry for auth errors
+      throw processedError;
     }
-  }
 
-  // If all URLs failed and we haven't exceeded max retries, retry with delay
-  if (retryCount < maxRetries && lastError) {
-    console.log(
-      `⏳ Retrying API call in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
-    );
-    await new Promise((resolve) => setTimeout(resolve, retryDelay));
-    return apiCall(endpoint, options, retryCount + 1);
-  }
+    // If we haven't exceeded max retries, retry with delay
+    if (retryCount < maxRetries) {
+      console.log(
+        `⏳ Retrying API call in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+      return apiCall(endpoint, options, retryCount + 1);
+    }
 
-  // All attempts failed
-  console.error(`❌ All API call attempts failed for endpoint: ${endpoint}`);
-  throw lastError || new Error("API call failed after all retries");
+    // All attempts failed
+    console.error(`❌ All API call attempts failed for endpoint: ${endpoint}`);
+    throw processedError;
+  }
 };
