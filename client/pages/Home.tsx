@@ -223,7 +223,11 @@ export function Home() {
                 <Button
                   size="lg"
                   variant="outline"
+<<<<<<< HEAD
                   className="text-lg px-8 py-4 text-blue-600 hover:bg-black-300 hover:text-blue-600"
+=======
+                  className="text-lg px-8 py-4  text-blue-600 hover:bg-gray-100 hover:text-blue-500"
+>>>>>>> 9f8da9125a0585697b6a3486ee91274a79b64e30
                 >
                   Ver Planes
                 </Button>

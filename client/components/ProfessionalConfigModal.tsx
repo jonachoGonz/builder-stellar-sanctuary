@@ -4,12 +4,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "./ui/select";
 import { Settings, Plus, X } from "lucide-react";
 
@@ -51,10 +51,16 @@ export function ProfessionalConfigModal({
       setWorkingHours({
         startTime: user.workingHours.start || "08:00",
         endTime: user.workingHours.end || "20:00",
-        workingDays: user.workingHours.days || ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        workingDays: user.workingHours.days || [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+        ],
       });
     }
-    
+
     // Load blocked times from user data
     if (user?.blockedTimes) {
       setBlockedTimes(user.blockedTimes);
@@ -72,7 +78,11 @@ export function ProfessionalConfigModal({
   ];
 
   const handleAddBlockedTime = () => {
-    if (!newBlockedTime.day || !newBlockedTime.startTime || !newBlockedTime.endTime) {
+    if (
+      !newBlockedTime.day ||
+      !newBlockedTime.startTime ||
+      !newBlockedTime.endTime
+    ) {
       alert("Por favor complete todos los campos");
       return;
     }
@@ -91,10 +101,10 @@ export function ProfessionalConfigModal({
   };
 
   const handleWorkingDayToggle = (day: string) => {
-    setWorkingHours(prev => ({
+    setWorkingHours((prev) => ({
       ...prev,
       workingDays: prev.workingDays.includes(day)
-        ? prev.workingDays.filter(d => d !== day)
+        ? prev.workingDays.filter((d) => d !== day)
         : [...prev.workingDays, day],
     }));
   };
@@ -113,7 +123,7 @@ export function ProfessionalConfigModal({
   };
 
   const getDayLabel = (dayValue: string) => {
-    return days.find(d => d.value === dayValue)?.label || dayValue;
+    return days.find((d) => d.value === dayValue)?.label || dayValue;
   };
 
   return (
@@ -125,7 +135,7 @@ export function ProfessionalConfigModal({
             Configuración de Horarios
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Working Hours */}
           <div>
@@ -137,10 +147,12 @@ export function ProfessionalConfigModal({
                   id="startTime"
                   type="time"
                   value={workingHours.startTime}
-                  onChange={(e) => setWorkingHours(prev => ({ 
-                    ...prev, 
-                    startTime: e.target.value 
-                  }))}
+                  onChange={(e) =>
+                    setWorkingHours((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -149,21 +161,27 @@ export function ProfessionalConfigModal({
                   id="endTime"
                   type="time"
                   value={workingHours.endTime}
-                  onChange={(e) => setWorkingHours(prev => ({ 
-                    ...prev, 
-                    endTime: e.target.value 
-                  }))}
+                  onChange={(e) =>
+                    setWorkingHours((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
-            
+
             <div>
               <Label>Días de Trabajo</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {days.map((day) => (
                   <Badge
                     key={day.value}
-                    variant={workingHours.workingDays.includes(day.value) ? "default" : "outline"}
+                    variant={
+                      workingHours.workingDays.includes(day.value)
+                        ? "default"
+                        : "outline"
+                    }
                     className="cursor-pointer"
                     onClick={() => handleWorkingDayToggle(day.value)}
                   >
@@ -177,17 +195,21 @@ export function ProfessionalConfigModal({
           {/* Blocked Times */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Horarios Bloqueados</h3>
-            
+
             {/* Add new blocked time */}
             <div className="border rounded-lg p-4 mb-4">
-              <Label className="text-sm font-medium mb-3 block">Agregar Nuevo Bloqueo</Label>
+              <Label className="text-sm font-medium mb-3 block">
+                Agregar Nuevo Bloqueo
+              </Label>
               <div className="grid grid-cols-4 gap-3">
                 <Select
                   value={newBlockedTime.day}
-                  onValueChange={(value) => setNewBlockedTime(prev => ({ 
-                    ...prev, 
-                    day: value 
-                  }))}
+                  onValueChange={(value) =>
+                    setNewBlockedTime((prev) => ({
+                      ...prev,
+                      day: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Día" />
@@ -200,27 +222,31 @@ export function ProfessionalConfigModal({
                     ))}
                   </SelectContent>
                 </Select>
-                
+
                 <Input
                   type="time"
                   placeholder="Hora inicio"
                   value={newBlockedTime.startTime}
-                  onChange={(e) => setNewBlockedTime(prev => ({ 
-                    ...prev, 
-                    startTime: e.target.value 
-                  }))}
+                  onChange={(e) =>
+                    setNewBlockedTime((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                 />
-                
+
                 <Input
                   type="time"
                   placeholder="Hora fin"
                   value={newBlockedTime.endTime}
-                  onChange={(e) => setNewBlockedTime(prev => ({ 
-                    ...prev, 
-                    endTime: e.target.value 
-                  }))}
+                  onChange={(e) =>
+                    setNewBlockedTime((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                 />
-                
+
                 <Button onClick={handleAddBlockedTime} size="sm">
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -230,15 +256,19 @@ export function ProfessionalConfigModal({
             {/* List of blocked times */}
             <div className="space-y-2">
               {blockedTimes.length === 0 ? (
-                <p className="text-gray-500 text-sm">No hay horarios bloqueados</p>
+                <p className="text-gray-500 text-sm">
+                  No hay horarios bloqueados
+                </p>
               ) : (
                 blockedTimes.map((blocked, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                   >
                     <span className="text-sm">
-                      <span className="font-medium">{getDayLabel(blocked.day)}</span>
+                      <span className="font-medium">
+                        {getDayLabel(blocked.day)}
+                      </span>
                       {" - "}
                       {blocked.startTime} a {blocked.endTime}
                     </span>
@@ -261,7 +291,11 @@ export function ProfessionalConfigModal({
             <Button variant="outline" onClick={onClose} disabled={loading}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={loading} className="btn-primary">
+            <Button
+              onClick={handleSave}
+              disabled={loading}
+              className="btn-primary"
+            >
               {loading ? "Guardando..." : "Guardar Configuración"}
             </Button>
           </div>

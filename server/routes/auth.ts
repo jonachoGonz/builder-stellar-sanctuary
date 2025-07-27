@@ -12,18 +12,18 @@ router.get("/debug/users", async (req: Request, res: Response) => {
     res.json({
       success: true,
       count: users.length,
-      users: users.map(u => ({
+      users: users.map((u) => ({
         email: u.email,
         name: `${u.firstName} ${u.lastName}`,
-        role: u.role
-      }))
+        role: u.role,
+      })),
     });
   } catch (error) {
     console.error("Debug users error:", error);
     res.status(500).json({
       success: false,
       message: "Error connecting to database",
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -123,7 +123,12 @@ router.post("/login", async (req: Request, res: Response) => {
 
     // Find user by email
     const user = await User.findOne({ email });
-    console.log("📊 User found:", user ? { id: user._id, email: user.email, hasPassword: !!user.password } : "No user found");
+    console.log(
+      "📊 User found:",
+      user
+        ? { id: user._id, email: user.email, hasPassword: !!user.password }
+        : "No user found",
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -134,7 +139,10 @@ router.post("/login", async (req: Request, res: Response) => {
 
     // Check password
     const isMatch = await user.comparePassword(password);
-    console.log("🔑 Password comparison:", { isMatch, userHasPassword: !!user.password });
+    console.log("🔑 Password comparison:", {
+      isMatch,
+      userHasPassword: !!user.password,
+    });
 
     if (!isMatch) {
       return res.status(401).json({
