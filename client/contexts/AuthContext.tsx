@@ -259,16 +259,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: Object.fromEntries(response.headers.entries()),
       });
 
-      // Clone response to avoid "body stream already read" error
-      const responseForErrorHandling = response.clone();
-      const responseForSuccessHandling = response.clone();
+      // Read response as text first to avoid "body stream already read" error
+      const responseText = await response.text();
+      console.log("📝 Raw response text:", responseText.substring(0, 500));
 
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
-
-        // Read response as text first to avoid "body stream already read" error
-        const responseText = await responseForErrorHandling.text();
-        console.log("📝 Raw response text:", responseText.substring(0, 500));
 
         try {
           const errorData = JSON.parse(responseText);
@@ -306,9 +302,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         throw new Error(String(errorMessage));
       }
-
-      // Read response as text first to avoid "body stream already read" error
-      const responseText = await responseForSuccessHandling.text();
 
       let data;
       try {
