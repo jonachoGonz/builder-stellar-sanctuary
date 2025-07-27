@@ -395,7 +395,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(userData),
       });
 
-      const responseText = await response.text();
+      // Clone response immediately to prevent "body stream already read" errors
+      const responseClone = response.clone();
+      const responseText = await responseClone.text();
       let data;
 
       try {
@@ -468,7 +470,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(userData),
       });
 
-      const responseText = await response.text();
+      // Clone response immediately to prevent "body stream already read" errors
+      const responseClone = response.clone();
+      const responseText = await responseClone.text();
       let data;
 
       try {
