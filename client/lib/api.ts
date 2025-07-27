@@ -72,26 +72,14 @@ export const apiCall = async (
       : {}),
   };
 
-  // Try multiple API base URLs for production environment
-  const getUrlsToTry = (endpoint: string) => {
-    const baseEndpoint = endpoint.startsWith("http") ? endpoint : endpoint;
-
-    if (
-      typeof window !== "undefined" &&
-      !window.location.hostname.includes("localhost")
-    ) {
-      // For production deployments, try multiple potential backend URLs
-      // Try Netlify Functions first, then fallback to direct API path
-      return [
-        `/.netlify/functions/api${baseEndpoint}`,
-        `${window.location.origin}/api${baseEndpoint}`,
-      ];
+  // Get the URL to try for the API call
+  const getUrlToTry = (endpoint: string) => {
+    if (endpoint.startsWith("http")) {
+      return endpoint;
     }
 
-    const url = endpoint.startsWith("http")
-      ? endpoint
-      : `${API_BASE_URL}${endpoint}`;
-    return [url];
+    // For production deployments, use the API_BASE_URL which resolves to same origin + /api
+    return `${API_BASE_URL}${endpoint}`;
   };
 
   const urlsToTry = getUrlsToTry(endpoint);
