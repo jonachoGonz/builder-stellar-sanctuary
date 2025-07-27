@@ -99,16 +99,22 @@ export const apiCall = async (
 
   for (const url of urlsToTry) {
     try {
+      // Create fresh options for each URL attempt to prevent body stream reuse issues
+      const freshOptions = {
+        ...mergedOptions,
+        body: mergedOptions.body, // Body can be reused for string/FormData/etc.
+      };
+
       console.log(`🌐 Making API call (attempt ${retryCount + 1}):`, {
         url,
-        method: mergedOptions.method || "GET",
-        headers: mergedOptions.headers,
-        bodyLength: mergedOptions.body
-          ? mergedOptions.body.toString().length
+        method: freshOptions.method || "GET",
+        headers: freshOptions.headers,
+        bodyLength: freshOptions.body
+          ? freshOptions.body.toString().length
           : 0,
       });
 
-      const response = await fetch(url, mergedOptions);
+      const response = await fetch(url, freshOptions);
 
       console.log("📡 API call response:", {
         url,
