@@ -228,7 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ) {
         localStorage.removeItem("authToken");
       } else {
-        console.log("⚠️ Keeping token due to network error");
+        console.log("��️ Keeping token due to network error");
       }
     } finally {
       setIsLoading(false);
@@ -419,7 +419,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Check if Google OAuth is available first
       const statusResponse = await apiCall("/auth/google/status");
-      const statusData = await statusResponse.json();
+
+      let statusData;
+      if (statusResponse.ok) {
+        statusData = await statusResponse.json();
+      } else {
+        throw new Error("No se pudo verificar el estado de Google OAuth");
+      }
 
       if (!statusData.configured) {
         throw new Error(
