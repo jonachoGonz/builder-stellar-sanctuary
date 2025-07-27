@@ -176,15 +176,14 @@ export function CalendarioCompleto({
     calidad: 5,
   });
 
-  // Configuración de horarios (30 minutos)
+  // Configuración de horarios 24h (30 minutos)
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 8; hour <= 20; hour++) {
+    // Generate 24-hour slots with 30-minute intervals
+    for (let hour = 0; hour < 24; hour++) {
       slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 20) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
+      slots.push(`${hour.toString().padStart(2, "0")}:30`);
     }
     return slots;
   };
@@ -203,17 +202,32 @@ export function CalendarioCompleto({
     }
   }, [user, currentDate, filtros]);
 
+  // Listen for real-time updates from other components
+  useEffect(() => {
+    const handleCalendarUpdate = (event: any) => {
+      console.log("🔄 Received real-time calendar update:", event.detail);
+      loadData(); // Reload data when other components trigger updates
+      if (isStudent) {
+        loadPlanUsuario();
+      }
+    };
+
+    window.addEventListener('calendarUpdate', handleCalendarUpdate);
+    return () => window.removeEventListener('calendarUpdate', handleCalendarUpdate);
+  }, [isStudent]);
+
   // Auto-refresh calendar every 5 minutes to update past times and availability
   useEffect(() => {
     const refreshInterval = setInterval(
       () => {
         if (user) {
           console.log("🔄 Auto-refreshing calendar for real-time updates");
+          loadData(); // Full data reload for real-time updates
           generateScheduleGrid(); // Regenerate grid to update past times
         }
       },
-      5 * 60 * 1000,
-    ); // 5 minutes
+      2 * 60 * 1000,
+    ); // 2 minutes for more responsive updates
 
     return () => clearInterval(refreshInterval);
   }, [agenda, bloqueos, currentDate, user]);
@@ -522,12 +536,19 @@ export function CalendarioCompleto({
       if (response.ok) {
         setModalAgendar(false);
         resetFormAgendar();
+
+        // Immediate real-time update
         await loadData();
         if (isStudent) await loadPlanUsuario();
 
+        // Trigger custom event for other components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'appointment_created', data: claseData }
+        }));
+
         // Show success message
         setError("");
-        console.log("✅ Clase agendada exitosamente");
+        console.log("✅ Clase agendada exitosamente - Real-time update triggered");
       } else {
         const errorData = await response.json();
         const errorMessage = errorData.message || "Error al crear la clase";
@@ -599,10 +620,18 @@ export function CalendarioCompleto({
       });
 
       if (response.ok) {
+        // Immediate real-time update
         await loadData();
         if (isStudent) await loadPlanUsuario();
+
+        // Trigger custom event for other components to update
+        window.dispatchEvent(new CustomEvent('calendarUpdate', {
+          detail: { type: 'appointment_updated', claseId, updates }
+        }));
+
         setModalDetalle(false);
         setModalEvaluar(false);
+        console.log("✅ Clase actualizada - Real-time update triggered");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Error al actualizar la clase");

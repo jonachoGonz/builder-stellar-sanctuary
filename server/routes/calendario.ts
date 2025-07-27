@@ -252,11 +252,20 @@ router.post(
         });
       }
 
-      // Business hours validation (8:00 AM to 8:30 PM)
-      if (horaNum < 8 || horaNum > 20 || (horaNum === 20 && minutoNum > 30)) {
+      // 24-hour booking validation - allow all hours
+      // Classes can be scheduled any time of day (24/7 availability)
+      if (horaNum < 0 || horaNum > 23 || minutoNum < 0 || minutoNum > 59) {
         return res.status(400).json({
           success: false,
-          message: "Las clases solo se pueden agendar entre 8:00 AM y 8:30 PM.",
+          message: "Hora inválida. Use formato HH:MM válido (00:00 - 23:59).",
+        });
+      }
+
+      // Validate 30-minute intervals only
+      if (minutoNum !== 0 && minutoNum !== 30) {
+        return res.status(400).json({
+          success: false,
+          message: "Las clases solo se pueden agendar en intervalos de 30 minutos (XX:00 o XX:30).",
         });
       }
 

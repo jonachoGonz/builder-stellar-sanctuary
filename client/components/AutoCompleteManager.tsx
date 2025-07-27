@@ -50,8 +50,22 @@ export function AutoCompleteManager() {
     loadStats();
 
     // Auto-refresh stats every 30 seconds
-    const interval = setInterval(loadStats, 30000);
-    return () => clearInterval(interval);
+    const statsInterval = setInterval(loadStats, 30000);
+
+    // Auto-execute completion every 5 minutes
+    const autoCompleteInterval = setInterval(async () => {
+      try {
+        console.log("🔄 Auto-executing class completion check...");
+        await executeAutoComplete(true); // Silent execution
+      } catch (error) {
+        console.error("Auto-complete execution error:", error);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => {
+      clearInterval(statsInterval);
+      clearInterval(autoCompleteInterval);
+    };
   }, []);
 
   const loadStats = async () => {
@@ -76,8 +90,9 @@ export function AutoCompleteManager() {
     }
   };
 
-  const executeAutoComplete = async () => {
+  const executeAutoComplete = async (silentMode = false) => {
     if (
+      !silentMode &&
       !confirm(
         "¿Estás seguro de que quieres ejecutar el auto-completado de clases?",
       )
@@ -95,13 +110,24 @@ export function AutoCompleteManager() {
         const data = await response.json();
         setLastResult(data.data);
 
-        toast({
-          title: "Éxito",
-          description: data.message,
-        });
+        if (!silentMode) {
+          toast({
+            title: "Éxito",
+            description: data.message,
+          });
+        } else if (data.data.completadas > 0) {
+          console.log(`✅ Auto-completed ${data.data.completadas} classes automatically`);
+        }
 
         // Refresh stats after execution
         await loadStats();
+
+        // Trigger calendar update for real-time sync
+        if (data.data.completadas > 0) {
+          window.dispatchEvent(new CustomEvent('calendarUpdate', {
+            detail: { type: 'classes_auto_completed', count: data.data.completadas }
+          }));
+        }
       } else {
         const errorData = await response.json();
         throw new Error(
@@ -109,11 +135,15 @@ export function AutoCompleteManager() {
         );
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (!silentMode) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        console.error("Silent auto-complete error:", error.message);
+      }
     } finally {
       setExecuting(false);
     }
@@ -172,7 +202,7 @@ export function AutoCompleteManager() {
             Actualizar
           </Button>
           <Button
-            onClick={executeAutoComplete}
+            onClick={() => executeAutoComplete()}
             disabled={executing || (stats?.pendientesCompletar || 0) === 0}
           >
             <Play className="h-4 w-4 mr-2" />
@@ -293,7 +323,7 @@ export function AutoCompleteManager() {
             {stats.pendientesCompletar > 0 && (
               <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ Hay {stats.pendientesCompletar} clases que deberían
+                  ⚠��� Hay {stats.pendientesCompletar} clases que deberían
                   completarse automáticamente. Se recomienda ejecutar el proceso
                   ahora para mantener los registros actualizados.
                 </p>

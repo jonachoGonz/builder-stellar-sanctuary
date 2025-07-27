@@ -145,7 +145,10 @@ export function EnhancedUnifiedCalendar({
 
   // Regenerate schedule grid when appointments or blocked times change
   useEffect(() => {
-    if (appointments.length > 0 || blockedTimes.length > 0) {
+    if (
+      appointments.length > 0 ||
+      (Array.isArray(blockedTimes) && blockedTimes.length > 0)
+    ) {
       generateScheduleGrid();
     }
   }, [appointments, blockedTimes, currentDate, user]);
@@ -319,11 +322,27 @@ export function EnhancedUnifiedCalendar({
           error: errorText,
         });
         setAppointments([]); // Set empty array to prevent UI issues
+
+        // Check for authentication errors
+        if (response.status === 401 || response.status === 403) {
+          console.warn(
+            "🔒 Authentication error - user may need to login again",
+          );
+          setAuthError(true);
+        }
+
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading appointments:", error);
       setAppointments([]); // Set empty array to prevent UI issues
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
 
       // Re-throw to let Promise.allSettled handle it
       throw error;
@@ -349,6 +368,9 @@ export function EnhancedUnifiedCalendar({
             } else {
               console.error("❌ Students API error:", response.status);
               setStudents([]);
+              if (response.status === 401 || response.status === 403) {
+                setAuthError(true);
+              }
               throw new Error(`Students API error: ${response.status}`);
             }
           }),
@@ -376,6 +398,9 @@ export function EnhancedUnifiedCalendar({
             } else {
               console.error("❌ Professionals API error:", response.status);
               setProfessionals([]);
+              if (response.status === 401 || response.status === 403) {
+                setAuthError(true);
+              }
               throw new Error(`Professionals API error: ${response.status}`);
             }
           }),
@@ -386,10 +411,18 @@ export function EnhancedUnifiedCalendar({
       if (promises.length > 0) {
         await Promise.all(promises);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading users:", error);
       setStudents([]);
       setProfessionals([]);
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
+
       throw error;
     }
   };
@@ -401,23 +434,44 @@ export function EnhancedUnifiedCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Blocked times loaded:", data.data?.length || 0);
-        setBlockedTimes(data.data || []);
+        const blockedTimesData = Array.isArray(data.data) ? data.data : [];
+        console.log("✅ Blocked times loaded:", blockedTimesData.length);
+        setBlockedTimes(blockedTimesData);
       } else {
         console.error("❌ Blocked times API error:", response.status);
         setBlockedTimes([]);
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(true);
+        }
         if (response.status !== 404) {
           throw new Error(`Blocked times API error: ${response.status}`);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Fatal error loading blocked times:", error);
       setBlockedTimes([]);
+
+      // Handle specific error types
+      if (error.message?.includes("AUTH_ERROR")) {
+        setAuthError(true);
+      } else if (error.message?.includes("NETWORK_ERROR")) {
+        setNetworkError(true);
+      }
+
       throw error;
     }
   };
 
   const generateScheduleGrid = () => {
+    // Ensure blockedTimes is always an array to prevent runtime errors
+    if (!Array.isArray(blockedTimes)) {
+      console.warn(
+        "⚠️ blockedTimes is not an array, initializing as empty array",
+      );
+      setBlockedTimes([]);
+      return;
+    }
+
     const grid: TimeSlot[] = [];
     const startOfWeek = new Date(currentDate);
     startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
@@ -461,17 +515,19 @@ export function EnhancedUnifiedCalendar({
         });
 
         // Check if this time is blocked
-        const isBlocked = blockedTimes.some((block) => {
-          return (
-            (block.type === "global" &&
-              (block.date === dateStr || block.day === dayIndex) &&
-              block.time === time) ||
-            (block.professionalId === user?.id &&
-              block.day === dayIndex &&
-              block.time === time) ||
-            (block.date === dateStr && block.time === time)
-          );
-        });
+        const isBlocked =
+          Array.isArray(blockedTimes) &&
+          blockedTimes.some((block) => {
+            return (
+              (block.type === "global" &&
+                (block.date === dateStr || block.day === dayIndex) &&
+                block.time === time) ||
+              (block.professionalId === user?.id &&
+                block.day === dayIndex &&
+                block.time === time) ||
+              (block.date === dateStr && block.time === time)
+            );
+          });
 
         // Determine permissions
         let canEdit = false;
@@ -499,9 +555,12 @@ export function EnhancedUnifiedCalendar({
           appointment,
           canEdit,
           canSchedule,
-          isGlobalBlock: blockedTimes.some(
-            (b) => b.type === "global" && b.date === dateStr && b.time === time,
-          ),
+          isGlobalBlock:
+            Array.isArray(blockedTimes) &&
+            blockedTimes.some(
+              (b) =>
+                b.type === "global" && b.date === dateStr && b.time === time,
+            ),
         });
       });
     });
@@ -706,7 +765,9 @@ export function EnhancedUnifiedCalendar({
           ...blockData,
           createdAt: new Date(),
         };
-        setBlockedTimes((prev) => [...prev, newBlock]);
+        setBlockedTimes((prev) =>
+          Array.isArray(prev) ? [...prev, newBlock] : [newBlock],
+        );
 
         // Regenerate schedule grid to show blocked time immediately
         generateScheduleGrid();
@@ -987,17 +1048,30 @@ export function EnhancedUnifiedCalendar({
 
           {authError && (
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 mr-2" />
-                <div>
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    Error de Autenticación
-                  </h3>
-                  <p className="text-xs text-yellow-600 mt-1">
-                    Tu sesión podría haber expirado. Por favor, inicia sesión
-                    nuevamente.
-                  </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-yellow-800">
+                      Error de Autenticación
+                    </h3>
+                    <p className="text-xs text-yellow-600 mt-1">
+                      Tu sesión ha expirado. Por favor, inicia sesión
+                      nuevamente.
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    // Clear auth token and redirect to login
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/auth";
+                  }}
+                >
+                  Iniciar Sesión
+                </Button>
               </div>
             </div>
           )}

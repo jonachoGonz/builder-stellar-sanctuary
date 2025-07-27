@@ -259,11 +259,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: Object.fromEntries(response.headers.entries()),
       });
 
+      // Clone response to avoid "body stream already read" error
+      const responseForErrorHandling = response.clone();
+      const responseForSuccessHandling = response.clone();
+
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         // Read response as text first to avoid "body stream already read" error
-        const responseText = await response.text();
+        const responseText = await responseForErrorHandling.text();
         console.log("📝 Raw response text:", responseText.substring(0, 500));
 
         try {
@@ -304,7 +308,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Read response as text first to avoid "body stream already read" error
-      const responseText = await response.text();
+      const responseText = await responseForSuccessHandling.text();
 
       let data;
       try {
@@ -415,7 +419,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Autenticación con Google no está configurada completamente. " +
             (statusData.missingConfig?.includes("GOOGLE_CLIENT_SECRET")
               ? "Se requiere configurar el Client Secret de Google."
-              : "Configuración de Google OAuth incompleta."),
+              : "Configuraci��n de Google OAuth incompleta."),
         );
       }
 

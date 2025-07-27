@@ -5,6 +5,8 @@ import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
 import { PlanManagement } from "../components/PlanManagement";
 import { AutoCompleteManager } from "../components/AutoCompleteManager";
 import { ReviewsManager } from "../components/ReviewsManager";
+import { BlockingManager } from "../components/BlockingManager";
+import { TeamsStyleCalendar } from "../components/TeamsStyleCalendar";
 import {
   Users,
   Calendar,
@@ -73,8 +75,9 @@ export function AdminDashboard() {
   });
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "users" | "calendar" | "plans" | "automation" | "reviews"
+    "users" | "calendar" | "plans" | "automation" | "reviews" | "blocking"
   >("users");
+  const [calendarView, setCalendarView] = useState<"enhanced" | "teams">("teams");
 
   // Get admin info from real user data
   const getAdminInfo = () => {
@@ -216,6 +219,19 @@ export function AdminDashboard() {
     loadUsers();
     loadStats();
   }, [pagination.currentPage, searchTerm, filterRole]);
+
+  // Real-time updates for stats and users
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      console.log("🔄 Auto-refreshing admin dashboard for real-time updates");
+      loadStats(); // Refresh stats for real-time metrics
+      if (activeTab === "users") {
+        loadUsers(); // Refresh users list if on users tab
+      }
+    }, 3 * 60 * 1000); // 3 minutes for admin dashboard
+
+    return () => clearInterval(refreshInterval);
+  }, [activeTab]);
 
   useEffect(() => {
     // Reset to first page when search/filter changes
@@ -476,6 +492,17 @@ export function AdminDashboard() {
             >
               <User className="h-4 w-4 mr-2 inline" />
               Evaluaciones
+            </button>
+            <button
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "blocking"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+              onClick={() => setActiveTab("blocking")}
+            >
+              <Calendar className="h-4 w-4 mr-2 inline" />
+              Bloqueos de Horarios
             </button>
           </div>
         </div>
@@ -813,13 +840,43 @@ export function AdminDashboard() {
           </>
         )}
 
-        {activeTab === "calendar" && <EnhancedUnifiedCalendar />}
+        {activeTab === "calendar" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Vista de Calendario</h3>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={calendarView === "teams" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCalendarView("teams")}
+                >
+                  Vista Teams
+                </Button>
+                <Button
+                  variant={calendarView === "enhanced" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCalendarView("enhanced")}
+                >
+                  Vista Clásica
+                </Button>
+              </div>
+            </div>
+
+            {calendarView === "teams" ? (
+              <TeamsStyleCalendar />
+            ) : (
+              <EnhancedUnifiedCalendar />
+            )}
+          </div>
+        )}
 
         {activeTab === "plans" && <PlanManagement />}
 
         {activeTab === "automation" && <AutoCompleteManager />}
 
         {activeTab === "reviews" && <ReviewsManager />}
+
+        {activeTab === "blocking" && <BlockingManager />}
       </div>
 
       {/* User Management Modal */}
