@@ -465,7 +465,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(userData),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("❌ Could not parse profile update response as JSON:", parseError);
+        throw new Error("Error al procesar la respuesta del servidor");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Error al actualizar el perfil");
@@ -489,6 +497,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+      } else {
+        // Consume the response body to avoid issues
+        try {
+          await response.text();
+        } catch (e) {
+          // Ignore errors from consuming response body
+        }
       }
     } catch (error) {
       console.error("Refresh user failed:", error);
