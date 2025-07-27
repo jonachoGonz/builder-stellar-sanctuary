@@ -16,7 +16,7 @@
     "build:client": "vite build",
     "build:server": "vite build --config vite.config.server.ts",
     "build:production": "npm run build:client && cp _headers dist/spa/ && cp _redirects dist/spa/",
-    "build:netlify": "vite build",
+    "build:netlify": "npx vite build",
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
@@ -109,7 +109,7 @@
     "tsx": "^4.7.0",
     "typescript": "^5.5.3",
     "vaul": "^0.9.3",
-    "vite": "^6.2.2",
+    "vite": "^6.3.5",
     "vitest": "^3.1.4"
   }
 }

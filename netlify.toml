@@ -1,28 +1,33 @@
 [build]
-  command = "npm install && npm run build:netlify && cp _headers dist/spa/ && cp _redirects dist/spa/"
-  functions = "netlify/functions"
+  command = "npm install && npm run build && cp _headers dist/spa/ && cp _redirects dist/spa/"
   publish = "dist/spa"
+  environment = { NODE_VERSION = "18" }
 
 [build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--include=dev"
+  NODE_VERSION = "20.12.2" # Puedes cambiar según lo que uses localmente
 
 [functions]
-  external_node_modules = ["express", "mongoose", "bcryptjs", "jsonwebtoken", "passport", "passport-google-oauth20"]
+  directory = "netlify/functions"
+
+[functions."*"]
+  external_node_modules = [
+    "express",
+    "mongoose",
+    "bcryptjs",
+    "jsonwebtoken",
+    "passport",
+    "passport-google-oauth20"
+  ]
   node_bundler = "esbuild"
 
 [[redirects]]
-  force = true
   from = "/api/*"
-  status = 200
   to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
 
-# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  conditions = {Role = ["path"], headers = {accept = "text/html"}}
-
-[context.production.environment]
-  NODE_ENV = "production"
+  conditions = { Role = ["path"], headers = { accept = "text/html" } }
