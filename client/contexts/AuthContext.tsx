@@ -281,7 +281,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             statusText: response.statusText,
             parseError: parseError.message,
             responseText: responseText.substring(0, 500),
-            contentType: response.headers.get('Content-Type'),
+            contentType: response.headers.get("Content-Type"),
           });
 
           // Use a more user-friendly error message based on status
@@ -318,7 +318,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("❌ Could not parse successful response as JSON:", {
           parseError: parseError.message,
           responseText: responseText.substring(0, 500),
-          contentType: response.headers.get('Content-Type'),
+          contentType: response.headers.get("Content-Type"),
         });
         throw new Error("Error al procesar la respuesta del servidor");
       }
