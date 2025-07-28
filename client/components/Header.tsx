@@ -161,7 +161,7 @@ export function Header() {
                     Iniciar Sesión
                   </Button>
                 </Link>
-                <Link to="/register">
+                <Link to="/login?tab=register">
                   <Button className="btn-primary">
                     <UserPlus className="h-4 w-4 mr-2" />
                     Registrarse
