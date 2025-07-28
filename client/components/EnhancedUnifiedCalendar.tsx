@@ -307,19 +307,27 @@ export function EnhancedUnifiedCalendar({
         statusText: response.statusText,
       });
 
+      // Read response body once
+      const responseText = await response.text();
+
       if (response.ok) {
-        const data = await response.json();
-        console.log(
-          "✅ Appointments loaded:",
-          data.data?.appointments?.length || 0,
-        );
-        setAppointments(data.data.appointments || []);
+        try {
+          const data = JSON.parse(responseText);
+          console.log(
+            "✅ Appointments loaded:",
+            data.data?.appointments?.length || 0,
+          );
+          setAppointments(data.data.appointments || []);
+        } catch (parseError) {
+          console.error("❌ Error parsing appointments response:", parseError);
+          setAppointments([]);
+          throw new Error("Error parsing response data");
+        }
       } else {
-        const errorText = await response.text();
         console.error("❌ Appointments API error:", {
           status: response.status,
           statusText: response.statusText,
-          error: errorText,
+          error: responseText,
         });
         setAppointments([]); // Set empty array to prevent UI issues
 
