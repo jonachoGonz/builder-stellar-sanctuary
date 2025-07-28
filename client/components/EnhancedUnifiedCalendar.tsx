@@ -394,9 +394,11 @@ export function EnhancedUnifiedCalendar({
       if (isAdmin || isStudent) {
         console.log("🔍 Loading professionals...");
         promises.push(
-          apiCall("/admin/users?limit=100").then((response) => {
+          apiCall("/admin/users?limit=100").then(async (response) => {
+            const responseText = await response.text();
             if (response.ok) {
-              return response.json().then((data) => {
+              try {
+                const data = JSON.parse(responseText);
                 const professionalUsers =
                   data.data.users?.filter((u: any) =>
                     ["teacher", "nutritionist", "psychologist"].includes(
@@ -408,7 +410,11 @@ export function EnhancedUnifiedCalendar({
                   professionalUsers.length,
                 );
                 setProfessionals(professionalUsers);
-              });
+              } catch (parseError) {
+                console.error("❌ Error parsing professionals response:", parseError);
+                setProfessionals([]);
+                throw new Error("Error parsing professionals data");
+              }
             } else {
               console.error("❌ Professionals API error:", response.status);
               setProfessionals([]);
