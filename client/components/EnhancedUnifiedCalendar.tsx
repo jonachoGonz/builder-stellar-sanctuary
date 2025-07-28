@@ -332,11 +332,13 @@ export function EnhancedUnifiedCalendar({
       if (response.ok) {
         try {
           const data = JSON.parse(responseText);
+          // Handle both agenda and appointments response formats
+          const appointments = data.data?.agenda || data.data?.appointments || [];
           console.log(
             "✅ Appointments loaded:",
-            data.data?.appointments?.length || 0,
+            appointments.length,
           );
-          setAppointments(data.data.appointments || []);
+          setAppointments(appointments);
         } catch (parseError) {
           console.error("❌ Error parsing appointments response:", parseError);
           setAppointments([]);
@@ -435,7 +437,7 @@ export function EnhancedUnifiedCalendar({
                 throw new Error("Error parsing professionals data");
               }
             } else {
-              console.error("❌ Professionals API error:", response.status);
+              console.error("�� Professionals API error:", response.status);
               setProfessionals([]);
               if (response.status === 401 || response.status === 403) {
                 setAuthError(true);
