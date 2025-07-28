@@ -471,7 +471,7 @@ export function EnhancedUnifiedCalendar({
   const loadBlockedTimes = async () => {
     try {
       console.log("🔍 Loading blocked times...");
-      const response = await apiCall("/admin/blocked-times");
+      const response = await apiCall("/calendario/bloqueos");
 
       // Read response body once
       const responseText = await response.text();
