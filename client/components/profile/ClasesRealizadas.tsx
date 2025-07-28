@@ -46,7 +46,9 @@ export function ClasesRealizadas({
           <div className="text-2xl font-bold text-accent">
             {stats.classesThisMonth}
           </div>
-          <div className="text-sm text-gray-600">Clases completadas del mes</div>
+          <div className="text-sm text-gray-600">
+            Clases completadas del mes
+          </div>
         </div>
 
         {/* Additional Stats */}

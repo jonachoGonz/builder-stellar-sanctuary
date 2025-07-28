@@ -47,7 +47,9 @@ export function MiProgreso({ userStats }: MiProgresoProps) {
             <div className="text-2xl font-bold text-primary">
               {attendancePercentage}%
             </div>
-            <div className="text-sm text-gray-600">Porcentaje de asistencia</div>
+            <div className="text-sm text-gray-600">
+              Porcentaje de asistencia
+            </div>
           </div>
           <div className="text-center p-4 bg-secondary/5 rounded-lg">
             <div className="text-2xl font-bold text-secondary">

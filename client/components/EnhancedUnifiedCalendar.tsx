@@ -333,11 +333,9 @@ export function EnhancedUnifiedCalendar({
         try {
           const data = JSON.parse(responseText);
           // Handle both agenda and appointments response formats
-          const appointments = data.data?.agenda || data.data?.appointments || [];
-          console.log(
-            "✅ Appointments loaded:",
-            appointments.length,
-          );
+          const appointments =
+            data.data?.agenda || data.data?.appointments || [];
+          console.log("✅ Appointments loaded:", appointments.length);
           setAppointments(appointments);
         } catch (parseError) {
           console.error("❌ Error parsing appointments response:", parseError);
@@ -385,30 +383,35 @@ export function EnhancedUnifiedCalendar({
       if (isAdmin) {
         console.log("🔍 Loading students...");
         promises.push(
-          apiCall("/admin/users?role=student&limit=100").then(async (response) => {
-            const responseText = await response.text();
-            if (response.ok) {
-              try {
-                const data = JSON.parse(responseText);
-                console.log(
-                  "✅ Students loaded:",
-                  data.data?.users?.length || 0,
-                );
-                setStudents(data.data.users || []);
-              } catch (parseError) {
-                console.error("❌ Error parsing students response:", parseError);
+          apiCall("/admin/users?role=student&limit=100").then(
+            async (response) => {
+              const responseText = await response.text();
+              if (response.ok) {
+                try {
+                  const data = JSON.parse(responseText);
+                  console.log(
+                    "✅ Students loaded:",
+                    data.data?.users?.length || 0,
+                  );
+                  setStudents(data.data.users || []);
+                } catch (parseError) {
+                  console.error(
+                    "❌ Error parsing students response:",
+                    parseError,
+                  );
+                  setStudents([]);
+                  throw new Error("Error parsing students data");
+                }
+              } else {
+                console.error("❌ Students API error:", response.status);
                 setStudents([]);
-                throw new Error("Error parsing students data");
+                if (response.status === 401 || response.status === 403) {
+                  setAuthError(true);
+                }
+                throw new Error(`Students API error: ${response.status}`);
               }
-            } else {
-              console.error("❌ Students API error:", response.status);
-              setStudents([]);
-              if (response.status === 401 || response.status === 403) {
-                setAuthError(true);
-              }
-              throw new Error(`Students API error: ${response.status}`);
-            }
-          }),
+            },
+          ),
         );
       }
 
@@ -432,7 +435,10 @@ export function EnhancedUnifiedCalendar({
                 );
                 setProfessionals(professionalUsers);
               } catch (parseError) {
-                console.error("❌ Error parsing professionals response:", parseError);
+                console.error(
+                  "❌ Error parsing professionals response:",
+                  parseError,
+                );
                 setProfessionals([]);
                 throw new Error("Error parsing professionals data");
               }

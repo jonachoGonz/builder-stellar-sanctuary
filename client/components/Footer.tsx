@@ -1,5 +1,14 @@
 import { Link } from "react-router-dom";
-import { Heart, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Facebook,
+  Instagram,
+  Twitter,
+} from "lucide-react";
 
 export function Footer() {
   return (
@@ -15,17 +24,27 @@ export function Footer() {
               <span className="text-2xl font-bold">HTK center</span>
             </Link>
             <p className="text-gray-300 text-sm">
-              Transformamos vidas a través de la salud integral. Nuestro centro ofrece servicios 
-              especializados de kinesiología, nutrición y psicología para tu bienestar total.
+              Transformamos vidas a través de la salud integral. Nuestro centro
+              ofrece servicios especializados de kinesiología, nutrición y
+              psicología para tu bienestar total.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -35,19 +54,34 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Enlaces Rápidos</h3>
             <nav className="flex flex-col space-y-2">
-              <Link to="/" className="text-gray-300 hover:text-primary transition-colors">
+              <Link
+                to="/"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 Inicio
               </Link>
-              <Link to="/#about" className="text-gray-300 hover:text-primary transition-colors">
+              <Link
+                to="/#about"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 Nosotros
               </Link>
-              <Link to="/#services" className="text-gray-300 hover:text-primary transition-colors">
+              <Link
+                to="/#services"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 Servicios
               </Link>
-              <Link to="/#plans" className="text-gray-300 hover:text-primary transition-colors">
+              <Link
+                to="/#plans"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 Planes
               </Link>
-              <Link to="/#contact" className="text-gray-300 hover:text-primary transition-colors">
+              <Link
+                to="/#contact"
+                className="text-gray-300 hover:text-primary transition-colors"
+              >
                 Contacto
               </Link>
             </nav>
@@ -71,7 +105,9 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-2 text-gray-300">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span className="text-sm">Av. Principal 123, Santiago, Chile</span>
+                <span className="text-sm">
+                  Av. Principal 123, Santiago, Chile
+                </span>
               </div>
               <div className="flex items-center space-x-2 text-gray-300">
                 <Phone className="h-4 w-4 text-primary" />
@@ -96,10 +132,16 @@ export function Footer() {
               © 2024 HTK center. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/terms" className="text-gray-300 hover:text-primary text-sm transition-colors">
+              <Link
+                to="/terms"
+                className="text-gray-300 hover:text-primary text-sm transition-colors"
+              >
                 Términos y Condiciones
               </Link>
-              <Link to="/privacy" className="text-gray-300 hover:text-primary text-sm transition-colors">
+              <Link
+                to="/privacy"
+                className="text-gray-300 hover:text-primary text-sm transition-colors"
+              >
                 Política de Privacidad
               </Link>
             </div>

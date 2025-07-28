@@ -125,9 +125,7 @@ export function ProximasClases({
                 <p>No tienes clases agendadas</p>
               </div>
               <Link to="/calendar">
-                <Button className="btn-primary">
-                  Agenda tus clases ahora
-                </Button>
+                <Button className="btn-primary">Agenda tus clases ahora</Button>
               </Link>
             </div>
           )}

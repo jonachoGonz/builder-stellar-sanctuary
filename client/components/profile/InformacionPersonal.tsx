@@ -160,7 +160,9 @@ export function InformacionPersonal({
               <Input
                 id="occupation"
                 value={editData.occupation}
-                onChange={(e) => handleInputChange("occupation", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("occupation", e.target.value)
+                }
               />
             ) : (
               <div className="p-3 bg-gray-50 rounded-lg">
