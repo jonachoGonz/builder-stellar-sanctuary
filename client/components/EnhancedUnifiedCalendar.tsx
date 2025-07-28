@@ -364,15 +364,21 @@ export function EnhancedUnifiedCalendar({
       if (isProfessional || isAdmin) {
         console.log("🔍 Loading students...");
         promises.push(
-          apiCall("/admin/users?role=student&limit=100").then((response) => {
+          apiCall("/admin/users?role=student&limit=100").then(async (response) => {
+            const responseText = await response.text();
             if (response.ok) {
-              return response.json().then((data) => {
+              try {
+                const data = JSON.parse(responseText);
                 console.log(
                   "✅ Students loaded:",
                   data.data?.users?.length || 0,
                 );
                 setStudents(data.data.users || []);
-              });
+              } catch (parseError) {
+                console.error("❌ Error parsing students response:", parseError);
+                setStudents([]);
+                throw new Error("Error parsing students data");
+              }
             } else {
               console.error("❌ Students API error:", response.status);
               setStudents([]);
