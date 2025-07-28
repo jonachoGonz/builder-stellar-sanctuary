@@ -299,12 +299,25 @@ export function EnhancedUnifiedCalendar({
 
       console.log("🔍 Loading appointments with params:", params.toString());
 
-      // Use different endpoint based on user role
-      const endpoint = isStudent
-        ? `/appointments?${params}` // Student endpoint (if exists)
-        : `/admin/appointments?${params}`; // Admin/Professional endpoint
+      // Use calendario endpoint which handles all user roles properly
+      const calendarParams = new URLSearchParams({
+        fechaInicio: startOfWeek.toISOString().split("T")[0],
+        fechaFin: endOfWeek.toISOString().split("T")[0],
+        limit: "100",
+      });
 
-      const response = await apiCall(endpoint);
+      // Apply filters based on role and permissions
+      if (filters.professional !== "all" && (isAdmin || isProfessional)) {
+        calendarParams.append("profesionalId", filters.professional);
+      }
+      if (filters.student !== "all" && (isAdmin || isProfessional)) {
+        calendarParams.append("alumnoId", filters.student);
+      }
+      if (filters.status !== "all") {
+        calendarParams.append("estado", filters.status);
+      }
+
+      const response = await apiCall(`/calendario/agenda?${calendarParams}`);
 
       console.log("📡 Appointments response:", {
         url: endpoint,
