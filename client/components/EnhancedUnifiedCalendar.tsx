@@ -299,9 +299,15 @@ export function EnhancedUnifiedCalendar({
 
       console.log("🔍 Loading appointments with params:", params.toString());
 
-      const response = await apiCall(`/admin/appointments?${params}`);
+      // Use different endpoint based on user role
+      const endpoint = isStudent
+        ? `/appointments?${params}` // Student endpoint (if exists)
+        : `/admin/appointments?${params}`; // Admin/Professional endpoint
+
+      const response = await apiCall(endpoint);
 
       console.log("📡 Appointments response:", {
+        url: endpoint,
         status: response.status,
         ok: response.ok,
         statusText: response.statusText,
