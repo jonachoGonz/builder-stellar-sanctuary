@@ -215,7 +215,7 @@ export function EnhancedUnifiedCalendar({
       }
 
       if (usersResult.status === "rejected") {
-        console.error("��� Failed to load users:", usersResult.reason);
+        console.error("❌ Failed to load users:", usersResult.reason);
         if (
           usersResult.reason?.message?.includes("401") ||
           usersResult.reason?.message?.includes("403")
@@ -297,7 +297,7 @@ export function EnhancedUnifiedCalendar({
         params.append("studentId", user!.id);
       }
 
-      console.log("�� Loading appointments with params:", params.toString());
+      console.log("🔍 Loading appointments with params:", params.toString());
 
       // Use calendario endpoint which handles all user roles properly
       const calendarParams = new URLSearchParams({
@@ -412,7 +412,7 @@ export function EnhancedUnifiedCalendar({
         );
       }
 
-      if (isAdmin || isStudent) {
+      if (isAdmin) {
         console.log("🔍 Loading professionals...");
         promises.push(
           apiCall("/admin/users?limit=100").then(async (response) => {
