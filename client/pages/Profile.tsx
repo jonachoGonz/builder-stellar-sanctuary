@@ -3,7 +3,6 @@ import { Star } from "lucide-react";
 import { WelcomeModal } from "../components/WelcomeModal";
 import { useAuth, usePermissions } from "../contexts/AuthContext";
 import { apiCall } from "../lib/api";
-import { Header } from "../components/Header";
 import { Encabezado } from "../components/profile/Encabezado";
 import { Perfil } from "../components/profile/Perfil";
 
