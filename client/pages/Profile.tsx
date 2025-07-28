@@ -317,9 +317,6 @@ export function Profile() {
         isNewUser={true} // You can make this dynamic based on user registration date
       />
 
-      {/* Header Component */}
-      <Header />
-
       {/* Encabezado Component */}
       <Encabezado
         user={user}
