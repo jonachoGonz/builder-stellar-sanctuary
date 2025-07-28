@@ -452,11 +452,20 @@ export function EnhancedUnifiedCalendar({
       console.log("🔍 Loading blocked times...");
       const response = await apiCall("/admin/blocked-times");
 
+      // Read response body once
+      const responseText = await response.text();
+
       if (response.ok) {
-        const data = await response.json();
-        const blockedTimesData = Array.isArray(data.data) ? data.data : [];
-        console.log("✅ Blocked times loaded:", blockedTimesData.length);
-        setBlockedTimes(blockedTimesData);
+        try {
+          const data = JSON.parse(responseText);
+          const blockedTimesData = Array.isArray(data.data) ? data.data : [];
+          console.log("✅ Blocked times loaded:", blockedTimesData.length);
+          setBlockedTimes(blockedTimesData);
+        } catch (parseError) {
+          console.error("❌ Error parsing blocked times response:", parseError);
+          setBlockedTimes([]);
+          throw new Error("Error parsing blocked times data");
+        }
       } else {
         console.error("❌ Blocked times API error:", response.status);
         setBlockedTimes([]);
