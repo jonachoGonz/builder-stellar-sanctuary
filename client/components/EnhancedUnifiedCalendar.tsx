@@ -320,7 +320,7 @@ export function EnhancedUnifiedCalendar({
       const response = await apiCall(`/calendario/agenda?${calendarParams}`);
 
       console.log("📡 Appointments response:", {
-        url: endpoint,
+        url: `/calendario/agenda?${calendarParams}`,
         status: response.status,
         ok: response.ok,
         statusText: response.statusText,
@@ -437,7 +437,7 @@ export function EnhancedUnifiedCalendar({
                 throw new Error("Error parsing professionals data");
               }
             } else {
-              console.error("�� Professionals API error:", response.status);
+              console.error("❌ Professionals API error:", response.status);
               setProfessionals([]);
               if (response.status === 401 || response.status === 403) {
                 setAuthError(true);
