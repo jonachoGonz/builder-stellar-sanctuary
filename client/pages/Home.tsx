@@ -25,6 +25,7 @@ import { Button } from "../components/ui/button";
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
@@ -437,7 +438,7 @@ export function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <Card
                 key={plan.id}
@@ -478,7 +479,9 @@ export function Home() {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/register" className="block">
+                </CardContent>
+                <CardFooter className=" flex justify-center">
+                  <Link to="/register" className="block w-full">
                     <Button
                       className={`w-full ${
                         plan.popular ? "btn-primary" : "btn-secondary"
@@ -487,7 +490,7 @@ export function Home() {
                       Elegir Plan
                     </Button>
                   </Link>
-                </CardContent>
+                </CardFooter>
               </Card>
             ))}
           </div>

@@ -23,6 +23,7 @@ import {
   Filter,
   RefreshCw,
   AlertTriangle,
+  Upload,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -582,12 +583,12 @@ export function AdminDashboard() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Users Management */}
               <div className="lg:col-span-2">
                 <Card>
                   <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-2">
                       <CardTitle>Gestión de Usuarios</CardTitle>
                       <Button
                         size="sm"
@@ -710,6 +711,7 @@ export function AdminDashboard() {
                                   >
                                     <Trash2 className="h-3 w-3" />
                                   </Button>
+                                  
                                 </div>
                               </TableCell>
                             </TableRow>
@@ -762,111 +764,14 @@ export function AdminDashboard() {
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Quick Actions & Stats */}
-              <div className="space-y-6">
-                {/* Role Distribution */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Users className="h-5 w-5 mr-2" />
-                      Distribución por Rol
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {stats?.usersByRole && (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-sm">Estudiantes</span>
-                          <span className="font-medium">
-                            {stats.usersByRole.students}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm">Entrenadores</span>
-                          <span className="font-medium">
-                            {stats.usersByRole.teachers}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm">Nutricionistas</span>
-                          <span className="font-medium">
-                            {stats.usersByRole.nutritionists}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm">Psicólogos</span>
-                          <span className="font-medium">
-                            {stats.usersByRole.psychologists}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm">Administradores</span>
-                          <span className="font-medium">
-                            {stats.usersByRole.admins}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Acciones Rápidas</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Crear Nueva Clase
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Gestionar Horarios
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      Ver Reportes
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Configuración
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </>
         )}
 
         {activeTab === "calendar" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Vista de Calendario</h3>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant={calendarView === "teams" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCalendarView("teams")}
-                >
-                  Vista Teams
-                </Button>
-                <Button
-                  variant={calendarView === "enhanced" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCalendarView("enhanced")}
-                >
-                  Vista Clásica
-                </Button>
-              </div>
-            </div>
-
-            {calendarView === "teams" ? (
               <TeamsStyleCalendar />
-            ) : (
-              <EnhancedUnifiedCalendar />
-            )}
+            
           </div>
         )}
 

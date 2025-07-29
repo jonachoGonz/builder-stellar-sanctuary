@@ -51,7 +51,10 @@ export function Encabezado({
             </h1>
             <div className="flex items-center space-x-4 mt-2">
               {/* Role/Plan Badge */}
-              <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
+              <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2 capitalize">
+                {isStudent
+                  ? 'Plan '
+                  : ''}
                 {isAdmin
                   ? "Administrador"
                   : isProfessional
@@ -82,30 +85,30 @@ export function Encabezado({
           {/* Action Menu */}
           <div className="flex flex-col space-y-2">
             <Link to="/dashboard">
-              <Button className="bg-white text-primary hover:bg-gray-100 font-semibold">
+              <Button className="bg-white text-primary hover:bg-gray-100 font-semibold w-full">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
                 Dashboard
               </Button>
             </Link>
-            {(isStudent || isAdmin) && (
-              <Button
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10"
-                onClick={onToggleEdit}
-              >
-                {isEditing ? (
-                  <>
-                    <X className="h-4 w-4 mr-2" />
-                    Cancelar
-                  </>
-                ) : (
-                  <>
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Editar Perfil
-                  </>
-                )}
-              </Button>
-            )}
+            
+            <Button
+              variant="outline"
+              className="border-white/30 text-blue-600 hover:bg-white/10"
+              onClick={onToggleEdit}
+            >
+              {isEditing ? (
+                <>
+                  <X className="h-4 w-4 mr-2" />
+                  Cancelar
+                </>
+              ) : (
+                <>
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Editar Perfil
+                </>
+              )}
+            </Button>
+            
           </div>
         </div>
       </div>

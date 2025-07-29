@@ -46,6 +46,7 @@ import {
 } from "../components/ui/select";
 import { Progress } from "../components/ui/progress";
 import { EnhancedUnifiedCalendar } from "../components/EnhancedUnifiedCalendar";
+import { TeamsStyleCalendar } from "@/components/TeamsStyleCalendar";
 
 export function StudentDashboard() {
   const { user, isLoading } = useAuth();
@@ -563,291 +564,296 @@ export function StudentDashboard() {
 
         {/* Unified Calendar */}
         <div className="mb-8">
-          <EnhancedUnifiedCalendar
-            showCreateButton={true}
-            showConfigButton={false}
-          />
-        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+                <TeamsStyleCalendar></TeamsStyleCalendar>
+                <EnhancedUnifiedCalendar
+                  showCreateButton={true}
+                  showConfigButton={false}
+                />
+            </div>
+            
+          
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Available Classes */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <Calendar className="h-5 w-5 mr-2" />
-                    Clases Disponibles
-                  </CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-auto"
-                    />
-                  </div>
-                </div>
+            {/* Available Classes */}
+            <div className="lg:col-span-1">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center">
+                        <Calendar className="h-5 w-5 mr-2" />
+                        Clases Disponibles
+                      </CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          type="date"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                          className="w-auto"
+                        />
+                      </div>
+                    </div>
 
-                {/* Filters */}
-                <div className="flex items-center space-x-4 mt-4">
-                  <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Tipo de clase" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      <SelectItem value="functional">Funcional</SelectItem>
-                      <SelectItem value="yoga">Yoga</SelectItem>
-                      <SelectItem value="crossfit">CrossFit</SelectItem>
-                      <SelectItem value="pilates">Pilates</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    {/* Filters */}
+                    <div className="flex items-center space-x-4 mt-4">
+                      <Select value={filterType} onValueChange={setFilterType}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Tipo de clase" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todas</SelectItem>
+                          <SelectItem value="functional">Funcional</SelectItem>
+                          <SelectItem value="yoga">Yoga</SelectItem>
+                          <SelectItem value="crossfit">CrossFit</SelectItem>
+                          <SelectItem value="pilates">Pilates</SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                  <Select value={filterTime} onValueChange={setFilterTime}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Horario" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todo el día</SelectItem>
-                      <SelectItem value="morning">Mañana</SelectItem>
-                      <SelectItem value="afternoon">Tarde</SelectItem>
-                      <SelectItem value="evening">Noche</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredClasses.map((classItem) => (
-                    <div
-                      key={classItem.id}
-                      className="p-4 border rounded-lg hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-semibold">{classItem.title}</h3>
-                            {getDifficultyBadge(classItem.difficulty)}
+                      <Select value={filterTime} onValueChange={setFilterTime}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Horario" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todo el día</SelectItem>
+                          <SelectItem value="morning">Mañana</SelectItem>
+                          <SelectItem value="afternoon">Tarde</SelectItem>
+                          <SelectItem value="evening">Noche</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {filteredClasses.map((classItem) => (
+                        <div
+                          key={classItem.id}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="font-semibold">{classItem.title}</h3>
+                                {getDifficultyBadge(classItem.difficulty)}
+                              </div>
+
+                              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                <span className="flex items-center">
+                                  <User className="h-4 w-4 mr-1" />
+                                  {classItem.instructor.name}
+                                </span>
+                                <span className="flex items-center">
+                                  <Star className="h-4 w-4 mr-1 text-yellow-500" />
+                                  {classItem.instructor.rating}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                <span className="flex items-center">
+                                  <Calendar className="h-4 w-4 mr-1" />
+                                  {new Date(classItem.date).toLocaleDateString(
+                                    "es-ES",
+                                  )}
+                                </span>
+                                <span className="flex items-center">
+                                  <Clock className="h-4 w-4 mr-1" />
+                                  {classItem.startTime} - {classItem.endTime}
+                                </span>
+                                <span>{classItem.location}</span>
+                              </div>
+
+                              <p className="text-sm text-gray-600 mb-3">
+                                {classItem.description}
+                              </p>
+
+                              <div className="flex items-center space-x-4">
+                                <span className="text-sm">
+                                  {classItem.availableSpots > 0 ? (
+                                    <span className="text-green-600 font-medium">
+                                      {classItem.availableSpots} espacios
+                                      disponibles
+                                    </span>
+                                  ) : (
+                                    <span className="text-red-600 font-medium">
+                                      Clase llena
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {classItem.currentCapacity}/
+                                  {classItem.maxCapacity} inscritos
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="ml-4">
+                              <Button
+                                className={
+                                  classItem.availableSpots > 0
+                                    ? "btn-primary"
+                                    : "btn-secondary"
+                                }
+                                onClick={() => handleBookClass(classItem)}
+                              >
+                                {classItem.availableSpots > 0 ? (
+                                  <>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Reservar
+                                  </>
+                                ) : (
+                                  <>
+                                    <AlertCircle className="h-4 w-4 mr-2" />
+                                    Lista de Espera
+                                  </>
+                                )}
+                              </Button>
+                            </div>
                           </div>
+                        </div>
+                      ))}
 
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                            <span className="flex items-center">
-                              <User className="h-4 w-4 mr-1" />
-                              {classItem.instructor.name}
-                            </span>
-                            <span className="flex items-center">
-                              <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                              {classItem.instructor.rating}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                            <span className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              {new Date(classItem.date).toLocaleDateString(
-                                "es-ES",
-                              )}
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {classItem.startTime} - {classItem.endTime}
-                            </span>
-                            <span>{classItem.location}</span>
-                          </div>
-
-                          <p className="text-sm text-gray-600 mb-3">
-                            {classItem.description}
+                      {filteredClasses.length === 0 && (
+                        <div className="text-center py-12 text-gray-500">
+                          <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                          <h3 className="text-lg font-medium mb-2">
+                            No hay clases disponibles
+                          </h3>
+                          <p>
+                            Intenta cambiar los filtros o seleccionar otra fecha
                           </p>
-
-                          <div className="flex items-center space-x-4">
-                            <span className="text-sm">
-                              {classItem.availableSpots > 0 ? (
-                                <span className="text-green-600 font-medium">
-                                  {classItem.availableSpots} espacios
-                                  disponibles
-                                </span>
-                              ) : (
-                                <span className="text-red-600 font-medium">
-                                  Clase llena
-                                </span>
-                              )}
-                            </span>
-                            <span className="text-sm text-gray-500">
-                              {classItem.currentCapacity}/
-                              {classItem.maxCapacity} inscritos
-                            </span>
-                          </div>
                         </div>
-
-                        <div className="ml-4">
-                          <Button
-                            className={
-                              classItem.availableSpots > 0
-                                ? "btn-primary"
-                                : "btn-secondary"
-                            }
-                            onClick={() => handleBookClass(classItem)}
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Today's Classes */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Activity className="h-5 w-5 mr-2" />
+                      Hoy
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {todayClasses.length > 0 ? (
+                      <div className="space-y-3">
+                        {todayClasses.map((classItem) => (
+                          <div
+                            key={classItem.id}
+                            className="p-3 bg-primary/5 border border-primary/20 rounded-lg"
                           >
-                            {classItem.availableSpots > 0 ? (
-                              <>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Reservar
-                              </>
-                            ) : (
-                              <>
-                                <AlertCircle className="h-4 w-4 mr-2" />
-                                Lista de Espera
-                              </>
+                            <div className="font-medium text-sm">
+                              {classItem.title}
+                            </div>
+                            <div className="text-xs text-gray-600 mt-1">
+                              {classItem.instructor} • {classItem.startTime} •{" "}
+                              {classItem.location}
+                            </div>
+                            <div className="mt-2">
+                              {getStatusBadge(classItem.status)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-gray-500">
+                        <Clock className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No tienes clases hoy</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* My Upcoming Classes */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Mis Próximas Clases</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {upcomingClasses.slice(0, 3).map((classItem) => (
+                        <div
+                          key={classItem.id}
+                          className="p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="font-medium text-sm">
+                                {classItem.title}
+                              </div>
+                              <div className="text-xs text-gray-600 mt-1">
+                                {new Date(classItem.date).toLocaleDateString(
+                                  "es-ES",
+                                )}{" "}
+                                • {classItem.startTime}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                {classItem.instructor}
+                              </div>
+                            </div>
+                            {classItem.canCancel && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleCancelClass(classItem.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
                             )}
-                          </Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {upcomingClasses.length === 0 && (
+                        <div className="text-center py-6 text-gray-500">
+                          <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                          <p className="text-sm">No tienes clases reservadas</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Achievements */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Award className="h-5 w-5 mr-2" />
+                      Logros Recientes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 bg-gym-gold/5 rounded-lg">
+                      <Award className="h-6 w-6 text-gym-gold" />
+                      <div>
+                        <div className="font-medium text-sm">Racha de 12 días</div>
+                        <div className="text-xs text-gray-600">¡Increíble!</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg">
+                      <Target className="h-6 w-6 text-primary" />
+                      <div>
+                        <div className="font-medium text-sm">Meta Cumplida</div>
+                        <div className="text-xs text-gray-600">
+                          40 clases completadas
                         </div>
                       </div>
                     </div>
-                  ))}
-
-                  {filteredClasses.length === 0 && (
-                    <div className="text-center py-12 text-gray-500">
-                      <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <h3 className="text-lg font-medium mb-2">
-                        No hay clases disponibles
-                      </h3>
-                      <p>
-                        Intenta cambiar los filtros o seleccionar otra fecha
-                      </p>
+                    <div className="flex items-center space-x-3 p-3 bg-secondary/5 rounded-lg">
+                      <TrendingUp className="h-6 w-6 text-secondary" />
+                      <div>
+                        <div className="font-medium text-sm">Progreso</div>
+                        <div className="text-xs text-gray-600">94% asistencia</div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Today's Classes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Activity className="h-5 w-5 mr-2" />
-                  Hoy
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {todayClasses.length > 0 ? (
-                  <div className="space-y-3">
-                    {todayClasses.map((classItem) => (
-                      <div
-                        key={classItem.id}
-                        className="p-3 bg-primary/5 border border-primary/20 rounded-lg"
-                      >
-                        <div className="font-medium text-sm">
-                          {classItem.title}
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
-                          {classItem.instructor} • {classItem.startTime} •{" "}
-                          {classItem.location}
-                        </div>
-                        <div className="mt-2">
-                          {getStatusBadge(classItem.status)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-gray-500">
-                    <Clock className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm">No tienes clases hoy</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* My Upcoming Classes */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Mis Próximas Clases</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {upcomingClasses.slice(0, 3).map((classItem) => (
-                    <div
-                      key={classItem.id}
-                      className="p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-medium text-sm">
-                            {classItem.title}
-                          </div>
-                          <div className="text-xs text-gray-600 mt-1">
-                            {new Date(classItem.date).toLocaleDateString(
-                              "es-ES",
-                            )}{" "}
-                            • {classItem.startTime}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {classItem.instructor}
-                          </div>
-                        </div>
-                        {classItem.canCancel && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleCancelClass(classItem.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-
-                  {upcomingClasses.length === 0 && (
-                    <div className="text-center py-6 text-gray-500">
-                      <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm">No tienes clases reservadas</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Achievements */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Award className="h-5 w-5 mr-2" />
-                  Logros Recientes
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-gym-gold/5 rounded-lg">
-                  <Award className="h-6 w-6 text-gym-gold" />
-                  <div>
-                    <div className="font-medium text-sm">Racha de 12 días</div>
-                    <div className="text-xs text-gray-600">¡Increíble!</div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg">
-                  <Target className="h-6 w-6 text-primary" />
-                  <div>
-                    <div className="font-medium text-sm">Meta Cumplida</div>
-                    <div className="text-xs text-gray-600">
-                      40 clases completadas
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-secondary/5 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-secondary" />
-                  <div>
-                    <div className="font-medium text-sm">Progreso</div>
-                    <div className="text-xs text-gray-600">94% asistencia</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
 

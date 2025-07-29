@@ -71,7 +71,7 @@ export function InformacionPersonal({
           {/* First Name */}
           <div className="space-y-2">
             <Label htmlFor="firstName">Nombre</Label>
-            {isEditing && (isStudent || isAdmin) ? (
+            {isEditing && (isStudent || isAdmin || isProfessional) ? (
               <Input
                 id="firstName"
                 value={editData.firstName}
@@ -87,7 +87,7 @@ export function InformacionPersonal({
           {/* Last Name */}
           <div className="space-y-2">
             <Label htmlFor="lastName">Apellido</Label>
-            {isEditing && (isStudent || isAdmin) ? (
+            {isEditing && (isStudent || isAdmin || isProfessional) ? (
               <Input
                 id="lastName"
                 value={editData.lastName}
@@ -118,7 +118,7 @@ export function InformacionPersonal({
               <Phone className="h-4 w-4 mr-1" />
               Teléfono
             </Label>
-            {isEditing && (isStudent || isAdmin) ? (
+            {isEditing && (isStudent || isAdmin || isProfessional) ? (
               <Input
                 id="phone"
                 value={editData.phone}
@@ -137,7 +137,7 @@ export function InformacionPersonal({
               <Calendar className="h-4 w-4 mr-1" />
               Fecha de Nacimiento
             </Label>
-            {isEditing && (isStudent || isAdmin) ? (
+            {isEditing && (isStudent || isAdmin || isProfessional) ? (
               <Input
                 id="birthDate"
                 type="date"
@@ -156,7 +156,7 @@ export function InformacionPersonal({
           {/* Occupation */}
           <div className="space-y-2">
             <Label htmlFor="occupation">Ocupación</Label>
-            {isEditing && (isStudent || isAdmin) ? (
+            {isEditing && (isStudent || isAdmin || isProfessional) ? (
               <Input
                 id="occupation"
                 value={editData.occupation}
@@ -172,77 +172,95 @@ export function InformacionPersonal({
           </div>
 
           {/* Activity Level */}
-          <div className="space-y-2">
-            <Label htmlFor="activityLevel" className="flex items-center">
-              <Activity className="h-4 w-4 mr-1" />
-              Nivel de Actividad
-            </Label>
-            {isEditing && (isStudent || isAdmin) ? (
-              <Select
-                value={editData.activityLevel}
-                onValueChange={(value) =>
-                  handleInputChange("activityLevel", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sedentary">Sedentario</SelectItem>
-                  <SelectItem value="active">Activo</SelectItem>
-                  <SelectItem value="very-active">Muy Activo</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                {user.activityLevel === "sedentary"
-                  ? "Sedentario"
-                  : user.activityLevel === "active"
-                    ? "Activo"
-                    : user.activityLevel === "very-active"
-                      ? "Muy Activo"
-                      : "No especificado"}
-              </div>
-            )}
-          </div>
-
-          {/* Role/Plan Field */}
-          <div className="space-y-2">
-            <Label htmlFor="role">
-              {isProfessional ? "Rol / Especialidad" : "Plan Actual"}
-            </Label>
-            <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-              {isProfessional ? (
-                <>
-                  <div className="font-semibold text-primary">
-                    {getRoleDisplayName(user.role)}
-                  </div>
-                  {user.specialty && (
-                    <div className="text-sm text-gray-600 mt-1">
-                      Especialidad: {user.specialty}
-                    </div>
-                  )}
-                  <div className="text-xs text-gray-500 mt-1">
-                    Profesional certificado
-                  </div>
-                </>
+          {isStudent ? 
+          (
+            <>
+            <div className="space-y-2">
+              <Label htmlFor="activityLevel" className="flex items-center">
+                <Activity className="h-4 w-4 mr-1" />
+                Nivel de Actividad
+              </Label>
+              {isEditing && (isStudent || isAdmin || isProfessional) ? (
+                <Select
+                  value={editData.activityLevel}
+                  onValueChange={(value) =>
+                    handleInputChange("activityLevel", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sedentary">Sedentario</SelectItem>
+                    <SelectItem value="active">Activo</SelectItem>
+                    <SelectItem value="very-active">Muy Activo</SelectItem>
+                  </SelectContent>
+                </Select>
               ) : (
-                <>
-                  <div className="font-semibold text-primary">
-                    {user.plan || "Plan Trial"}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {getWeeklyClasses(user.plan || "")} clases por semana
-                  </div>
-                  {isAdmin && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      Campo asignado por el administrador (No editable)
-                    </div>
-                  )}
-                </>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  {user.activityLevel === "sedentary"
+                    ? "Sedentario"
+                    : user.activityLevel === "active"
+                      ? "Activo"
+                      : user.activityLevel === "very-active"
+                        ? "Muy Activo"
+                        : "No especificado"}
+                </div>
               )}
             </div>
-          </div>
+            </>
+          ) :
+          (
+            ''
+          )
+          }
+          
+          {isProfessional || isStudent ? (
+
+            <>
+            <div className="space-y-2">
+              <Label htmlFor="role">
+                {isProfessional ? "Rol / Especialidad" : "Plan Actual"}
+              </Label>
+              <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                {isProfessional ? (
+                  <>
+                    <div className="font-semibold text-primary">
+                      {getRoleDisplayName(user.role)}
+                    </div>
+                    {user.specialty && (
+                      <div className="text-sm text-gray-600 mt-1">
+                        Especialidad: {user.specialty}
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500 mt-1">
+                      Profesional certificado
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="font-semibold text-primary capitalize">
+                      Plan 
+                      {user.plan || "Plan Trial"}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {getWeeklyClasses(user.plan || "")} clases por semana
+                    </div>
+                    {isAdmin && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Campo asignado por el administrador (No editable)
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          
+          </>
+          ):
+          ('')
+          }
+          
         </div>
 
         {/* Emergency Contact Section */}
@@ -251,7 +269,7 @@ export function InformacionPersonal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="emergencyContactName">Nombre</Label>
-              {isEditing && (isStudent || isAdmin) ? (
+              {isEditing && (isStudent || isAdmin || isProfessional) ? (
                 <Input
                   id="emergencyContactName"
                   value={editData.emergencyContactName}
@@ -267,7 +285,7 @@ export function InformacionPersonal({
             </div>
             <div className="space-y-2">
               <Label htmlFor="emergencyContactPhone">Teléfono</Label>
-              {isEditing && (isStudent || isAdmin) ? (
+              {isEditing && (isStudent || isAdmin || isProfessional) ? (
                 <Input
                   id="emergencyContactPhone"
                   value={editData.emergencyContactPhone}

@@ -155,7 +155,7 @@ export function Header() {
                 <Link to="/login">
                   <Button
                     variant="ghost"
-                    className="text-gray-700 hover:text-primary"
+                    className="text-gray-700 hover:text-white"
                   >
                     <LogIn className="h-4 w-4 mr-2" />
                     Iniciar Sesión

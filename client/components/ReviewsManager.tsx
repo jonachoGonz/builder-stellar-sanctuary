@@ -283,7 +283,7 @@ export function ReviewsManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold">Sistema de Evaluaciones</h2>
           <p className="text-gray-600">

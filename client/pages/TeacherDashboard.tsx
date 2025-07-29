@@ -503,8 +503,13 @@ export function TeacherDashboard() {
           <div className="lg:col-span-2">
             <EnhancedUnifiedCalendar />
 
+            
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
             {/* Today's Classes */}
-            <Card className="mt-6">
+            <Card>
               <CardHeader>
                 <CardTitle>Clases de Hoy</CardTitle>
               </CardHeader>
@@ -555,10 +560,6 @@ export function TeacherDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
             {/* Quick Actions */}
             <Card>
               <CardHeader>

@@ -22,7 +22,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import {
   Select,
   SelectContent,
@@ -432,16 +432,16 @@ export function PlanManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold">Gestión de Planes</h2>
           <p className="text-gray-600">
             Administra los planes de suscripción disponibles
           </p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 ">
           <Button onClick={handleSeedDefaultPlans} variant="outline">
             Crear Planes por Defecto
           </Button>
@@ -499,7 +499,7 @@ export function PlanManagement() {
         {filteredPlans.map((plan) => (
           <Card
             key={plan._id}
-            className={`${!plan.active ? "opacity-60" : ""}`}
+            className={`flex flex-col justify-between ${!plan.active ? "opacity-60" : ""}`}
           >
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -593,7 +593,8 @@ export function PlanManagement() {
                   </div>
                 )}
               </div>
-
+            </CardContent>
+            <CardFooter>
               <div className="flex space-x-2">
                 <Button
                   size="sm"
@@ -619,7 +620,7 @@ export function PlanManagement() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-            </CardContent>
+            </CardFooter>
           </Card>
         ))}
       </div>

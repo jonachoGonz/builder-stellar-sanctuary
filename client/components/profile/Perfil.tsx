@@ -48,7 +48,8 @@ export function Perfil({
       {/* Plan/Role Section */}
       <div className="mb-8">{isStudent && <TuPlan user={user} />}</div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"> */}
+      <div className={'grid grid-cols-1 ' + (isAdmin ? 'lg:grid-cols-2' : 'lg:grid-cols-3 gap-8')}>
         {/* Left Column - Progress/Stats and Evaluation */}
         <div className="space-y-6">
           {/* Progress/Professional Stats */}

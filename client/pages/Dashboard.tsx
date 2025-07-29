@@ -3,16 +3,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { AdminDashboard } from "./AdminDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
 import { StudentDashboard } from "./StudentDashboard";
-import { NutritionistDashboard } from "./NutritionistDashboard";
-import { PsychologistDashboard } from "./PsychologistDashboard";
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
 
 export function Dashboard() {
   const { user, isLoading } = useAuth();
@@ -50,9 +40,9 @@ export function Dashboard() {
     case "teacher":
       return <TeacherDashboard />;
     case "nutritionist":
-      return <NutritionistDashboard />;
+      return <TeacherDashboard />;
     case "psychologist":
-      return <PsychologistDashboard />;
+      return <TeacherDashboard />;
     case "student":
       return <StudentDashboard />;
     default:
